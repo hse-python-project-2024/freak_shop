@@ -1,0 +1,1 @@
+AmountOfCardsInHand = 5
