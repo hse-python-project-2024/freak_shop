@@ -3,14 +3,20 @@ syntax = "proto3";
 package great;
 
 service DbService {
-  rpc GetUserById (UserId) returns (User);
+  rpc GetUserById (Id) returns (User);
+  rpc AddUser (User) returns (IsDone);
 }
 
-message UserId{
+message Id{
   int32 id = 1;
 }
 
 message User{
-  string login = 1;
-  string name = 2;
+  optional int32 id = 1;
+  optional string login = 2;
+  optional string name = 3;
+}
+
+message IsDone{
+  bool is_done = 1;
 }

@@ -15,8 +15,11 @@ class DBServer(db_pb2_grpc.DbServiceServicer):
         print("Already connected")
         user = self.db.get_user_by_id(_user_id=request.id)
         if user is not None:
-            return db_pb2.User(login=user[0], name=user[1])
-        return db_pb2.User(login="", name="")
+            return db_pb2.User(id=user[0], login=user[1], name=user[2])
+        return db_pb2.User()
+
+    def AddUser(self, request, context):
+        return db_pb2.IsDone(is_done=self.db.add_user(_user_login=request.login, _user_name=request.name))
 
 
 def serve():
