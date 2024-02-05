@@ -60,12 +60,12 @@ class DBConnection:
 
         return row[0]
 
-    def get_user_name_by_id(self, _user_id: int) -> Optional[str]:
+    def get_user_by_id(self, _user_id: int) -> Optional[tuple[str, str]]:
         self.cursor.execute(f"SELECT * FROM users WHERE user_id = '{_user_id}'")
         row = self.cursor.fetchone()
         if row is None:
             return None
-        return row[2]
+        return row[1], row[2]  # (login, name)
 
     def close_connection(self) -> None:
         self.connection.commit()
