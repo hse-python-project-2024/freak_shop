@@ -1,5 +1,5 @@
-import db_pb2
 import db_pb2_grpc
+import db_pb2
 import grpc
 
 
