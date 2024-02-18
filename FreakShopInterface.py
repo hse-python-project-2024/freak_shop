@@ -3,8 +3,9 @@ from Client.GameplayRelatedClasses import*
 from Client.LibrariesForInterface import *
 screen = pygame.display.set_mode((ScreenWidth, ScreenHieght))
 # get global info about the game
-GameEntity = GameInfo(1,1,[1,2,3],4,["Pasha", "Sasha", "Nagibator228", "Боб"])
+GameEntity = GameInfo(1,1,[1,9,5],4,["Pasha", "Sasha", "Nagibator228", "Боб"])
 Player = PlayerInfo()
+Shop = ShopInfo()
 while True:
     clock.tick(60)
     for event in pygame.event.get():
@@ -14,10 +15,11 @@ while True:
     if pressed_keys[K_ESCAPE]:
         sys.exit()
     screen.fill(BackgroundColor)
-    ShopNameImage = pygame.image.load("../src/img/ShopPicture.jpg").convert()
 
-    screen.blit(ShopNameImage, (ScreenWidth/2-100 , ScreenHieght/10))
-
+    # Display Shop_Image 
+    ShopImage = pygame.image.load("../src/img/Shop_Image.jpg").convert()
+    screen.blit(pygame.transform.scale(ShopImage, (800, 400)), (ScreenWidth/4,
+                                                                ScreenHieght/10))
 
     # Display players cards
     for i in range(10):
@@ -33,7 +35,27 @@ while True:
             CardName += ".png"
             CardImage = pygame.image.load(CardName).convert()
             screen.blit(pygame.transform.scale(CardImage, (140, 200)), (ScreenWidth*(1/30+i/12),
-                                                                        ScreenHieght*6/10 + j*ScreenHieght/50))
+                                                                        ScreenHieght*(6/10 + j/50)+20))
+    # Display shop cards
+    for i in range(10):
+        DisplayedDiscounted = 0
+        for j in range(Shop.CardsInShop[i]):
+            CardName = "../src/img/"
+            if Shop.DiscountedCardsInShop[i] > DisplayedDiscounted:
+                DisplayedDiscounted += 1
+                CardName += "Discount_Image_"
+            else:
+                CardName += "Non_Discount_Image_"
+            CardName += str(i + 1)
+            CardName += ".png"
+            CardImage = pygame.image.load(CardName).convert()
+            WidthAdd = i / 8 + 1 / 100
+            HeightAdd = 1 / 100
+            if i >= 5:
+                WidthAdd = (i - 5) / 8 - 1 / 25 - 1 / 100
+                HeightAdd += 9 / 30
+            screen.blit(pygame.transform.scale(CardImage, (140, 200)), (ScreenWidth * (2 / 10 + WidthAdd),
+                                                                        ScreenHieght * (HeightAdd + j / 50)))
 
     # Display other players
     for i in range(GameEntity.PlayerAmount):
@@ -62,12 +84,15 @@ while True:
                                                                     ScreenHieght * ind / 5 + 10))
         ind += 1
 
-    # Display Tasks when hovering over them
+    # Display Tasks text when hovering over them
     for i in range (3):
         if TaskImagesRects[i].collidepoint(pygame.mouse.get_pos()):
             for j in range(len(Task_Descriptions[GameEntity.Tasks[i]-1])):
                 TaskDescriptionText = TaskFont.render(Task_Descriptions[GameEntity.Tasks[i]-1][j], False, (0, 0, 0))
-                screen.blit(TaskDescriptionText, (ScreenWidth * 1 / 10, ScreenHieght * i/5 + j*40 + 20))
+                TaskTextSurface = pygame.Surface(TaskDescriptionText.get_size())
+                TaskTextSurface.fill(BackgroundColor)
+                TaskTextSurface.blit(TaskDescriptionText, (0, 0))
+                screen.blit(TaskTextSurface, (ScreenWidth * 1 / 10, ScreenHieght * i/5 + j*40 + 40))
 
     pygame.display.update()
 
