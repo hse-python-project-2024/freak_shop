@@ -7,7 +7,6 @@ GameEntity = GameInfo(1,1,[1,9,5],4,["Pasha", "Sasha", "Nagibator228", "Боб"]
 Player = PlayerInfo()
 Shop = ShopInfo()
 while True:
-    clock.tick(60)
     for event in pygame.event.get():
         if event.type == QUIT:
             sys.exit()
@@ -16,11 +15,10 @@ while True:
         sys.exit()
     screen.fill(BackgroundColor)
 
-    # Display Shop_Image 
+    # Display Shop_Image
     ShopImage = pygame.image.load("../src/img/Shop_Image.jpg").convert()
     screen.blit(pygame.transform.scale(ShopImage, (800, 400)), (ScreenWidth/4,
                                                                 ScreenHieght/10))
-
     # Display players cards
     for i in range(10):
         DisplayedDiscounted = 0
@@ -69,6 +67,10 @@ while True:
     screen.blit(EndTurnText, (ScreenWidth * 6 / 7 + 15, ScreenHieght * 3 / 4 - 40))
     EndTurnIcon = pygame.image.load("../src/img/End_Turn_Icon.png").convert_alpha()
     screen.blit(pygame.transform.scale(EndTurnIcon, (250, 250)), (ScreenWidth * 6 / 7, ScreenHieght * 3 / 4))
+
+    if Rect(ScreenWidth * 6 / 7, ScreenHieght * 3 / 4, 250, 250).collidepoint(pygame.mouse.get_pos()):
+        EndTurnIconActivated = pygame.image.load("../src/img/End_Turn_Icon_Activated.png").convert_alpha()
+        screen.blit(pygame.transform.scale(EndTurnIconActivated, (250, 250)), (ScreenWidth * 6 / 7, ScreenHieght * 3 / 4))
 
     # Display tasks
     ind = 0
