@@ -98,6 +98,7 @@ class Player:
         self.id = player_id
         self.decks = {}
         self.goals = {}
+        self.ready = {}
 
     def join_game(self, game_id):
         self.decks[game_id] = Deck()
@@ -115,9 +116,19 @@ class Player:
             not_the_same_values: 0,
             fashion_at_lowest_price: 0,
         }
+        self.ready[game_id] = False
+
+    def change_readiness(self, game_id):
+        self.ready[game_id] += 1
+        self.ready[game_id] %= 2
+
+    def is_ready(self, game_id):
+        return self.ready[game_id]
 
     def leave_game(self, game_id):
         self.decks.pop(game_id)
+        self.goals.pop(game_id)
+        self.ready.pop(game_id)
 
     def add_cards(self, game_id, *card_ids):
         self.decks[game_id].add_cards(card_ids)
@@ -165,6 +176,13 @@ class Game:
         if self.state == WAITING and player_id not in self.players and len(self.players) < 5:
             self.players.append(player_id)
             PLAYERS[player_id].join_game(self.id)
+
+    def change_player_readiness(self, player_id):
+        if player_id not in self.players:
+            return
+        PLAYERS[player_id].change_readiness(self.id)
+        if all(PLAYERS[player_id].is_ready()):
+            self.start()
 
     def kick_player(self, player_id):
         if player_id in self.players:
