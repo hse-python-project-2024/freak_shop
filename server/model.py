@@ -84,16 +84,16 @@ class Deck:
 
         Description of the goal can be found in the rulebook."""
         return 2 * (self.cats[Items] // 2) + \
-               4 * (self.cats[Pets] // 2) + \
-               5 * (self.cats[Employees] // 2)
+            4 * (self.cats[Pets] // 2) + \
+            5 * (self.cats[Employees] // 2)
 
     def check_three_is_better_than_two(self):
         """Return number of points earned through the goal "Three is better than two".
 
         Description of the goal can be found in the rulebook."""
         return 2 * (self.cats[Items] // 3) + \
-               4 * (self.cats[Pets] // 3) + \
-               5 * (self.cats[Employees] // 3)
+            4 * (self.cats[Pets] // 3) + \
+            5 * (self.cats[Employees] // 3)
 
     def check_the_sum_of_all_fears(self):
         """Return number of points earned through the goal "The sum of all fears".
