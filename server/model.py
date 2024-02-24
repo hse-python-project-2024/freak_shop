@@ -300,12 +300,8 @@ class Game:
 
     def add_card_to_shop(self):
         """Add a new card from the queue to the shop."""
-        # TODO remove unnecessary asserts
         new_card = self.unused.popleft()
-        if not new_card:
-            return False
         self.shop.append(new_card)
-        return True
 
     def restock(self):
         """Restock the shop with new cards from the queue."""
@@ -320,7 +316,6 @@ class Game:
         """Give players points earned through the goal "Neighbors' festival".
 
         Description of the goal can be found in the rulebook."""
-        # TODO: finish the function
         for val in range(1, 11):
             mx_copies = max(PLAYERS[player_id].get_val_cnt(val) for player_id in self.players)
             for player_id in self.players:
