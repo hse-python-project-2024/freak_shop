@@ -49,5 +49,5 @@ run_client: venv_client
 clean_client:
 	rm -rf client/__pycache__
 	rm -rf client/venv
-	rm -rf client/db_pb2.py
-	rm -rf client/db_pb2_grpc.py
+	rm -rf client/requests_pb2.py
+	rm -rf client/requests_pb2_grpc.py

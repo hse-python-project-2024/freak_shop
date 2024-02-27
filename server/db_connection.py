@@ -30,10 +30,16 @@ class DBConnection:
                             login             varchar(50) NOT NULL UNIQUE,
                             name              varchar(50) NOT NULL
                             );""")
+        self.cursor.execute("""CREATE TABLE IF NOT EXISTS passwords (
+                            login             varchar(50) REFERENCES users(login),
+                            password          varchar(100) NOT NULL
+                            );""")
+        self.connection.commit()
 
     def connect_to_schema(self):
         self.cursor.execute("""CREATE SCHEMA IF NOT EXISTS freak_shop;
-                            SET SEARCH_PATH = freak_shop;""")
+                            SET SEARCH_PATH = freak_shop;
+                            CREATE EXTENSION pgcrypto;""")
         self.connection.commit()
         self.create_if_not_exists_all_tables()
 
@@ -49,25 +55,40 @@ class DBConnection:
             if _password_1 != _password_2:
                 return False, "Пароли не совпали"
             self.cursor.execute(f"INSERT INTO users (login, name) VALUES ('{_user_login}', '{_user_name}')")
+            self.cursor.execute(
+                f"INSERT INTO passwords (login, password) VALUES ('{_user_login}', crypt('{_password_1}', gen_salt('bf')));")
             self.connection.commit()
             return True, "Пользователь добавлен"
         except Exception as e:
             print(f'Error while adding user. Exception: {e}')
             return False, "Ошибка со стороны сервера. Попробуйте позже"
 
+    def check_password(self, _user_login: str, _password: str) -> (bool, str):
+        user_id = self.get_id_by_login(_user_login=_user_login)
+        if not user_id[0]:
+            return False, "Пользователя с таким логином не существует"
+        self.cursor.execute(f"""SELECT (password = crypt('{_password}', password))
+                            AS password_match
+                            FROM passwords
+                            WHERE login= '{_user_login}';""")
+        self.connection.commit()
+        row = self.cursor.fetchone()
+        if row[0]:
+            return True
+        return False, "Пароль неверный"
+
     def get_all_users(self) -> list[tuple]:
         self.cursor.execute(f"SELECT * FROM users")
         self.connection.commit()
         return self.cursor.fetchall()
 
-    def get_id_by_login(self, _user_login: str) -> Optional[int]:
+    def get_id_by_login(self, _user_login: str) -> (bool, int, str):
         self.cursor.execute(f"SELECT * FROM users WHERE login = '{_user_login}'")
         self.connection.commit()
         row = self.cursor.fetchone()
         if row is None:
-            return None
-
-        return row[0]
+            return False, -1, "Пользователя с таким логином не существует"
+        return True, row[0]
 
     def get_user_by_id(self, _user_id: int):  # status, id, login, name, info
         self.cursor.execute(f"SELECT * FROM users WHERE user_id = '{_user_id}'")
