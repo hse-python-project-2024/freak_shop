@@ -12,14 +12,13 @@ server_env:
 	chmod +x server/venv/bin/activate
 	. ./server/venv/bin/activate
 
-prepare_the_server: server_env
+
+prepare_server: server_env
 	$(PIP_SERVER) install -r server/requirements.txt
 	$(PYTHON_SERVER) -m grpc_tools.protoc -I protos --python_out=server --grpc_python_out=server protos/requests.proto
 
-venv_server: prepare_the_server
+run_server:
 	. ./server/venv/bin/activate
-
-run_server: venv_server
 	$(PYTHON_SERVER) server/main.py
 
 clean_server:
@@ -34,11 +33,12 @@ client_env:
 	chmod +x client/venv/bin/activate
 	. ./client/venv/bin/activate
 
-prepare_the_client: client_env
+prepare_client: client_env
 	$(PIP_CLIENT) install -r client/requirements.txt
 	$(PYTHON_CLIENT) -m grpc_tools.protoc -I protos --python_out=client --grpc_python_out=client protos/requests.proto
 
-venv_client: prepare_the_client
+venv_client:
+	. ./client/venv/bin/activate
 	. ./client/venv/bin/activate
 
 
