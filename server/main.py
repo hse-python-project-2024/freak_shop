@@ -1,7 +1,7 @@
 from concurrent import futures
 from facade import Facade
 
-from server_address_config import host, port
+from config import host, port
 import grpc
 import requests_pb2_grpc
 

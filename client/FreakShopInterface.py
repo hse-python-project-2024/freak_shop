@@ -1,6 +1,6 @@
-from Client.SettingsValues import*
-from Client.GameplayRelatedClasses import*
-from Client.LibrariesForInterface import *
+from client.SettingsValues import*
+from client.GameplayRelatedClasses import*
+from client.LibrariesForInterface import *
 screen = pygame.display.set_mode((ScreenWidth, ScreenHieght))
 # get global info about the game
 GameEntity = GameInfo(1,1,[1,9,5],4,["Pasha", "Sasha", "Nagibator228", "Боб"])
