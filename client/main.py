@@ -20,5 +20,4 @@ if __name__ == '__main__':
             _login = input("Enter login:\n")
             _password = input("Enter password:\n")
             response = client.login_user(_login, _password)
-            print(response)
-            print("Статус - ", response.status)
+            print(response.status.is_done, response.status.info)
