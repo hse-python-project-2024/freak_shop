@@ -1,6 +1,6 @@
 .idea/
 *__pycache__
-**/config.py
+**/*config.py
 *_pb2_grpc.py
 *_pb2.py
 **/venv
