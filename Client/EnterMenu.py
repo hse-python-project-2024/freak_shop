@@ -30,12 +30,12 @@ def ShowEnter():
                 if active == 1:
                     if event.key == K_BACKSPACE:
                         LoginInput = LoginInput[:-1]
-                    elif len(LoginInput) < 20:
+                    elif len(LoginInput) < MaxLoginLength:
                         LoginInput += event.unicode
                 if active == 2:
                     if event.key == K_BACKSPACE:
                         PasswordInput = PasswordInput[:-1]
-                    elif len(PasswordInput) < 20:
+                    elif len(PasswordInput) < MaxPasswordLength:
                         PasswordInput += event.unicode
 
         pressed_keys = pygame.key.get_pressed()

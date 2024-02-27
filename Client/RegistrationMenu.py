@@ -4,7 +4,7 @@ def ShowResgistration():
     LoginText = RegistrationFont.render("Логин :", False, (0, 0, 0))
     PassowrdText = RegistrationFont.render("Пароль : ", False, (0, 0, 0))
     RepeatPasswordText = RegistrationFont.render("Повторите пароль : ", False, (0, 0, 0))
-    ConfirmText = RegistrationFont.render("Войти", False, (0, 0, 0))
+    ConfirmText = RegistrationFont.render("Регистрация", False, (0, 0, 0))
     LoginButton = Rect(ScreenWidth * 5 / 38, ScreenHeight / 6, 800, 150)
     PasswordButton = Rect(ScreenWidth * 5 / 38, ScreenHeight *4/10 , 800, 150)
     RepeatPasswordButton = Rect(ScreenWidth * 5 / 38, ScreenHeight * 13 / 20, 800, 150)
@@ -36,17 +36,17 @@ def ShowResgistration():
                 if active == 1:
                     if event.key == K_BACKSPACE:
                         LoginInput = LoginInput[:-1]
-                    elif len(LoginInput) < 20:
+                    elif len(LoginInput) < MaxLoginLength:
                         LoginInput += event.unicode
                 if active == 2:
                     if event.key == K_BACKSPACE:
                         PasswordInput = PasswordInput[:-1]
-                    elif len(PasswordInput) < 20:
+                    elif len(PasswordInput) < MaxPasswordLength:
                         PasswordInput += event.unicode
                 if active == 3:
                     if event.key == K_BACKSPACE:
                         RepeatPasswordInput = RepeatPasswordInput[:-1]
-                    elif len(RepeatPasswordInput) < 20:
+                    elif len(RepeatPasswordInput) < MaxPasswordLength:
                         RepeatPasswordInput += event.unicode
 
         pressed_keys = pygame.key.get_pressed()
@@ -60,7 +60,7 @@ def ShowResgistration():
         screen.blit(LoginText, (LoginButton.midtop[0] - 100, LoginButton.midtop[1] - 80))
         screen.blit(PassowrdText, (PasswordButton.midtop[0] - 120, PasswordButton.midtop[1] - 80))
         screen.blit(RepeatPasswordText, (RepeatPasswordButton.midtop[0] - 270, RepeatPasswordButton.midtop[1] - 80))
-        screen.blit(ConfirmText, (ConfirmButton.center[0] - 100, ConfirmButton.center[1] - 60))
+        screen.blit(ConfirmText, (ConfirmButton.center[0] - 175, ConfirmButton.center[1] - 60))
 
         LoginInputText = RegistrationFont.render(LoginInput, False, (0, 0, 0))
         PassowrdInputText = RegistrationFont.render(PasswordInput, False, (0, 0, 0))

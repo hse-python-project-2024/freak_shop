@@ -13,7 +13,9 @@ while True:
                 ShowEnter()
             if RegistrationButton.collidepoint(pygame.mouse.get_pos()):
                 ShowResgistration()
-
+    pressed_keys = pygame.key.get_pressed()
+    if pressed_keys[K_ESCAPE]:
+        sys.exit()
     pygame.draw.rect(screen, RegistrationButtonColor, EnterButton)
     pygame.draw.rect(screen, RegistrationButtonColor, RegistrationButton)
     EnterText = RegistrationFont.render("Войти", False, (0, 0, 0))
