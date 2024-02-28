@@ -1,12 +1,18 @@
-from db_connection import DBConnection
+from concurrent import futures
+from facade import Facade
 
-if __name__ == "__main__":
-    DB = DBConnection()
-    # DB.drop_and_create_schema()
-    print(DB.get_all_users())
-    DB.add_user("gab1k", "Kamil")
-    DB.add_user("Pupkin", "Krasava")
-    DB.add_user("Pirog", "Nem")
-    print(DB.get_all_users())
-    DB.close_connection()
+from server_address_config import host, port
+import grpc
+import requests_pb2_grpc
 
+
+def serve():
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+    requests_pb2_grpc.add_DbServiceServicer_to_server(Facade(), server)
+    server.add_insecure_port(f'{host}:{port}')
+    server.start()
+    server.wait_for_termination()
+
+
+if __name__ == '__main__':
+    serve()
