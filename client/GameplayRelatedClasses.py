@@ -1,8 +1,13 @@
 class PlayerInfo:
     def __init__(self):
-        self.CardsInHand = [11, 10, 9, 8, 7, 6, 5, 4, 3, 2]
-        self.DiscountedCardsInHand = [4, 4, 3, 3, 3, 2, 2, 2, 1, 1]
+        self.CardsInHand = [3, 2, 4, 1, 0, 6, 2, 1, 0, 1]
+        self.DiscountedCardsInHand = [1, 2, 3, 0, 0, 0, 1, 0, 0, 0]
 
+
+class ShopInfo:
+    def __init__(self):
+        self.CardsInShop = [5, 6, 2, 4, 2, 6, 3, 2, 1, 1]
+        self.DiscountedCardsInShop = [2, 1, 0, 1, 1, 1, 0, 0, 1, 0]
 
 class GameInfo:
     def __init__(self, playerID, gameID, CurrentTasks, AmountOfPlayers, NicknamesOfPlayers):
@@ -60,4 +65,3 @@ Task_Descriptions = [
 "   товаров по акции(от большего к меньшему):10-6-3",
 "(при равенстве количества, оба игрока получают очки)"]
 ]
-
