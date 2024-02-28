@@ -10,14 +10,16 @@ if __name__ == '__main__':
             s3 = input("Enter password\n")
             s4 = input("Confirm password:\n")
             response = client.register_user(s1, s2, s3, s4)
+            print(response.is_done, response.info)
             print(response)
         elif n == 2:
             _id = int(input("Enter user id:\n"))
             response = client.get_user_by_id(_id)
+            print(response.status.is_done, response.status.info)
             print(response)
-            print("Статус - ", response.status)
         else:
             _login = input("Enter login:\n")
             _password = input("Enter password:\n")
             response = client.login_user(_login, _password)
             print(response.status.is_done, response.status.info)
+            print(response)

@@ -23,7 +23,7 @@ class Facade(requests_pb2_grpc.DbServiceServicer):
 
     def RegisterUser(self, request, context):
         result = self.db.add_user(_user_login=request.login, _user_name=request.name, _password_1=request.password1,
-                                  _password_2=request.password1)
+                                  _password_2=request.password2)
         return requests_pb2.Status(is_done=result[0], info=result[1])
 
     def LoginUser(self, request, context):
