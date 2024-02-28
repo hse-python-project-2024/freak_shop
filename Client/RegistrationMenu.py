@@ -9,9 +9,13 @@ def ShowResgistration():
     PasswordButton = Rect(ScreenWidth * 5 / 38, ScreenHeight *4/10 , 800, 150)
     RepeatPasswordButton = Rect(ScreenWidth * 5 / 38, ScreenHeight * 13 / 20, 800, 150)
     ConfirmButton = Rect(ScreenWidth * 27 / 38, ScreenHeight / 3 -40, 400, 400)
+    EyeIconButton1 = Rect(ScreenWidth / 80, ScreenHeight * 4 / 10 - 20, 220, 180)
+    EyeIconButton2 = Rect(ScreenWidth / 80, ScreenHeight * 13 / 20 - 20, 220, 180)
     LoginInput = ""
     PasswordInput = ""
     RepeatPasswordInput = ""
+    password_show = False
+    repeat_password_show = False
     active = 0
     while True:
         screen.fill(RegistrationBackgroundColor)
@@ -31,6 +35,10 @@ def ShowResgistration():
                 if ConfirmButton.collidepoint(MousePosition):
                     #connect to database with Login Password and RepeatPassword
                     ReturnToMenu = 1
+                if EyeIconButton1.collidepoint(MousePosition):
+                    password_show = not password_show
+                if EyeIconButton2.collidepoint(MousePosition):
+                    repeat_password_show = not repeat_password_show
 
             if event.type == KEYDOWN:
                 if active == 1:
@@ -63,12 +71,33 @@ def ShowResgistration():
         screen.blit(ConfirmText, (ConfirmButton.center[0] - 175, ConfirmButton.center[1] - 60))
 
         LoginInputText = RegistrationFont.render(LoginInput, False, (0, 0, 0))
-        PassowrdInputText = RegistrationFont.render(PasswordInput, False, (0, 0, 0))
-        RepeatPassowrdInputText = RegistrationFont.render(RepeatPasswordInput, False, (0, 0, 0))
-
         screen.blit(LoginInputText, (LoginButton.left, LoginButton.center[1] - 55))
-        screen.blit(PassowrdInputText, (PasswordButton.left, PasswordButton.center[1] - 55))
-        screen.blit(RepeatPassowrdInputText, (RepeatPasswordButton.left, RepeatPasswordButton.center[1] - 55))
+
+        if password_show:
+            EyeIconImage = pygame.image.load("../src/img/EyeIcon.png").convert_alpha()
+            screen.blit(pygame.transform.scale(EyeIconImage, (220, 180)),
+                        (ScreenWidth / 80, ScreenHeight *4/ 10-20))
+            PassowrdInputText = RegistrationFont.render(PasswordInput, False, (0, 0, 0))
+            screen.blit(PassowrdInputText, (PasswordButton.left, PasswordButton.center[1] - 55))
+        else:
+            EyeIconImage = pygame.image.load("../src/img/EyeIconCrossed.png").convert_alpha()
+            screen.blit(pygame.transform.scale(EyeIconImage, (250, 160)),
+                        (ScreenWidth / 80 - 10, ScreenHeight * 4 / 10 - 10))
+            PassowrdInputText = RegistrationFont.render('*'* len(PasswordInput), False, (0, 0, 0))
+            screen.blit(PassowrdInputText, (PasswordButton.left, PasswordButton.center[1] - 30))
+
+        if repeat_password_show:
+            EyeIconImage = pygame.image.load("../src/img/EyeIcon.png").convert_alpha()
+            screen.blit(pygame.transform.scale(EyeIconImage, (220, 180)),
+                        (ScreenWidth / 80, ScreenHeight *13/ 20-20))
+            RepeatPassowrdInputText = RegistrationFont.render(RepeatPasswordInput, False, (0, 0, 0))
+            screen.blit(RepeatPassowrdInputText, (RepeatPasswordButton.left, RepeatPasswordButton.center[1] - 55))
+        else:
+            EyeIconImage = pygame.image.load("../src/img/EyeIconCrossed.png").convert_alpha()
+            screen.blit(pygame.transform.scale(EyeIconImage, (250, 160)),
+                        (ScreenWidth / 80 - 10, ScreenHeight * 13 / 20 - 10))
+            RepeatPassowrdInputText = RegistrationFont.render('*'* len(RepeatPasswordInput), False, (0, 0, 0))
+            screen.blit(RepeatPassowrdInputText, (RepeatPasswordButton.left, RepeatPasswordButton.center[1] - 30))
 
         pygame.display.update()
 

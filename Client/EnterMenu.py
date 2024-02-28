@@ -7,9 +7,11 @@ def ShowEnter():
     LoginButton = Rect(ScreenWidth * 5 / 38, ScreenHeight / 5, 800, 150)
     PasswordButton = Rect(ScreenWidth * 5 / 38, ScreenHeight *6/10 , 800, 150)
     ConfirmButton = Rect(ScreenWidth * 27 / 38, ScreenHeight / 3 - 40, 400, 400)
+    EyeIconButton = Rect(ScreenWidth / 80, ScreenHeight * 6 / 10 - 20, 220, 180)
     LoginInput = ""
     PasswordInput = ""
     active = 0
+    password_show = False
     while True:
         screen.fill(RegistrationBackgroundColor)
         for event in pygame.event.get():
@@ -26,6 +28,8 @@ def ShowEnter():
                 if ConfirmButton.collidepoint(MousePosition):
                     # connect to database with Login Password
                     ReturnToMenu = 1
+                if EyeIconButton.collidepoint(MousePosition):
+                    password_show = not password_show
             if event.type == KEYDOWN:
                 if active == 1:
                     if event.key == K_BACKSPACE:
@@ -50,11 +54,21 @@ def ShowEnter():
         screen.blit(ConfirmText, (ConfirmButton.center[0] - 100, ConfirmButton.center[1] - 60))
 
         LoginInputText = RegistrationFont.render(LoginInput, False, (0, 0, 0))
-        PassowrdInputText = RegistrationFont.render(PasswordInput, False, (0, 0, 0))
-
         screen.blit(LoginInputText, (LoginButton.left, LoginButton.center[1] - 55))
-        screen.blit(PassowrdInputText, (PasswordButton.left, PasswordButton.center[1] - 55))
 
+
+        if password_show:
+            EyeIconImage = pygame.image.load("../src/img/EyeIcon.png").convert_alpha()
+            screen.blit(pygame.transform.scale(EyeIconImage, (220, 180)),
+                        (ScreenWidth / 80, ScreenHeight *6/ 10-20))
+            PassowrdInputText = RegistrationFont.render(PasswordInput, False, (0, 0, 0))
+            screen.blit(PassowrdInputText, (PasswordButton.left, PasswordButton.center[1] - 55))
+        else:
+            EyeIconImage = pygame.image.load("../src/img/EyeIconCrossed.png").convert_alpha()
+            screen.blit(pygame.transform.scale(EyeIconImage, (250, 160)),
+                        (ScreenWidth / 80 - 10, ScreenHeight * 6 / 10 - 10))
+            PassowrdInputText = RegistrationFont.render('*'* len(PasswordInput), False, (0, 0, 0))
+            screen.blit(PassowrdInputText, (PasswordButton.left, PasswordButton.center[1] - 30))
         pygame.display.update()
 
         if ReturnToMenu == 1:
