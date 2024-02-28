@@ -1,4 +1,4 @@
-from Client.InterfaceSetup import *
+from client.InterfaceSetup import *
 def ShowEnter():
     ReturnToMenu = 0
     LoginText = RegistrationFont.render("Логин :", False, (0, 0, 0))

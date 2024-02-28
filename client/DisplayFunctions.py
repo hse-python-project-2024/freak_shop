@@ -1,5 +1,5 @@
-from Client.InterfaceSetup import *
-from Client.GameplayRelatedClasses import *
+from client.InterfaceSetup import *
+from client.GameplayRelatedClasses import *
 
 def DisplayShopImage():
     ShopImage = pygame.image.load("../src/img/Shop_Image.jpg").convert()

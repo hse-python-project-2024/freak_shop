@@ -1,6 +1,6 @@
-from Client.FreakShopInterface import *
-from Client.RegistrationMenu import *
-from Client.EnterMenu import *
+from client.FreakShopInterface import *
+from client.RegistrationMenu import *
+from client.EnterMenu import *
 if __name__ == "__main__":
     while True:
         screen.fill(RegistrationBackgroundColor)

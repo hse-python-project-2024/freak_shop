@@ -19,4 +19,3 @@ screen = pygame.display.set_mode((ScreenWidth, ScreenHeight))
 TextFont = pygame.font.SysFont('Comic Sans MS', 30)
 TaskFont = pygame.font.SysFont('Comic Sans MS', 25)
 RegistrationFont = pygame.font.SysFont('Comic Sans MS', 60)
-

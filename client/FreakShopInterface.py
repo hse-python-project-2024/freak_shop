@@ -1,4 +1,4 @@
-from Client.DisplayFunctions import *
+from client.DisplayFunctions import *
 
 
 def StartGame():
@@ -57,4 +57,3 @@ def StartGame():
                     break
 
         pygame.display.update()
-
