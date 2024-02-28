@@ -8,6 +8,7 @@ def ShowEnter():
     PasswordButton = Rect(ScreenWidth * 5 / 38, ScreenHeight *6/10 , 800, 150)
     ConfirmButton = Rect(ScreenWidth * 27 / 38, ScreenHeight / 3 - 40, 400, 400)
     EyeIconButton = Rect(ScreenWidth / 80, ScreenHeight * 6 / 10 - 20, 220, 180)
+    BackButton = Rect(ScreenWidth *6/ 7, ScreenHeight * 1 / 30, 180, 180)
     LoginInput = ""
     PasswordInput = ""
     active = 0
@@ -30,6 +31,8 @@ def ShowEnter():
                     ReturnToMenu = 1
                 if EyeIconButton.collidepoint(MousePosition):
                     password_show = not password_show
+                if BackButton.collidepoint(MousePosition):
+                    ReturnToMenu = 1
             if event.type == KEYDOWN:
                 if active == 1:
                     if event.key == K_BACKSPACE:
@@ -69,6 +72,10 @@ def ShowEnter():
                         (ScreenWidth / 80 - 10, ScreenHeight * 6 / 10 - 10))
             PassowrdInputText = RegistrationFont.render('*'* len(PasswordInput), False, (0, 0, 0))
             screen.blit(PassowrdInputText, (PasswordButton.left, PasswordButton.center[1] - 30))
+
+        BackIconImage = pygame.image.load("../src/img/BackIcon.png").convert_alpha()
+        screen.blit(pygame.transform.scale(BackIconImage, (180, 180)),
+                    (ScreenWidth *6/ 7, ScreenHeight * 1 / 30))
         pygame.display.update()
 
         if ReturnToMenu == 1:

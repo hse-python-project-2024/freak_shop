@@ -11,6 +11,7 @@ def ShowResgistration():
     ConfirmButton = Rect(ScreenWidth * 27 / 38, ScreenHeight / 3 -40, 400, 400)
     EyeIconButton1 = Rect(ScreenWidth / 80, ScreenHeight * 4 / 10 - 20, 220, 180)
     EyeIconButton2 = Rect(ScreenWidth / 80, ScreenHeight * 13 / 20 - 20, 220, 180)
+    BackButton = Rect(ScreenWidth * 6 / 7, ScreenHeight * 1 / 30, 180, 180)
     LoginInput = ""
     PasswordInput = ""
     RepeatPasswordInput = ""
@@ -39,6 +40,8 @@ def ShowResgistration():
                     password_show = not password_show
                 if EyeIconButton2.collidepoint(MousePosition):
                     repeat_password_show = not repeat_password_show
+                if BackButton.collidepoint(MousePosition):
+                    ReturnToMenu = 1
 
             if event.type == KEYDOWN:
                 if active == 1:
@@ -99,6 +102,9 @@ def ShowResgistration():
             RepeatPassowrdInputText = RegistrationFont.render('*'* len(RepeatPasswordInput), False, (0, 0, 0))
             screen.blit(RepeatPassowrdInputText, (RepeatPasswordButton.left, RepeatPasswordButton.center[1] - 30))
 
+        BackIconImage = pygame.image.load("../src/img/BackIcon.png").convert_alpha()
+        screen.blit(pygame.transform.scale(BackIconImage, (180, 180)),
+                    (ScreenWidth * 6 / 7, ScreenHeight * 1 / 30))
         pygame.display.update()
 
         if ReturnToMenu == 1:
