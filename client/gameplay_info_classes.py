@@ -9,6 +9,7 @@ class ShopInfo:
         self.CardsInShop = [5, 6, 2, 4, 2, 6, 3, 2, 1, 1]
         self.DiscountedCardsInShop = [2, 1, 0, 1, 1, 1, 0, 0, 1, 0]
 
+
 class GameInfo:
     def __init__(self, gameID, CurrentTasks, AmountOfPlayers, NicknamesOfPlayers):
         self.GameId = gameID
@@ -16,5 +17,3 @@ class GameInfo:
         self.PlayerAmount = AmountOfPlayers
         self.PlayersNicknames = NicknamesOfPlayers
         self.Tasks = CurrentTasks
-
-
