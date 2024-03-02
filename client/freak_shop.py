@@ -1,6 +1,6 @@
-from client.GameplayInterface import Game
-from client.Menu import MenuView
-from client.GameplayInfoClasses import GameInfo
+from gameplay_interface import Game
+from menu import MenuView
+from gameplay_info_classes import GameInfo
 
 if __name__ == "__main__":
     Menu = MenuView()

@@ -47,7 +47,7 @@ venv_client:
 
 
 run_client: venv_client
-	$(PYTHON_CLIENT) client/main.py
+	$(PYTHON_CLIENT) client/freak_shop.py
 
 
 clean_client:

@@ -1,11 +1,12 @@
-from client.DisplayFunctions import GameBoardView
-from client.GameplayInfoClasses import GameInfo, PlayerInfo, ShopInfo
-from InterfaceSetup import *
+from display_functions import GameBoardView
+from gameplay_info_classes import GameInfo, PlayerInfo, ShopInfo
+from interface_setup import *
 
 
 class Game:
     def __init__(self, NewGameInfo):
         self.Info = NewGameInfo
+
     def StartGame(self):
         # get player and shop info
 
@@ -42,10 +43,10 @@ class Game:
             if pressed_keys[K_ESCAPE]:
                 sys.exit()
 
-
             if Rect(ScreenWidth * 6 / 7, ScreenHeight * 3 / 4, 250, 250).collidepoint(pygame.mouse.get_pos()):
-                EndTurnIconActivated = pygame.image.load("../src/img/End_Turn_Icon_Activated.png").convert_alpha()
-                screen.blit(pygame.transform.scale(EndTurnIconActivated, (250, 250)), (ScreenWidth * 6 / 7, ScreenHeight * 3 / 4))
+                EndTurnIconActivated = pygame.image.load("src/img/End_Turn_Icon_Activated.png").convert_alpha()
+                screen.blit(pygame.transform.scale(EndTurnIconActivated, (250, 250)),
+                            (ScreenWidth * 6 / 7, ScreenHeight * 3 / 4))
             else:
                 GameBoard.DisplayEndTurnButton()
                 # Display Tasks text when hovering over them
