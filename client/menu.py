@@ -1,8 +1,8 @@
 from interface_setup import *
-
+from facade import ClientRequests
 
 class MenuView:
-    def show_enter_menu(self):
+    def show_enter_menu(self, DataBaseRequester):
         ReturnToMenu = 0
         LoginText = RegistrationFont.render("Логин :", False, (0, 0, 0))
         PassowrdText = RegistrationFont.render("Пароль : ", False, (0, 0, 0))
@@ -30,8 +30,12 @@ class MenuView:
                     else:
                         active = 0
                     if ConfirmButton.collidepoint(MousePosition):
-                        # connect to database with Login Password
-                        ReturnToMenu = 2
+                        LoginSuccess = DataBaseRequester.login_user(LoginInput,  PasswordInput)
+                        if (LoginSuccess):
+                            ReturnToMenu = 2
+                        else:
+                            ReturnToMenu = 1
+                        #add real checks later
                     if EyeIconButton.collidepoint(MousePosition):
                         password_show = not password_show
                     if BackButton.collidepoint(MousePosition):
@@ -85,7 +89,7 @@ class MenuView:
             elif ReturnToMenu == 2:
                 return "gameplay"
 
-    def show_resgistration_menu(self):
+    def show_resgistration_menu(self, DataBaseRequester):
         ReturnToMenu = 0
         LoginText = RegistrationFont.render("Логин :", False, (0, 0, 0))
         NicknameText = RegistrationFont.render("Имя :", False, (0, 0, 0))
@@ -125,7 +129,9 @@ class MenuView:
                     else:
                         active = 0
                     if ConfirmButton.collidepoint(MousePosition):
-                        # connect to database with Login Password and RepeatPassword
+                        RegisterSuccess = DataBaseRequester.register_user(LoginInput, NicknameInput, PasswordInput,
+                                                                          RepeatPasswordInput)
+                        #add checker later
                         ReturnToMenu = 1
                     if EyeIconButton1.collidepoint(MousePosition):
                         password_show = not password_show
@@ -210,7 +216,7 @@ class MenuView:
             if ReturnToMenu == 1:
                 return "menu"
 
-    def show_start_menu(self):
+    def show_start_menu(self, DataBaseRequester):
         while True:
             screen.fill(RegistrationBackgroundColor)
             EnterButton = Rect(ScreenWidth * 11 / 38, ScreenHeight / 6, 800, 250)
@@ -220,9 +226,9 @@ class MenuView:
                     sys.exit()
                 if event.type == MOUSEBUTTONDOWN:
                     if EnterButton.collidepoint(pygame.mouse.get_pos()):
-                        return self.show_enter_menu()
+                        return self.show_enter_menu(DataBaseRequester)
                     if RegistrationButton.collidepoint(pygame.mouse.get_pos()):
-                        return self.show_resgistration_menu()
+                        return self.show_resgistration_menu(DataBaseRequester)
             pressed_keys = pygame.key.get_pressed()
             if pressed_keys[K_ESCAPE]:
                 sys.exit()
