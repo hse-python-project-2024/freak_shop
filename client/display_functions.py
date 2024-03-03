@@ -3,7 +3,7 @@ from interface_setup import *
 
 class GameBoardView:
     def display_shop_image(self):
-        ShopImage = pygame.image.load("src/img/Shop_Image.jpg").convert()
+        ShopImage = pygame.image.load("../src/img/Shop_Image.jpg").convert()
         screen.blit(pygame.transform.scale(ShopImage, (800, 400)), (ScreenWidth / 4,
                                                                     ScreenHeight / 10))
 
@@ -11,7 +11,7 @@ class GameBoardView:
         for i in range(10):
             DisplayedDiscounted = 0
             for j in range(CurrentPlayer.CardsInHand[i]):
-                CardName = "src/img/"
+                CardName = "../src/img/"
                 if CurrentPlayer.DiscountedCardsInHand[i] > DisplayedDiscounted:
                     DisplayedDiscounted += 1
                     CardName += "Discount_Image_"
@@ -27,7 +27,7 @@ class GameBoardView:
         for i in range(10):
             DisplayedDiscounted = 0
             for j in range(CurrentShop.CardsInShop[i]):
-                CardName = "src/img/"
+                CardName = "../src/img/"
                 if CurrentShop.DiscountedCardsInShop[i] > DisplayedDiscounted:
                     DisplayedDiscounted += 1
                     CardName += "Discount_Image_"
@@ -46,7 +46,7 @@ class GameBoardView:
 
     def display_player_list(self, Game):
         for i in range(Game.PlayerAmount):
-            PlayerIcon = pygame.image.load("src/img/Player_Icon.png").convert_alpha()
+            PlayerIcon = pygame.image.load("../src/img/Player_Icon.png").convert_alpha()
             screen.blit(pygame.transform.scale(PlayerIcon, (140, 140)), (ScreenWidth * 4 / 5, ScreenHeight * i / 8))
             PlayerNameText = TextFont.render(Game.PlayersNicknames[i], False, (0, 0, 0))
             screen.blit(PlayerNameText, (ScreenWidth * 4 / 5 + 150, ScreenHeight * i / 8 + 40))
@@ -54,14 +54,14 @@ class GameBoardView:
     def display_end_turn_button(self):
         EndTurnText = TextFont.render("Совершить обмен", False, (0, 0, 0))
         screen.blit(EndTurnText, (ScreenWidth * 6 / 7 + 15, ScreenHeight * 3 / 4 - 40))
-        EndTurnIcon = pygame.image.load("src/img/End_Turn_Icon.png").convert_alpha()
+        EndTurnIcon = pygame.image.load("../src/img/End_Turn_Icon.png").convert_alpha()
         screen.blit(pygame.transform.scale(EndTurnIcon, (250, 250)), (ScreenWidth * 6 / 7, ScreenHeight * 3 / 4))
 
     def display_task_list(self, Game):
         ind = 0
         TaskImagesRects = [Rect(0, 0, 0, 0), Rect(0, 0, 0, 0), Rect(0, 0, 0, 0)]
         for TaskNumber in Game.Tasks:
-            TaskName = "src/img/Task_"
+            TaskName = "../src/img/Task_"
             TaskName += str(TaskNumber)
             TaskName += ".png"
             TaskImage = pygame.image.load(TaskName).convert()
