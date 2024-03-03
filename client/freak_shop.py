@@ -8,6 +8,6 @@ if __name__ == "__main__":
     CurrentDisplayStatus = "menu"
     while True:
         if CurrentDisplayStatus == "menu":
-            CurrentDisplayStatus = Menu.ShowStartMenu()
+            CurrentDisplayStatus = Menu.show_start_menu()
         elif CurrentDisplayStatus == "gameplay":
             CurrentGame.StartGame()

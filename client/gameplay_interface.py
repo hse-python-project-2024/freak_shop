@@ -27,12 +27,12 @@ class Game:
 
             if UpdateStatus == 1:
                 screen.fill(BackgroundColor)
-                GameBoard.DisplayShopImage()
-                GameBoard.DisplayPlayerCards(Player)
-                GameBoard.DisplayShopCards(Shop)
-                GameBoard.DisplayPlayerList(self.Info)
-                GameBoard.DisplayEndTurnButton()
-                TaskImagesRects = GameBoard.DisplayTaskList(self.Info)
+                GameBoard.display_shop_image()
+                GameBoard.display_player_cards(Player)
+                GameBoard.display_shop_cards(Shop)
+                GameBoard.display_player_list(self.Info)
+                GameBoard.display_end_turn_button()
+                TaskImagesRects = GameBoard.display_task_list(self.Info)
                 UpdateStatus = 0
 
             for event in pygame.event.get():
@@ -48,7 +48,7 @@ class Game:
                 screen.blit(pygame.transform.scale(EndTurnIconActivated, (250, 250)),
                             (ScreenWidth * 6 / 7, ScreenHeight * 3 / 4))
             else:
-                GameBoard.DisplayEndTurnButton()
+                GameBoard.display_end_turn_button()
                 # Display Tasks text when hovering over them
                 for i in range(3):
                     if TaskImagesRects[i].collidepoint(pygame.mouse.get_pos()):

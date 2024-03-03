@@ -2,7 +2,7 @@ from interface_setup import *
 
 
 class MenuView:
-    def ShowEnterMenu(self):
+    def show_enter_menu(self):
         ReturnToMenu = 0
         LoginText = RegistrationFont.render("Логин :", False, (0, 0, 0))
         PassowrdText = RegistrationFont.render("Пароль : ", False, (0, 0, 0))
@@ -85,7 +85,7 @@ class MenuView:
             elif ReturnToMenu == 2:
                 return "gameplay"
 
-    def ShowResgistrationMenu(self):
+    def show_resgistration_menu(self):
         ReturnToMenu = 0
         LoginText = RegistrationFont.render("Логин :", False, (0, 0, 0))
         PassowrdText = RegistrationFont.render("Пароль : ", False, (0, 0, 0))
@@ -196,7 +196,7 @@ class MenuView:
             if ReturnToMenu == 1:
                 return "menu"
 
-    def ShowStartMenu(self):
+    def show_start_menu(self):
         while True:
             screen.fill(RegistrationBackgroundColor)
             EnterButton = Rect(ScreenWidth * 11 / 38, ScreenHeight / 6, 800, 250)
@@ -206,9 +206,9 @@ class MenuView:
                     sys.exit()
                 if event.type == MOUSEBUTTONDOWN:
                     if EnterButton.collidepoint(pygame.mouse.get_pos()):
-                        return self.ShowEnterMenu()
+                        return self.show_enter_menu()
                     if RegistrationButton.collidepoint(pygame.mouse.get_pos()):
-                        return self.ShowResgistrationMenu()
+                        return self.show_resgistration_menu()
             pressed_keys = pygame.key.get_pressed()
             if pressed_keys[K_ESCAPE]:
                 sys.exit()
