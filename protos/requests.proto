@@ -4,19 +4,25 @@ package great;
 
 service DbService {
   rpc GetUserById (Id) returns (ResponseUser);
-  rpc AddUser (NewUser) returns (MessageInfo);
+  rpc RegisterUser (NewUser) returns (Status);
+  rpc LoginUser (NewUser) returns (ResponseUser);
+}
+
+message Status{
+  bool is_done = 1;
+  string info = 2;
 }
 
 message Id{
-  int32 id = 1;
+  optional Status status = 1;
+  int32 id = 2;
 }
 
 message ResponseUser{
-  bool status = 1;
+  Status status = 1;
   int32 id = 2;
   string login = 3;
   string name = 4;
-  string info = 5;
 }
 
 message NewUser{
@@ -24,80 +30,4 @@ message NewUser{
   string name = 2;
   string password1 = 3;
   string password2 = 4;
-}
-
-message MessageInfo{
-  bool status = 1;
-  optional string info = 2;
-}
-
-//_________________________________________________________________
-
-
-
-message NewGameResponse{
-  bool status = 1;
-  string info = 2;
-  int32 game_id = 3;
-}
-
-message JoinGame{
-  int32 game_id = 1;
-  int32 player_id = 2;
-}
-
-message JoinGameResponse{
-  bool status = 1;
-  string info = 2;
-}
-
-message LeaveGame{
-  int32 game_id = 1;
-  int32 player_id = 2;
-}
-
-message LeaveGameResponse{
-  bool status = 1;
-  string info = 2;
-}
-
-message ChangeReadiness{
-  int32 game_id = 1;
-  int32 player_id = 2;
-}
-
-message ChangeReadinessResponse{
-  bool status = 1;
-  string info = 2;
-}
-
-message GetState{
-  int32 game_id = 1;
-}
-
-message CardList{
-  repeated int32 card_ids = 1;
-}
-
-message GoalState{
-  string goal = 1;
-  int32 point = 2;
-}
-
-message GoalDict{
-  repeated GoalState goals = 1;
-}
-
-message PlayerState{
-  int32 player_id = 1;
-  CardList card_ids = 2;
-  GoalDict goals = 3;
-}
-
-message State{
-  bool status = 1;
-  string info = 2;
-  string stage = 3;
-  CardList cards_in_shop = 4;
-  repeated PlayerState players_info = 5;
 }
