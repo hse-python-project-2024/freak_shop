@@ -6,6 +6,11 @@ service DbService {
   rpc GetUserById (Id) returns (ResponseUser);
   rpc RegisterUser (NewUser) returns (Status);
   rpc LoginUser (NewUser) returns (ResponseUser);
+  rpc CreateGame(NoParameters) returns (Id);
+  rpc JoinGame(JoinGame) returns (Status);
+  rpc LeaveGame(LeaveGame) returns (Status);
+  rpc ChangeReadiness(ChangeReadiness) returns (Status);
+  rpc GetState(Id) returns (State);
 }
 
 message Status{
@@ -34,12 +39,7 @@ message NewUser{
 
 //_________________________________________________________________
 
-
-
-message NewGameResponse{
-  Status status = 1;
-  int32 game_id = 2;
-}
+message NoParameters{}
 
 message JoinGame{
   int32 game_id = 1;
