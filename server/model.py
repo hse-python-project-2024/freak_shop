@@ -10,20 +10,20 @@ class Deck:
         self.merch_vals = [0] * 11
         self.cats = {Items: 0, Pets: 0, Employees: 0}
 
-    def add_cards(self, *card_ids):
+    def add_cards(self, *_card_ids):
         """Add cards with the given ids to the deck."""
-        self.card_ids += list(card_ids)
+        self.card_ids += list(_card_ids)
         self.card_ids.sort()
-        for card_id in card_ids:
+        for card_id in _card_ids:
             card = CARDS[card_id]
             self.vals[card.value] += 1
             if card.is_merch:
                 self.merch_vals[card.value] += 1
             self.cats[card.category] += 1
 
-    def sell_cards(self, *card_ids):
+    def sell_cards(self, *_card_ids):
         """Delete cards with the given ids from the deck."""
-        for card_id in card_ids:
+        for card_id in _card_ids:
             self.card_ids.remove(card_id)
             card = CARDS[card_id]
             self.vals[card.value] -= 1
