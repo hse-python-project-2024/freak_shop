@@ -37,9 +37,8 @@ message NewUser{
 
 
 message NewGameResponse{
-  bool status = 1;
-  string info = 2;
-  int32 game_id = 3;
+  Status status = 1;
+  int32 game_id = 2;
 }
 
 message JoinGame{
@@ -47,33 +46,14 @@ message JoinGame{
   int32 player_id = 2;
 }
 
-message JoinGameResponse{
-  bool status = 1;
-  string info = 2;
-}
-
 message LeaveGame{
   int32 game_id = 1;
   int32 player_id = 2;
 }
 
-message LeaveGameResponse{
-  bool status = 1;
-  string info = 2;
-}
-
 message ChangeReadiness{
   int32 game_id = 1;
   int32 player_id = 2;
-}
-
-message ChangeReadinessResponse{
-  bool status = 1;
-  string info = 2;
-}
-
-message GetState{
-  int32 game_id = 1;
 }
 
 message CardList{
@@ -100,5 +80,5 @@ message State{
   string info = 2;
   string stage = 3;
   CardList cards_in_shop = 4;
-  repeated PlayerState players_i;
+  repeated PlayerState players_i = 5;
 }
