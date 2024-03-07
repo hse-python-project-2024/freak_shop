@@ -215,14 +215,24 @@ class Game:
         self.players = []
         self.shop = []
         self.cur_player = 0
-        self.state = WAITING
+        self.stage = WAITING
         self.unused = deque()
 
     def add_player(self, player_id):
         """Add player."""
-        if self.state == WAITING and player_id not in self.players and len(self.players) < 5:
-            self.players.append(player_id)
-            PLAYERS[player_id].join_game(self.id)
+        if player_id not in PLAYERS:
+            return "Player not found"
+        if player_id in self.players:
+            return "The player has already joined"
+        if self.stage == RUNNING:
+            return "The game has already started"
+        if self.stage == RESULTS:
+            return "The game is already over"
+        if len(self.players) == 5:
+            return "The game is already full"
+        self.players.append(player_id)
+        PLAYERS[player_id].join_game(self.id)
+        return "ok"
 
     def change_player_readiness(self, player_id):
         """Change the readiness status of the player with the given id.
@@ -230,24 +240,27 @@ class Game:
 
         If after the change all the players are ready, the game starts."""
         if player_id not in self.players:
-            return
+            return "Player not found"
         PLAYERS[player_id].change_readiness(self.id)
         if all(PLAYERS[player_id].is_ready()):
             self.start()
+        return "ok"
 
     def kick_player(self, player_id):
         """Remove player from the game."""
-        if player_id in self.players:
-            self.players.remove(player_id)
-            PLAYERS[player_id].leave_game(self.id)
-            if not self.players:
-                GAMES.pop(self.id)
+        if player_id not in self.players:
+            return "Player is not in the game"
+        self.players.remove(player_id)
+        PLAYERS[player_id].leave_game(self.id)
+        if not self.players:
+            GAMES.pop(self.id)
+        return "ok"
 
     def start(self):
         """Start the game."""
-        if self.state != WAITING:
+        if self.stage != WAITING:
             return
-        self.state = RUNNING
+        self.stage = RUNNING
         for i, player in enumerate(self.players):
             last_card = (10, 12, 14, 16, 18)
             player.add_cards(game_id=self.id, cards=(2, 4, 6, last_card[i]))
@@ -267,7 +280,7 @@ class Game:
 
     def finish(self):
         """End the game and show the results."""
-        self.state = RESULTS
+        self.stage = RESULTS
 
     def move(self, player_id, sold_cards_ids, bought_cards_ids):
         """Handle a player's move. Restock the shop after a valid move
@@ -383,7 +396,7 @@ the_art_of_bargaining = "the art of bargaining"
 not_the_same_values = "not the same values"
 fashion_at_lowest_price = "fashion at lowest price"
 
-# Handles for the game states
+# Handles for the game stages
 WAITING = 0
 RUNNING = 1
 RESULTS = 2
@@ -412,3 +425,5 @@ CARDS = [Card(card_id=0, value=0, is_merch=False, category=Closed),
          Card(card_id=18, value=9, is_merch=False, category=Employees),
          Card(category=19, value=10, is_merch=True, card_id=Employees),
          Card(category=20, value=10, is_merch=False, card_id=Employees)]
+
+MX_GAME_ID = 50
