@@ -9,6 +9,7 @@ import server.model as md
 
 from random import randint
 
+
 class Facade(requests_pb2_grpc.DbServiceServicer):
     def __init__(self):
         super().__init__()
