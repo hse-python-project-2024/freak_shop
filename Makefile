@@ -21,6 +21,10 @@ run_server:
 	. ./server/venv/bin/activate
 	$(PYTHON_SERVER) server/main.py
 
+drop_and_restore_data_base:
+	. ./server/venv/bin/activate
+	$(PYTHON_SERVER) server/db_prepare.py
+
 clean_server:
 	rm -rf server/__pycache__
 	rm -rf server/venv
@@ -43,7 +47,7 @@ venv_client:
 
 
 run_client: venv_client
-	$(PYTHON_CLIENT) client/main.py
+	$(PYTHON_CLIENT) client/freak_shop.py
 
 
 clean_client:
