@@ -1,5 +1,8 @@
 import psycopg2
 from config import db_host, db_user_name, db_password, db_name
+from logs.loggers import get_logger
+
+_LOGGER = get_logger(__name__)
 
 
 class DBConnection:
@@ -12,7 +15,7 @@ class DBConnection:
         )
         self.cursor = self.connection.cursor()
         self.connect_to_schema()
-        print("Correct connection to database")
+        _LOGGER.info("Корректное подключение к базе данных")
 
     def drop_and_create_schema(self):
         self.cursor.execute("""DROP SCHEMA IF EXISTS freak_shop CASCADE;
@@ -104,3 +107,4 @@ class DBConnection:
         self.connection.commit()
         self.cursor.close()
         self.connection.close()
+        _LOGGER.info("Корректное отключение от базы данных")
