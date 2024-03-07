@@ -25,3 +25,40 @@ class Facade(requests_pb2_grpc.DbServiceServicer):
         status.is_done = True
         return requests_pb2.ResponseUser(status=status, id=user[1], login=user[2], name=user[3])
 
+#_______________________________________________________
+    def CreateGame(self):
+        if len(md.GAMES) == md.MX_GAME_ID:
+            return requests_pb2.NewGameResponse(status=False, info="Server cannot host more games", game_id=-1)
+        new_game_id = randint(1, md.MX_GAME_ID)
+        while new_game_id in md.GAMES.keys():
+            new_game_id = randint(1, md.MX_GAME_ID)
+        new_game = md.Game(new_game_id)
+        md.GAMES[new_game_id] = new_game
+        return requests_pb2.NewGameResponse(status=True, info="ok", game_id=new_game_id)
+
+    def JoinGame(self, request, context):
+        if requests_pb2.game_id not in md.GAMES:
+            return requests_pb2.JoinGameRespose(status=False, info="Game not found")
+        game = md.GAMES[request.game_id]
+        result_info = game.add_player(request.player_id)
+        return requests_pb2.JoinGameRespose(status=(result_info == "ok"), info=result_info)
+
+    def LeaveGame(self, request, context):
+        if requests_pb2.game_id not in md.GAMES:
+            return requests_pb2.LeaveGameRespose(status=False, info="Game not found")
+        game = md.GAMES[request.game_id]
+        result_info = game.kick_player(request.player_id)
+        return requests_pb2.LeaveGameRespose(status=(result_info == "ok"), info=result_info)
+
+    def ChangeReadiness(self, request, context):
+        if requests_pb2.game_id not in md.GAMES:
+            return requests_pb2.ChangeReadinessRespose(status=False, info="Game not found")
+        game = md.GAMES[request.game_id]
+        result_info = game.change_player_readiness(request.player_id)
+        return requests_pb2.ChangeReadinessRespose(status=(result_info == "ok"), info=result_info)
+
+    def GetState(self, request, context):
+        if request.game_id not in md.GAMES:
+            return requests_pb2.State(status=False, info="Game not found")
+        game = md.GAMES[request.game_id]
+        stage = game.get_current_stage()
