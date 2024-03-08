@@ -39,7 +39,7 @@ class Facade(requests_pb2_grpc.DbServiceServicer):
         return requests_pb2.ResponseUser(status=status, id=user[1], login=user[2], name=user[3])
 
     # _______________________________________________________
-    def CreateGame(self):
+    def create_game(self):
         if len(md.GAMES) == md.MX_GAME_ID:
             return requests_pb2.Id(requests_pb2.Status(is_done=False,
                                                        info="Server cannot host more games"),
@@ -51,28 +51,28 @@ class Facade(requests_pb2_grpc.DbServiceServicer):
         md.GAMES[new_game_id] = new_game
         return requests_pb2.Id(requests_pb2.Status(status=True, info="ok"), game_id=new_game_id)
 
-    def JoinGame(self, request, context):
+    def join_game(self, request, context):
         if requests_pb2.game_id not in md.GAMES:
             return requests_pb2.Status(is_done=False, info="Game not found")
         game = md.GAMES[request.game_id]
         result_info = game.add_player(request.player_id)
         return requests_pb2.Status(is_done=(result_info == "ok"), info=result_info)
 
-    def LeaveGame(self, request, context):
+    def leave_game(self, request, context):
         if requests_pb2.game_id not in md.GAMES:
             return requests_pb2.Status(is_done=False, info="Game not found")
         game = md.GAMES[request.game_id]
         result_info = game.kick_player(request.player_id)
         return requests_pb2.Status(is_done=(result_info == "ok"), info=result_info)
 
-    def ChangeReadiness(self, request, context):
+    def change_readiness(self, request, context):
         if requests_pb2.game_id not in md.GAMES:
             return requests_pb2.Status(is_done=False, info="Game not found")
         game = md.GAMES[request.game_id]
         result_info = game.change_player_readiness(request.player_id)
         return requests_pb2.Status(is_done=(result_info == "ok"), info=result_info)
 
-    def GetState(self, request, context):
+    def get_state(self, request, context):
         if request.game_id not in md.GAMES:
             return requests_pb2.State(status=False, info="Game not found")
         game = md.GAMES[request.game_id]
