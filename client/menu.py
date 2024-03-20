@@ -67,19 +67,19 @@ class MenuView:
             screen.blit(LoginInputText, (LoginButton.left, LoginButton.center[1] - 55))
 
             if password_show:
-                EyeIconImage = pygame.image.load("../src/img/EyeIcon.png").convert_alpha()
+                EyeIconImage = pygame.image.load("src/img/EyeIcon.png").convert_alpha()
                 screen.blit(pygame.transform.scale(EyeIconImage, (220, 180)),
                             (ScreenWidth / 80, ScreenHeight * 6 / 10 - 20))
                 PassowrdInputText = RegistrationFont.render(PasswordInput, False, (0, 0, 0))
                 screen.blit(PassowrdInputText, (PasswordButton.left, PasswordButton.center[1] - 55))
             else:
-                EyeIconImage = pygame.image.load("../src/img/EyeIconCrossed.png").convert_alpha()
+                EyeIconImage = pygame.image.load("src/img/EyeIconCrossed.png").convert_alpha()
                 screen.blit(pygame.transform.scale(EyeIconImage, (250, 160)),
                             (ScreenWidth / 80 - 10, ScreenHeight * 6 / 10 - 10))
                 PassowrdInputText = RegistrationFont.render('*' * len(PasswordInput), False, (0, 0, 0))
                 screen.blit(PassowrdInputText, (PasswordButton.left, PasswordButton.center[1] - 30))
 
-            BackIconImage = pygame.image.load("../src/img/BackIcon.png").convert_alpha()
+            BackIconImage = pygame.image.load("src/img/BackIcon.png").convert_alpha()
             screen.blit(pygame.transform.scale(BackIconImage, (180, 180)),
                         (ScreenWidth * 6 / 7, ScreenHeight * 1 / 30))
             pygame.display.update()
@@ -183,32 +183,32 @@ class MenuView:
             screen.blit(NicknameInputText, (NicknameButton.left, NicknameButton.center[1] - 55))
 
             if password_show:
-                EyeIconImage = pygame.image.load("../src/img/EyeIcon.png").convert_alpha()
+                EyeIconImage = pygame.image.load("src/img/EyeIcon.png").convert_alpha()
                 screen.blit(pygame.transform.scale(EyeIconImage, (220, 180)),
                             (ScreenWidth / 80, ScreenHeight / 2 + 10))
                 PassowrdInputText = RegistrationFont.render(PasswordInput, False, (0, 0, 0))
                 screen.blit(PassowrdInputText, (PasswordButton.left, PasswordButton.center[1] - 55))
             else:
-                EyeIconImage = pygame.image.load("../src/img/EyeIconCrossed.png").convert_alpha()
+                EyeIconImage = pygame.image.load("src/img/EyeIconCrossed.png").convert_alpha()
                 screen.blit(pygame.transform.scale(EyeIconImage, (250, 160)),
                             (ScreenWidth / 80 - 10, ScreenHeight  / 2 + 20))
                 PassowrdInputText = RegistrationFont.render('*' * len(PasswordInput), False, (0, 0, 0))
                 screen.blit(PassowrdInputText, (PasswordButton.left, PasswordButton.center[1] - 30))
 
             if repeat_password_show:
-                EyeIconImage = pygame.image.load("../src/img/EyeIcon.png").convert_alpha()
+                EyeIconImage = pygame.image.load("src/img/EyeIcon.png").convert_alpha()
                 screen.blit(pygame.transform.scale(EyeIconImage, (220, 180)),
                             (ScreenWidth / 80, ScreenHeight * 7 / 10 + 20))
                 RepeatPassowrdInputText = RegistrationFont.render(RepeatPasswordInput, False, (0, 0, 0))
                 screen.blit(RepeatPassowrdInputText, (RepeatPasswordButton.left, RepeatPasswordButton.center[1] - 55))
             else:
-                EyeIconImage = pygame.image.load("../src/img/EyeIconCrossed.png").convert_alpha()
+                EyeIconImage = pygame.image.load("src/img/EyeIconCrossed.png").convert_alpha()
                 screen.blit(pygame.transform.scale(EyeIconImage, (250, 160)),
                             (ScreenWidth / 80 - 10, ScreenHeight * 7 / 10 + 30))
                 RepeatPassowrdInputText = RegistrationFont.render('*' * len(RepeatPasswordInput), False, (0, 0, 0))
                 screen.blit(RepeatPassowrdInputText, (RepeatPasswordButton.left, RepeatPasswordButton.center[1] - 30))
 
-            BackIconImage = pygame.image.load("../src/img/BackIcon.png").convert_alpha()
+            BackIconImage = pygame.image.load("src/img/BackIcon.png").convert_alpha()
             screen.blit(pygame.transform.scale(BackIconImage, (180, 180)),
                         (ScreenWidth * 6 / 7, ScreenHeight * 1 / 30))
             pygame.display.update()
