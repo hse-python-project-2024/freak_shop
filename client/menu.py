@@ -31,11 +31,11 @@ class MenuView:
                         active = 0
                     if ConfirmButton.collidepoint(MousePosition):
                         LoginSuccess = DataBaseRequester.login_user(LoginInput,  PasswordInput)
-                        if (LoginSuccess):
+                        print(LoginSuccess)
+                        if LoginSuccess.status.info == "OK":
                             ReturnToMenu = 2
                         else:
                             ReturnToMenu = 1
-                        #add real checks later
                     if EyeIconButton.collidepoint(MousePosition):
                         password_show = not password_show
                     if BackButton.collidepoint(MousePosition):
@@ -131,7 +131,6 @@ class MenuView:
                     if ConfirmButton.collidepoint(MousePosition):
                         RegisterSuccess = DataBaseRequester.register_user(LoginInput, NicknameInput, PasswordInput,
                                                                           RepeatPasswordInput)
-                        #add checker later
                         ReturnToMenu = 1
                     if EyeIconButton1.collidepoint(MousePosition):
                         password_show = not password_show
