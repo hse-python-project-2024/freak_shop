@@ -103,11 +103,7 @@ class MenuView:
             screen.blit(pygame.transform.scale(BackIconImage, (180, 180)),
                         (ScreenWidth * 6 / 7, ScreenHeight * 1 / 30))
             if error_message_show:
-                ErrorMessageRect = Rect(ScreenWidth/2 - (100 + len(ErrorMessage) * 15), ScreenHeight / 4 + 50,220 + len(ErrorMessage) * 30, 350)
-                pygame.draw.rect(screen, ErrorMessageBackgroundColor, ErrorMessageRect)
-                MessageText = RegistrationFont.render(ErrorMessage, False, (0, 0, 0))
-                screen.blit(MessageText,
-                            (ErrorMessageRect.center[0] - (10 + len(ErrorMessage)*15), ErrorMessageRect.center[1] - 40))
+                self.message_show(ErrorMessage)
                 pygame.display.update()
                 time.sleep(2.5)
             else:
@@ -140,6 +136,10 @@ class MenuView:
         repeat_password_show = False
         active = 0
         while True:
+            ErrorMessage = ''
+            error_message_show = False
+            SuccessMessage = ''
+            success_message_show = False
             screen.fill(RegistrationBackgroundColor)
             for event in pygame.event.get():
                 if event.type == QUIT:
@@ -150,14 +150,20 @@ class MenuView:
                         active = 1
                     elif NicknameButton.collidepoint(MousePosition):
                         active = 2
-                    elif RepeatPasswordButton.collidepoint(MousePosition):
-                        active = 3
                     elif PasswordButton.collidepoint(MousePosition):
+                        active = 3
+                    elif RepeatPasswordButton.collidepoint(MousePosition):
                         active = 4
                     elif ConfirmButton.collidepoint(MousePosition):
                         RegisterSuccess = DataBaseRequester.register_user(LoginInput, NicknameInput, PasswordInput,
                                                                           RepeatPasswordInput)
-                        ReturnToMenu = 1
+                        print(RegisterSuccess)
+                        if RegisterSuccess.info == "Пользователь добавлен":
+                            SuccessMessage = RegisterSuccess.info
+                            success_message_show = True
+                        else:
+                            ErrorMessage = RegisterSuccess.info
+                            error_message_show = True
                         active = 0
                     elif EyeIconButton1.collidepoint(MousePosition):
                         password_show = not password_show
@@ -173,7 +179,13 @@ class MenuView:
                         if event.key == K_RETURN:
                             RegisterSuccess = DataBaseRequester.register_user(LoginInput, NicknameInput, PasswordInput,
                                                                               RepeatPasswordInput)
-                            ReturnToMenu = 1
+                            print(RegisterSuccess)
+                            if RegisterSuccess.info == "Пользователь добавлен":
+                                SuccessMessage = RegisterSuccess.info
+                                success_message_show = True
+                            else:
+                                ErrorMessage = RegisterSuccess.info
+                                error_message_show = True
                     elif active == 1:
                         if event.key == K_BACKSPACE:
                             LoginInput = LoginInput[:-1]
@@ -252,7 +264,17 @@ class MenuView:
             BackIconImage = pygame.image.load("src/img/BackIcon.png").convert_alpha()
             screen.blit(pygame.transform.scale(BackIconImage, (180, 180)),
                         (ScreenWidth * 6 / 7, ScreenHeight * 1 / 30))
-            pygame.display.update()
+            if error_message_show:
+                self.message_show(ErrorMessage)
+                pygame.display.update()
+                time.sleep(2.5)
+            elif success_message_show:
+                self.message_show(SuccessMessage)
+                ReturnToMenu = 1
+                pygame.display.update()
+                time.sleep(2.5)
+            else:
+                pygame.display.update()
 
             if ReturnToMenu == 1:
                 return "menu"
@@ -281,3 +303,10 @@ class MenuView:
             screen.blit(RegistrationText, (RegistrationButton.center[0] - 285, RegistrationButton.center[1] - 40))
             pygame.display.update()
 
+    def message_show(self, message):
+        MessageRect = Rect(ScreenWidth / 2 - (100 + len(message) * 15), ScreenHeight / 4 + 50,
+                                220 + len(message) * 30, 350)
+        pygame.draw.rect(screen, MessageBackgroundColor, MessageRect)
+        MessageText = RegistrationFont.render(message, False, (0, 0, 0))
+        screen.blit(MessageText,
+                    (MessageRect.center[0] - (10 + len(message) * 15), MessageRect.center[1] - 40))
