@@ -11,18 +11,17 @@ server_env:
 	python3 -m venv server/venv
 	chmod +x server/venv/bin/activate
 	. ./server/venv/bin/activate
+	$(PIP_SERVER) install -r server/requirements.txt
 
 
 prepare_server: server_env
-	$(PIP_SERVER) install -r server/requirements.txt
 	$(PYTHON_SERVER) -m grpc_tools.protoc -I protos --python_out=server --grpc_python_out=server protos/requests.proto
 
 run_server:
 	. ./server/venv/bin/activate
 	$(PYTHON_SERVER) server/main.py
 
-drop_and_restore_data_base:
-	. ./server/venv/bin/activate
+drop_and_restore_data_base: server_env
 	$(PYTHON_SERVER) server/db_prepare.py
 
 clean_server:
