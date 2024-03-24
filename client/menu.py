@@ -189,28 +189,28 @@ class MenuView:
                     elif active == 1:
                         if event.key == K_BACKSPACE:
                             LoginInput = LoginInput[:-1]
-                        if event.key == K_RETURN:
+                        elif event.key == K_RETURN:
                             active = 2
                         elif len(LoginInput) < MaxLoginLength:
                             LoginInput += event.unicode
                     elif active == 2:
                         if event.key == K_BACKSPACE:
                             NicknameInput = NicknameInput[:-1]
-                        if event.key == K_RETURN:
+                        elif event.key == K_RETURN:
                             active = 3
                         elif len(NicknameInput) < MaxPasswordLength:
                             NicknameInput += event.unicode
                     elif active == 3:
                         if event.key == K_BACKSPACE:
                             PasswordInput = PasswordInput[:-1]
-                        if event.key == K_RETURN:
+                        elif event.key == K_RETURN:
                             active = 4
                         elif len(PasswordInput) < MaxPasswordLength:
                             PasswordInput += event.unicode
                     elif active == 4:
                         if event.key == K_BACKSPACE:
                             RepeatPasswordInput = RepeatPasswordInput[:-1]
-                        if event.key == K_RETURN:
+                        elif event.key == K_RETURN:
                             active = 0
                         elif len(RepeatPasswordInput) < MaxPasswordLength:
                             RepeatPasswordInput += event.unicode
