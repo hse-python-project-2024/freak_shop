@@ -10,8 +10,8 @@ RegistrationBackgroundColor = (255, 188, 0)
 RegistrationButtonColor = (178, 102, 255)
 ScreenWidth = 1920
 ScreenHeight = 1080
-MaxLoginLength = 15
-MaxPasswordLength = 15
+MaxLoginLength = 25
+MaxPasswordLength = 25
 Task_Descriptions = [
     ["Игрок получает 5 очков за каждый номинал,",
      "карт которого у него больше, чем у остальных",
@@ -65,6 +65,6 @@ clock = pygame.time.Clock()
 pygame.font.init()
 screen = pygame.display.set_mode((ScreenWidth, ScreenHeight))
 
-TextFont = pygame.font.SysFont('Comic Sans MS', 30)
+TextFont = pygame.font.SysFont('Comic Sans MS', 40)
 TaskFont = pygame.font.SysFont('Comic Sans MS', 25)
-RegistrationFont = pygame.font.SysFont('Comic Sans MS', 60)
+RegistrationFont = pygame.font.SysFont('Comic Sans MS', 80)

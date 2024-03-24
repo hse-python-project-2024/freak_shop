@@ -49,13 +49,13 @@ class GameBoardView:
             PlayerIcon = pygame.image.load("src/img/Player_Icon.png").convert_alpha()
             screen.blit(pygame.transform.scale(PlayerIcon, (140, 140)), (ScreenWidth * 4 / 5, ScreenHeight * i / 8))
             PlayerNameText = TextFont.render(Game.PlayersNicknames[i], False, (0, 0, 0))
-            screen.blit(PlayerNameText, (ScreenWidth * 4 / 5 + 150, ScreenHeight * i / 8 + 40))
+            screen.blit(PlayerNameText, (ScreenWidth * 4 / 5 + 150, ScreenHeight * i / 8 + 60))
 
     def display_end_turn_button(self):
         EndTurnText = TextFont.render("Совершить обмен", False, (0, 0, 0))
         screen.blit(EndTurnText, (ScreenWidth * 6 / 7 + 15, ScreenHeight * 3 / 4 - 40))
         EndTurnIcon = pygame.image.load("src/img/End_Turn_Icon.png").convert_alpha()
-        screen.blit(pygame.transform.scale(EndTurnIcon, (250, 250)), (ScreenWidth * 6 / 7, ScreenHeight * 3 / 4))
+        screen.blit(pygame.transform.scale(EndTurnIcon, (250, 250)), (ScreenWidth * 6 / 7 + 20, ScreenHeight * 3 / 4 - 30))
 
     def display_task_list(self, Game):
         ind = 0

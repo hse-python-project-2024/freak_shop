@@ -61,23 +61,23 @@ class MenuView:
             pygame.draw.rect(screen, RegistrationButtonColor, ConfirmButton)
             screen.blit(LoginText, (LoginButton.midtop[0] - 100, LoginButton.midtop[1] - 80))
             screen.blit(PassowrdText, (PasswordButton.midtop[0] - 120, PasswordButton.midtop[1] - 80))
-            screen.blit(ConfirmText, (ConfirmButton.center[0] - 100, ConfirmButton.center[1] - 60))
+            screen.blit(ConfirmText, (ConfirmButton.center[0] - 85, ConfirmButton.center[1] - 30))
 
             LoginInputText = RegistrationFont.render(LoginInput, False, (0, 0, 0))
-            screen.blit(LoginInputText, (LoginButton.left, LoginButton.center[1] - 55))
+            screen.blit(LoginInputText, (LoginButton.left, LoginButton.center[1] - 35))
 
             if password_show:
                 EyeIconImage = pygame.image.load("src/img/EyeIcon.png").convert_alpha()
                 screen.blit(pygame.transform.scale(EyeIconImage, (220, 180)),
                             (ScreenWidth / 80, ScreenHeight * 6 / 10 - 20))
                 PassowrdInputText = RegistrationFont.render(PasswordInput, False, (0, 0, 0))
-                screen.blit(PassowrdInputText, (PasswordButton.left, PasswordButton.center[1] - 55))
+                screen.blit(PassowrdInputText, (PasswordButton.left, PasswordButton.center[1] - 35))
             else:
                 EyeIconImage = pygame.image.load("src/img/EyeIconCrossed.png").convert_alpha()
                 screen.blit(pygame.transform.scale(EyeIconImage, (250, 160)),
                             (ScreenWidth / 80 - 10, ScreenHeight * 6 / 10 - 10))
                 PassowrdInputText = RegistrationFont.render('*' * len(PasswordInput), False, (0, 0, 0))
-                screen.blit(PassowrdInputText, (PasswordButton.left, PasswordButton.center[1] - 30))
+                screen.blit(PassowrdInputText, (PasswordButton.left, PasswordButton.center[1] - 10))
 
             BackIconImage = pygame.image.load("src/img/BackIcon.png").convert_alpha()
             screen.blit(pygame.transform.scale(BackIconImage, (180, 180)),
@@ -171,41 +171,41 @@ class MenuView:
             pygame.draw.rect(screen, RegistrationButtonColor, RepeatPasswordButton)
             pygame.draw.rect(screen, RegistrationButtonColor, ConfirmButton)
             screen.blit(LoginText, (LoginButton.midtop[0] - 100, LoginButton.midtop[1] - 80))
-            screen.blit(NicknameText, (NicknameButton.midtop[0] - 80, NicknameButton.midtop[1] - 80))
-            screen.blit(PassowrdText, (PasswordButton.midtop[0] - 120, PasswordButton.midtop[1] - 80))
-            screen.blit(RepeatPasswordText, (RepeatPasswordButton.midtop[0] - 270, RepeatPasswordButton.midtop[1] - 80))
-            screen.blit(ConfirmText, (ConfirmButton.center[0] - 175, ConfirmButton.center[1] - 60))
+            screen.blit(NicknameText, (NicknameButton.midtop[0] - 80, NicknameButton.midtop[1] - 60))
+            screen.blit(PassowrdText, (PasswordButton.midtop[0] - 120, PasswordButton.midtop[1] - 60))
+            screen.blit(RepeatPasswordText, (RepeatPasswordButton.midtop[0] - 220, RepeatPasswordButton.midtop[1] - 60))
+            screen.blit(ConfirmText, (ConfirmButton.center[0] - 180, ConfirmButton.center[1] - 20))
 
             LoginInputText = RegistrationFont.render(LoginInput, False, (0, 0, 0))
             NicknameInputText = RegistrationFont.render(NicknameInput, False, (0, 0, 0))
-            screen.blit(LoginInputText, (LoginButton.left, LoginButton.center[1] - 55))
-            screen.blit(NicknameInputText, (NicknameButton.left, NicknameButton.center[1] - 55))
+            screen.blit(LoginInputText, (LoginButton.left, LoginButton.center[1] - 35))
+            screen.blit(NicknameInputText, (NicknameButton.left, NicknameButton.center[1] - 35))
 
             if password_show:
                 EyeIconImage = pygame.image.load("src/img/EyeIcon.png").convert_alpha()
                 screen.blit(pygame.transform.scale(EyeIconImage, (220, 180)),
                             (ScreenWidth / 80, ScreenHeight / 2 + 10))
                 PassowrdInputText = RegistrationFont.render(PasswordInput, False, (0, 0, 0))
-                screen.blit(PassowrdInputText, (PasswordButton.left, PasswordButton.center[1] - 55))
+                screen.blit(PassowrdInputText, (PasswordButton.left, PasswordButton.center[1] - 35))
             else:
                 EyeIconImage = pygame.image.load("src/img/EyeIconCrossed.png").convert_alpha()
                 screen.blit(pygame.transform.scale(EyeIconImage, (250, 160)),
                             (ScreenWidth / 80 - 10, ScreenHeight  / 2 + 20))
                 PassowrdInputText = RegistrationFont.render('*' * len(PasswordInput), False, (0, 0, 0))
-                screen.blit(PassowrdInputText, (PasswordButton.left, PasswordButton.center[1] - 30))
+                screen.blit(PassowrdInputText, (PasswordButton.left, PasswordButton.center[1] - 10))
 
             if repeat_password_show:
                 EyeIconImage = pygame.image.load("src/img/EyeIcon.png").convert_alpha()
                 screen.blit(pygame.transform.scale(EyeIconImage, (220, 180)),
                             (ScreenWidth / 80, ScreenHeight * 7 / 10 + 20))
                 RepeatPassowrdInputText = RegistrationFont.render(RepeatPasswordInput, False, (0, 0, 0))
-                screen.blit(RepeatPassowrdInputText, (RepeatPasswordButton.left, RepeatPasswordButton.center[1] - 55))
+                screen.blit(RepeatPassowrdInputText, (RepeatPasswordButton.left, RepeatPasswordButton.center[1] - 35))
             else:
                 EyeIconImage = pygame.image.load("src/img/EyeIconCrossed.png").convert_alpha()
                 screen.blit(pygame.transform.scale(EyeIconImage, (250, 160)),
                             (ScreenWidth / 80 - 10, ScreenHeight * 7 / 10 + 30))
                 RepeatPassowrdInputText = RegistrationFont.render('*' * len(RepeatPasswordInput), False, (0, 0, 0))
-                screen.blit(RepeatPassowrdInputText, (RepeatPasswordButton.left, RepeatPasswordButton.center[1] - 30))
+                screen.blit(RepeatPassowrdInputText, (RepeatPasswordButton.left, RepeatPasswordButton.center[1] - 10))
 
             BackIconImage = pygame.image.load("src/img/BackIcon.png").convert_alpha()
             screen.blit(pygame.transform.scale(BackIconImage, (180, 180)),
@@ -235,6 +235,6 @@ class MenuView:
             pygame.draw.rect(screen, RegistrationButtonColor, RegistrationButton)
             EnterText = RegistrationFont.render("Войти", False, (0, 0, 0))
             RegistrationText = RegistrationFont.render("Зарегестрироваться", False, (0, 0, 0))
-            screen.blit(EnterText, (EnterButton.center[0] - 80, EnterButton.center[1] - 40))
-            screen.blit(RegistrationText, (RegistrationButton.center[0] - 270, RegistrationButton.center[1] - 40))
+            screen.blit(EnterText, (EnterButton.center[0] - 85, EnterButton.center[1] - 40))
+            screen.blit(RegistrationText, (RegistrationButton.center[0] - 285, RegistrationButton.center[1] - 40))
             pygame.display.update()
