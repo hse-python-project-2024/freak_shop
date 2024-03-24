@@ -1,4 +1,5 @@
 from interface_setup import *
+import time
 from facade import ClientRequests
 
 class MenuView:
@@ -17,6 +18,8 @@ class MenuView:
         active = 0
         password_show = False
         while True:
+            ErrorMessage = ''
+            error_message_show = False
             screen.fill(RegistrationBackgroundColor)
             for event in pygame.event.get():
                 if event.type == QUIT:
@@ -35,7 +38,8 @@ class MenuView:
                         if LoginSuccess.status.info == "OK":
                             ReturnToMenu = 2
                         else:
-                            ReturnToMenu = 1
+                            ErrorMessage = LoginSuccess.status.info
+                            error_message_show = True
                     if EyeIconButton.collidepoint(MousePosition):
                         password_show = not password_show
                     if BackButton.collidepoint(MousePosition):
@@ -82,8 +86,16 @@ class MenuView:
             BackIconImage = pygame.image.load("src/img/BackIcon.png").convert_alpha()
             screen.blit(pygame.transform.scale(BackIconImage, (180, 180)),
                         (ScreenWidth * 6 / 7, ScreenHeight * 1 / 30))
-            pygame.display.update()
-
+            if error_message_show:
+                ErrorMessageRect = Rect(ScreenWidth/2 - (100 + len(ErrorMessage) * 15), ScreenHeight / 4 + 50,220 + len(ErrorMessage) * 30, 350)
+                pygame.draw.rect(screen, ErrorMessageBackgroundColor, ErrorMessageRect)
+                MessageText = RegistrationFont.render(ErrorMessage, False, (0, 0, 0))
+                screen.blit(MessageText,
+                            (ErrorMessageRect.center[0] - (10 + len(ErrorMessage)*15), ErrorMessageRect.center[1] - 40))
+                pygame.display.update()
+                time.sleep(3)
+            else:
+                pygame.display.update()
             if ReturnToMenu == 1:
                 return "menu"
             elif ReturnToMenu == 2:
@@ -238,3 +250,4 @@ class MenuView:
             screen.blit(EnterText, (EnterButton.center[0] - 85, EnterButton.center[1] - 40))
             screen.blit(RegistrationText, (RegistrationButton.center[0] - 285, RegistrationButton.center[1] - 40))
             pygame.display.update()
+

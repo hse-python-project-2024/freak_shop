@@ -8,6 +8,7 @@ from math import *
 BackgroundColor = (178, 102, 255)
 RegistrationBackgroundColor = (255, 188, 0)
 RegistrationButtonColor = (178, 102, 255)
+ErrorMessageBackgroundColor = (51, 153, 255)
 ScreenWidth = 1920
 ScreenHeight = 1080
 MaxLoginLength = 25
