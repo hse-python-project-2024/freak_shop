@@ -30,9 +30,8 @@ class MenuView:
                         active = 1
                     elif PasswordButton.collidepoint(MousePosition):
                         active = 2
-                    else:
+                    elif ConfirmButton.collidepoint(MousePosition):
                         active = 0
-                    if ConfirmButton.collidepoint(MousePosition):
                         LoginSuccess = DataBaseRequester.login_user(LoginInput,  PasswordInput)
                         print(LoginSuccess)
                         if LoginSuccess.status.info == "OK":
@@ -40,21 +39,38 @@ class MenuView:
                         else:
                             ErrorMessage = LoginSuccess.status.info
                             error_message_show = True
-                    if EyeIconButton.collidepoint(MousePosition):
+                    elif EyeIconButton.collidepoint(MousePosition):
                         password_show = not password_show
-                    if BackButton.collidepoint(MousePosition):
+                    elif BackButton.collidepoint(MousePosition):
+                        active = 0
                         ReturnToMenu = 1
+                    else:
+                        active = 0
                 if event.type == KEYDOWN:
-                    if active == 1:
+                    if active == 0:
+                        if event.key == K_RETURN:
+                            LoginSuccess = DataBaseRequester.login_user(LoginInput, PasswordInput)
+                            print(LoginSuccess)
+                            if LoginSuccess.status.info == "OK":
+                                ReturnToMenu = 2
+                            else:
+                                ErrorMessage = LoginSuccess.status.info
+                                error_message_show = True
+                    elif active == 1:
                         if event.key == K_BACKSPACE:
                             LoginInput = LoginInput[:-1]
+                        elif event.key == K_RETURN:
+                            active = 2
                         elif len(LoginInput) < MaxLoginLength:
                             LoginInput += event.unicode
-                    if active == 2:
+                    elif active == 2:
                         if event.key == K_BACKSPACE:
                             PasswordInput = PasswordInput[:-1]
+                        elif event.key == K_RETURN:
+                            active = 0
                         elif len(PasswordInput) < MaxPasswordLength:
                             PasswordInput += event.unicode
+
 
             pressed_keys = pygame.key.get_pressed()
             if pressed_keys[K_ESCAPE]:
@@ -67,20 +83,20 @@ class MenuView:
             screen.blit(PassowrdText, (PasswordButton.midtop[0] - 120, PasswordButton.midtop[1] - 80))
             screen.blit(ConfirmText, (ConfirmButton.center[0] - 85, ConfirmButton.center[1] - 30))
 
-            LoginInputText = RegistrationFont.render(LoginInput, False, (0, 0, 0))
+            LoginInputText = RegistrationFont.render(LoginInput + (active == 1) * '|', False, (0, 0, 0))
             screen.blit(LoginInputText, (LoginButton.left, LoginButton.center[1] - 35))
 
             if password_show:
                 EyeIconImage = pygame.image.load("src/img/EyeIcon.png").convert_alpha()
                 screen.blit(pygame.transform.scale(EyeIconImage, (220, 180)),
                             (ScreenWidth / 80, ScreenHeight * 6 / 10 - 20))
-                PassowrdInputText = RegistrationFont.render(PasswordInput, False, (0, 0, 0))
+                PassowrdInputText = RegistrationFont.render(PasswordInput + (active == 2) * '|', False, (0, 0, 0))
                 screen.blit(PassowrdInputText, (PasswordButton.left, PasswordButton.center[1] - 35))
             else:
                 EyeIconImage = pygame.image.load("src/img/EyeIconCrossed.png").convert_alpha()
                 screen.blit(pygame.transform.scale(EyeIconImage, (250, 160)),
                             (ScreenWidth / 80 - 10, ScreenHeight * 6 / 10 - 10))
-                PassowrdInputText = RegistrationFont.render('*' * len(PasswordInput), False, (0, 0, 0))
+                PassowrdInputText = RegistrationFont.render('*' * len(PasswordInput) + (active == 2) * '|', False, (0, 0, 0))
                 screen.blit(PassowrdInputText, (PasswordButton.left, PasswordButton.center[1] - 10))
 
             BackIconImage = pygame.image.load("src/img/BackIcon.png").convert_alpha()
@@ -93,7 +109,7 @@ class MenuView:
                 screen.blit(MessageText,
                             (ErrorMessageRect.center[0] - (10 + len(ErrorMessage)*15), ErrorMessageRect.center[1] - 40))
                 pygame.display.update()
-                time.sleep(3)
+                time.sleep(2.5)
             else:
                 pygame.display.update()
             if ReturnToMenu == 1:
@@ -132,46 +148,60 @@ class MenuView:
                     MousePosition = pygame.mouse.get_pos()
                     if LoginButton.collidepoint(MousePosition):
                         active = 1
-                    elif PasswordButton.collidepoint(MousePosition):
+                    elif NicknameButton.collidepoint(MousePosition):
                         active = 2
                     elif RepeatPasswordButton.collidepoint(MousePosition):
                         active = 3
-                    elif NicknameButton.collidepoint(MousePosition):
+                    elif PasswordButton.collidepoint(MousePosition):
                         active = 4
-                    else:
-                        active = 0
-                    if ConfirmButton.collidepoint(MousePosition):
+                    elif ConfirmButton.collidepoint(MousePosition):
                         RegisterSuccess = DataBaseRequester.register_user(LoginInput, NicknameInput, PasswordInput,
                                                                           RepeatPasswordInput)
                         ReturnToMenu = 1
-                    if EyeIconButton1.collidepoint(MousePosition):
+                        active = 0
+                    elif EyeIconButton1.collidepoint(MousePosition):
                         password_show = not password_show
-                    if EyeIconButton2.collidepoint(MousePosition):
+                    elif EyeIconButton2.collidepoint(MousePosition):
                         repeat_password_show = not repeat_password_show
-                    if BackButton.collidepoint(MousePosition):
+                    elif BackButton.collidepoint(MousePosition):
                         ReturnToMenu = 1
-
+                        active = 0
+                    else:
+                        active = 0
                 if event.type == KEYDOWN:
-                    if active == 1:
+                    if active == 0:
+                        if event.key == K_RETURN:
+                            RegisterSuccess = DataBaseRequester.register_user(LoginInput, NicknameInput, PasswordInput,
+                                                                              RepeatPasswordInput)
+                            ReturnToMenu = 1
+                    elif active == 1:
                         if event.key == K_BACKSPACE:
                             LoginInput = LoginInput[:-1]
+                        if event.key == K_RETURN:
+                            active = 2
                         elif len(LoginInput) < MaxLoginLength:
                             LoginInput += event.unicode
-                    if active == 2:
-                        if event.key == K_BACKSPACE:
-                            PasswordInput = PasswordInput[:-1]
-                        elif len(PasswordInput) < MaxPasswordLength:
-                            PasswordInput += event.unicode
-                    if active == 3:
-                        if event.key == K_BACKSPACE:
-                            RepeatPasswordInput = RepeatPasswordInput[:-1]
-                        elif len(RepeatPasswordInput) < MaxPasswordLength:
-                            RepeatPasswordInput += event.unicode
-                    if active == 4:
+                    elif active == 2:
                         if event.key == K_BACKSPACE:
                             NicknameInput = NicknameInput[:-1]
+                        if event.key == K_RETURN:
+                            active = 3
                         elif len(NicknameInput) < MaxPasswordLength:
                             NicknameInput += event.unicode
+                    elif active == 3:
+                        if event.key == K_BACKSPACE:
+                            PasswordInput = PasswordInput[:-1]
+                        if event.key == K_RETURN:
+                            active = 4
+                        elif len(PasswordInput) < MaxPasswordLength:
+                            PasswordInput += event.unicode
+                    elif active == 4:
+                        if event.key == K_BACKSPACE:
+                            RepeatPasswordInput = RepeatPasswordInput[:-1]
+                        if event.key == K_RETURN:
+                            active = 0
+                        elif len(RepeatPasswordInput) < MaxPasswordLength:
+                            RepeatPasswordInput += event.unicode
 
             pressed_keys = pygame.key.get_pressed()
             if pressed_keys[K_ESCAPE]:
@@ -188,8 +218,8 @@ class MenuView:
             screen.blit(RepeatPasswordText, (RepeatPasswordButton.midtop[0] - 220, RepeatPasswordButton.midtop[1] - 60))
             screen.blit(ConfirmText, (ConfirmButton.center[0] - 180, ConfirmButton.center[1] - 20))
 
-            LoginInputText = RegistrationFont.render(LoginInput, False, (0, 0, 0))
-            NicknameInputText = RegistrationFont.render(NicknameInput, False, (0, 0, 0))
+            LoginInputText = RegistrationFont.render(LoginInput + (active == 1) * '|', False, (0, 0, 0))
+            NicknameInputText = RegistrationFont.render(NicknameInput + (active == 2) * '|', False, (0, 0, 0))
             screen.blit(LoginInputText, (LoginButton.left, LoginButton.center[1] - 35))
             screen.blit(NicknameInputText, (NicknameButton.left, NicknameButton.center[1] - 35))
 
@@ -197,26 +227,26 @@ class MenuView:
                 EyeIconImage = pygame.image.load("src/img/EyeIcon.png").convert_alpha()
                 screen.blit(pygame.transform.scale(EyeIconImage, (220, 180)),
                             (ScreenWidth / 80, ScreenHeight / 2 + 10))
-                PassowrdInputText = RegistrationFont.render(PasswordInput, False, (0, 0, 0))
+                PassowrdInputText = RegistrationFont.render(PasswordInput + (active == 3) * '|', False, (0, 0, 0))
                 screen.blit(PassowrdInputText, (PasswordButton.left, PasswordButton.center[1] - 35))
             else:
                 EyeIconImage = pygame.image.load("src/img/EyeIconCrossed.png").convert_alpha()
                 screen.blit(pygame.transform.scale(EyeIconImage, (250, 160)),
                             (ScreenWidth / 80 - 10, ScreenHeight  / 2 + 20))
-                PassowrdInputText = RegistrationFont.render('*' * len(PasswordInput), False, (0, 0, 0))
+                PassowrdInputText = RegistrationFont.render('*' * len(PasswordInput) + (active == 3) * '|', False, (0, 0, 0))
                 screen.blit(PassowrdInputText, (PasswordButton.left, PasswordButton.center[1] - 10))
 
             if repeat_password_show:
                 EyeIconImage = pygame.image.load("src/img/EyeIcon.png").convert_alpha()
                 screen.blit(pygame.transform.scale(EyeIconImage, (220, 180)),
                             (ScreenWidth / 80, ScreenHeight * 7 / 10 + 20))
-                RepeatPassowrdInputText = RegistrationFont.render(RepeatPasswordInput, False, (0, 0, 0))
+                RepeatPassowrdInputText = RegistrationFont.render(RepeatPasswordInput + (active == 4) * '|', False, (0, 0, 0))
                 screen.blit(RepeatPassowrdInputText, (RepeatPasswordButton.left, RepeatPasswordButton.center[1] - 35))
             else:
                 EyeIconImage = pygame.image.load("src/img/EyeIconCrossed.png").convert_alpha()
                 screen.blit(pygame.transform.scale(EyeIconImage, (250, 160)),
                             (ScreenWidth / 80 - 10, ScreenHeight * 7 / 10 + 30))
-                RepeatPassowrdInputText = RegistrationFont.render('*' * len(RepeatPasswordInput), False, (0, 0, 0))
+                RepeatPassowrdInputText = RegistrationFont.render('*' * len(RepeatPasswordInput) + (active == 4) * '|', False, (0, 0, 0))
                 screen.blit(RepeatPassowrdInputText, (RepeatPasswordButton.left, RepeatPasswordButton.center[1] - 10))
 
             BackIconImage = pygame.image.load("src/img/BackIcon.png").convert_alpha()
