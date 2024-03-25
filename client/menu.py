@@ -47,29 +47,34 @@ class MenuView:
                     else:
                         active = 0
                 if event.type == KEYDOWN:
-                    if active == 0:
-                        if event.key == K_RETURN:
-                            LoginSuccess = DataBaseRequester.login_user(LoginInput, PasswordInput)
-                            print(LoginSuccess)
-                            if LoginSuccess.status.info == "OK":
-                                ReturnToMenu = 2
-                            else:
-                                ErrorMessage = LoginSuccess.status.info
-                                error_message_show = True
-                    elif active == 1:
-                        if event.key == K_BACKSPACE:
-                            LoginInput = LoginInput[:-1]
-                        elif event.key == K_RETURN:
-                            active = 2
-                        elif len(LoginInput) < MaxLoginLength:
-                            LoginInput += event.unicode
-                    elif active == 2:
-                        if event.key == K_BACKSPACE:
-                            PasswordInput = PasswordInput[:-1]
-                        elif event.key == K_RETURN:
-                            active = 0
-                        elif len(PasswordInput) < MaxPasswordLength:
-                            PasswordInput += event.unicode
+                    if event.key == K_DOWN:
+                        active += 1*(active < 2)
+                    elif event.key == K_UP:
+                        active -= 1*(active > 1)
+                    else:
+                        if active == 1:
+                            if event.key == K_BACKSPACE:
+                                LoginInput = LoginInput[:-1]
+                            elif event.key == K_RETURN:
+                                active = 2
+                            elif len(LoginInput) < MaxLoginLength:
+                                LoginInput += event.unicode
+                        elif active == 2:
+                            if event.key == K_BACKSPACE:
+                                PasswordInput = PasswordInput[:-1]
+                            elif event.key == K_RETURN:
+                                active = 0
+                            elif len(PasswordInput) < MaxPasswordLength:
+                                PasswordInput += event.unicode
+                        if active == 0:
+                            if event.key == K_RETURN:
+                                LoginSuccess = DataBaseRequester.login_user(LoginInput, PasswordInput)
+                                print(LoginSuccess)
+                                if LoginSuccess.status.info == "OK":
+                                    ReturnToMenu = 2
+                                else:
+                                    ErrorMessage = LoginSuccess.status.info
+                                    error_message_show = True
 
 
             pressed_keys = pygame.key.get_pressed()
@@ -105,7 +110,7 @@ class MenuView:
             if error_message_show:
                 self.message_show(ErrorMessage)
                 pygame.display.update()
-                time.sleep(2.5)
+                time.sleep(2)
             else:
                 pygame.display.update()
             if ReturnToMenu == 1:
@@ -175,45 +180,50 @@ class MenuView:
                     else:
                         active = 0
                 if event.type == KEYDOWN:
-                    if active == 0:
-                        if event.key == K_RETURN:
-                            RegisterSuccess = DataBaseRequester.register_user(LoginInput, NicknameInput, PasswordInput,
-                                                                              RepeatPasswordInput)
-                            print(RegisterSuccess)
-                            if RegisterSuccess.info == "Пользователь добавлен":
-                                SuccessMessage = RegisterSuccess.info
-                                success_message_show = True
-                            else:
-                                ErrorMessage = RegisterSuccess.info
-                                error_message_show = True
-                    elif active == 1:
-                        if event.key == K_BACKSPACE:
-                            LoginInput = LoginInput[:-1]
-                        elif event.key == K_RETURN:
-                            active = 2
-                        elif len(LoginInput) < MaxLoginLength:
-                            LoginInput += event.unicode
-                    elif active == 2:
-                        if event.key == K_BACKSPACE:
-                            NicknameInput = NicknameInput[:-1]
-                        elif event.key == K_RETURN:
-                            active = 3
-                        elif len(NicknameInput) < MaxPasswordLength:
-                            NicknameInput += event.unicode
-                    elif active == 3:
-                        if event.key == K_BACKSPACE:
-                            PasswordInput = PasswordInput[:-1]
-                        elif event.key == K_RETURN:
-                            active = 4
-                        elif len(PasswordInput) < MaxPasswordLength:
-                            PasswordInput += event.unicode
-                    elif active == 4:
-                        if event.key == K_BACKSPACE:
-                            RepeatPasswordInput = RepeatPasswordInput[:-1]
-                        elif event.key == K_RETURN:
-                            active = 0
-                        elif len(RepeatPasswordInput) < MaxPasswordLength:
-                            RepeatPasswordInput += event.unicode
+                    if event.key == K_DOWN:
+                        active += 1*(active < 4)
+                    elif event.key == K_UP:
+                        active -= 1*(active > 1)
+                    else:
+                        if active == 1:
+                            if event.key == K_BACKSPACE:
+                                LoginInput = LoginInput[:-1]
+                            elif event.key == K_RETURN:
+                                active = 2
+                            elif len(LoginInput) < MaxLoginLength:
+                                LoginInput += event.unicode
+                        elif active == 2:
+                            if event.key == K_BACKSPACE:
+                                NicknameInput = NicknameInput[:-1]
+                            elif event.key == K_RETURN:
+                                active = 3
+                            elif len(NicknameInput) < MaxPasswordLength:
+                                NicknameInput += event.unicode
+                        elif active == 3:
+                            if event.key == K_BACKSPACE:
+                                PasswordInput = PasswordInput[:-1]
+                            elif event.key == K_RETURN:
+                                active = 4
+                            elif len(PasswordInput) < MaxPasswordLength:
+                                PasswordInput += event.unicode
+                        elif active == 4:
+                            if event.key == K_BACKSPACE:
+                                RepeatPasswordInput = RepeatPasswordInput[:-1]
+                            elif event.key == K_RETURN:
+                                active = 0
+                            elif len(RepeatPasswordInput) < MaxPasswordLength:
+                                RepeatPasswordInput += event.unicode
+                        if active == 0:
+                            if event.key == K_RETURN:
+                                RegisterSuccess = DataBaseRequester.register_user(LoginInput, NicknameInput, PasswordInput,
+                                                                                  RepeatPasswordInput)
+                                print(RegisterSuccess)
+                                if RegisterSuccess.info == "Пользователь добавлен":
+                                    SuccessMessage = RegisterSuccess.info
+                                    success_message_show = True
+                                else:
+                                    ErrorMessage = RegisterSuccess.info
+                                    error_message_show = True
 
             pressed_keys = pygame.key.get_pressed()
             if pressed_keys[K_ESCAPE]:
@@ -272,7 +282,7 @@ class MenuView:
                 self.message_show(SuccessMessage)
                 ReturnToMenu = 1
                 pygame.display.update()
-                time.sleep(2.5)
+                time.sleep(2)
             else:
                 pygame.display.update()
 
