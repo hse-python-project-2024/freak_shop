@@ -111,7 +111,7 @@ class MenuView:
             if ReturnToMenu == 1:
                 return "menu"
             elif ReturnToMenu == 2:
-                return "gameplay"
+                return self.show_ingame_menu(DataBaseRequester)
 
     def show_resgistration_menu(self, DataBaseRequester):
         ReturnToMenu = 0
@@ -284,24 +284,76 @@ class MenuView:
             screen.fill(RegistrationBackgroundColor)
             EnterButton = Rect(ScreenWidth * 11 / 38, ScreenHeight / 6, 800, 250)
             RegistrationButton = Rect(ScreenWidth * 11 / 38, ScreenHeight / 2, 800, 250)
+            BackButton = Rect(ScreenWidth * 6 / 7, ScreenHeight * 1 / 30, 180, 180)
+            ReturnType = "empty"
             for event in pygame.event.get():
                 if event.type == QUIT:
                     sys.exit()
                 if event.type == MOUSEBUTTONDOWN:
                     if EnterButton.collidepoint(pygame.mouse.get_pos()):
-                        return self.show_enter_menu(DataBaseRequester)
-                    if RegistrationButton.collidepoint(pygame.mouse.get_pos()):
-                        return self.show_resgistration_menu(DataBaseRequester)
+                        ReturnType = self.show_enter_menu(DataBaseRequester)
+                    elif RegistrationButton.collidepoint(pygame.mouse.get_pos()):
+                       ReturnType = self.show_resgistration_menu(DataBaseRequester)
+                    elif BackButton.collidepoint(pygame.mouse.get_pos()):
+                        sys.exit()
+
+            if ReturnType == "menu":
+                time.sleep(0.08)
+                continue
+            elif ReturnType != "empty":
+                return ReturnType
             pressed_keys = pygame.key.get_pressed()
             if pressed_keys[K_ESCAPE]:
                 sys.exit()
             pygame.draw.rect(screen, RegistrationButtonColor, EnterButton)
             pygame.draw.rect(screen, RegistrationButtonColor, RegistrationButton)
+            BackIconImage = pygame.image.load("src/img/BackIcon.png").convert_alpha()
+            screen.blit(pygame.transform.scale(BackIconImage, (180, 180)),
+                        (ScreenWidth * 6 / 7, ScreenHeight * 1 / 30))
             EnterText = RegistrationFont.render("Войти", False, (0, 0, 0))
             RegistrationText = RegistrationFont.render("Зарегестрироваться", False, (0, 0, 0))
             screen.blit(EnterText, (EnterButton.center[0] - 85, EnterButton.center[1] - 40))
             screen.blit(RegistrationText, (RegistrationButton.center[0] - 285, RegistrationButton.center[1] - 40))
             pygame.display.update()
+
+    def show_ingame_menu(self,DataBaseRequester ):
+        JoinGameButton = Rect(ScreenWidth * 10 / 38, ScreenHeight / 20 + 40, 850, 200)
+        CreateGameButton = Rect(ScreenWidth * 10 / 38, ScreenHeight / 4 + 40, 850, 200)
+        SettingsButton = Rect(ScreenWidth * 10 / 38, ScreenHeight * 4 / 9 + 45, 850, 200)
+        RankingsButton = Rect(ScreenWidth * 10 / 38, ScreenHeight * 2 / 3 + 25, 850, 200)
+        BackButton = Rect(ScreenWidth * 6 / 7, ScreenHeight * 1 / 30, 180, 180)
+        GameStart = False
+        while True:
+            screen.fill(RegistrationBackgroundColor)
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    sys.exit()
+                if event.type == MOUSEBUTTONDOWN:
+                    if JoinGameButton.collidepoint(pygame.mouse.get_pos()):
+                        GameStart = True
+                    elif BackButton.collidepoint(pygame.mouse.get_pos()):
+                        sys.exit()
+            pressed_keys = pygame.key.get_pressed()
+            if pressed_keys[K_ESCAPE]:
+                sys.exit()
+            pygame.draw.rect(screen, RegistrationButtonColor, JoinGameButton)
+            pygame.draw.rect(screen, RegistrationButtonColor, CreateGameButton)
+            pygame.draw.rect(screen, RegistrationButtonColor, SettingsButton)
+            pygame.draw.rect(screen, RegistrationButtonColor, RankingsButton)
+            JoinGameText = RegistrationFont.render("Присоединиться к игре", False, (0, 0, 0))
+            CreateGameText = RegistrationFont.render("Создать игру", False, (0, 0, 0))
+            SettingsText = RegistrationFont.render("Настройки", False, (0, 0, 0))
+            RankingsText = RegistrationFont.render("Списки лидеров", False, (0, 0, 0))
+            screen.blit(JoinGameText, (JoinGameButton.center[0] - 325, JoinGameButton.center[1] - 35))
+            screen.blit(CreateGameText, (CreateGameButton.center[0] - 185, CreateGameButton.center[1] - 35))
+            screen.blit(SettingsText, (SettingsButton.center[0] - 150, SettingsButton.center[1] - 35))
+            screen.blit(RankingsText, (RankingsButton.center[0] - 230, RankingsButton.center[1] - 35))
+            BackIconImage = pygame.image.load("src/img/BackIcon.png").convert_alpha()
+            screen.blit(pygame.transform.scale(BackIconImage, (180, 180)),
+                        (ScreenWidth * 6 / 7, ScreenHeight * 1 / 30))
+            pygame.display.update()
+            if GameStart:
+                return "gameplay"
 
     def message_show(self, message):
         MessageRect = Rect(ScreenWidth / 2 - (100 + len(message) * 15), ScreenHeight / 4 + 50,
