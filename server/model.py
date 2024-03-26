@@ -452,49 +452,54 @@ class Core:
 
         Output:
 
-        - -9
+        -- [0] status code:
+            - 0
 
-        - positive number:  game_id"""
+            - 9
+        -- [1] value:
+            - game_id if status == 0"""
         if len(GAMES) == MX_GAME_ID:
-            return -1
+            return 1
         new_game_id = randint(1, MX_GAME_ID)
         while new_game_id in GAMES.keys():
             new_game_id = randint(1, MX_GAME_ID)
         new_game = Game(new_game_id)
         GAMES[new_game_id] = new_game
-        return new_game_id
+        return 0, new_game_id
 
     def join_game(self, game_id, player_id):
         """Add player to a game.
 
         Output:
 
-         - 0
+        -- status code:
 
-         - -1
+             - 0
 
-         - -2
+             - 1
 
-         - -3
+             - 2
 
-         - -6
+             - 3
 
-         - -7
+             - 6
 
-         - -8"""
+             - 7
+
+             - 8"""
         if game_id not in GAMES:
-            return -1
+            return 1
         if player_id not in PLAYERS:
-            return -2
+            return 2
         game = GAMES[game_id]
         if player_id in game.get_players():
-            return -3
+            return 3
         if game.get_stage() == RUNNING:
-            return -4
+            return 4
         if game.get_stage() == RESULTS:
-            return -5
+            return 5
         if len(game.get_players()) == 5:
-            return -6
+            return 6
         game.add_player(player_id)
         return 0
 
@@ -505,18 +510,18 @@ class Core:
 
          - 0
 
-         - -1
+         - 1
 
-         - -2
+         - 2
 
-         - -4"""
+         - 4"""
         if game_id not in GAMES:
-            return -1
+            return 1
         if player_id not in PLAYERS:
-            return -2
+            return 2
         game = GAMES[game_id]
         if player_id not in game.get_players():
-            return -3
+            return 3
         game.kick_player(player_id)
         return 0
 
@@ -527,22 +532,22 @@ class Core:
 
          - 0
 
-         - -1
+         - 1
 
-         - -2
+         - 2
 
-         - -6
+         - 6
 
-         - -7"""
+         - 7"""
         if game_id not in GAMES:
-            return -1
+            return 1
         if player_id not in PLAYERS:
-            return -2
+            return 2
         game = GAMES[game_id]
         if game.get_stage() == RUNNING:
-            return -3
+            return 3
         if game.get_stage() == RESULTS:
-            return -4
+            return 4
         game.change_player_readiness(player_id)
         return 0
 
@@ -553,10 +558,10 @@ class Core:
 
         - positive number: player_id
 
-        - -1"""
+        - 1"""
 
         if game_id not in GAMES:
-            return -1
+            return 1
         game = GAMES[game_id]
         return game.get_current_player()
 
@@ -567,19 +572,19 @@ class Core:
 
         - tuple(0, list[int]): list of card ids
 
-        - tuple(-1, [])
+        - 1
 
-        - tuple(-5, [])
+        - 5
 
-        - tuple(-7, [])"""
+        - 7"""
 
         if game_id not in GAMES:
-            return -1, []
+            return 1
         game = GAMES[game_id]
         if game.get_stage == WAITING:
-            return -2, []
+            return 2
         if game.get_stage == RESULTS:
-            return -3, []
+            return 3
         return game.get_shop_cards()
 
     def get_player_cards(self, game_id, player_id):
@@ -589,26 +594,26 @@ class Core:
 
         - tuple(0, list[int]): list of card ids
 
-        - tuple(-1, [])
+        - 1
 
-        - tuple(-2, [])
+        - 2
 
-        - tuple(-4, [])
+        - 4
 
-        - tuple(-5, [])
+        - 5
 
-        - tuple(-7, [])"""
+        - 7"""
 
         if game_id not in GAMES:
-            return -1, []
+            return 1
         game = GAMES[game_id]
         if player_id not in PLAYERS:
-            return -2, []
+            return 2
         player = PLAYERS[player_id]
         if player_id not in game.get_players():
-            return -3, []
+            return 3
         if game.get_stage == WAITING:
-            return -4, []
+            return 4
         if game.get_stage == RESULTS:
-            return -5, []
-        return player.get_cards(game_id)
+            return 5
+        return 0, player.get_cards(game_id)
