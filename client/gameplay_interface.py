@@ -9,7 +9,6 @@ class Game:
 
     def StartGame(self):
         # get player and shop info
-
         Player = PlayerInfo()
         Shop = ShopInfo()
         ClickedPlayerCards = [0] * 10
@@ -35,7 +34,7 @@ class Game:
                 GameBoard.display_player_cards(Player)
                 GameBoard.display_shop_cards(Shop)
                 GameBoard.display_player_list(self.Info)
-                GameBoard.display_end_turn_button()
+                GameBoard.display_end_turn_button(False)
                 TaskImagesRects = GameBoard.display_task_list(self.Info)
                 UpdateStatus = 0
 
@@ -50,11 +49,9 @@ class Game:
                 sys.exit()
 
             if Rect(ScreenWidth * 6 / 7, ScreenHeight * 3 / 4, 250, 250).collidepoint(pygame.mouse.get_pos()):
-                EndTurnIconActivated = pygame.image.load("src/img/End_Turn_Icon_Activated.png").convert_alpha()
-                screen.blit(pygame.transform.scale(EndTurnIconActivated, (250, 250)),
-                            (ScreenWidth * 6 / 7 + 20, ScreenHeight * 3 / 4 - 30))
+                GameBoard.display_end_turn_button(True)
             else:
-                GameBoard.display_end_turn_button()
+                GameBoard.display_end_turn_button(False)
                 # Display Tasks text when hovering over them
                 for i in range(3):
                     if TaskImagesRects[i].collidepoint(pygame.mouse.get_pos()):
@@ -66,5 +63,4 @@ class Game:
                             TaskTextSurface.blit(TaskDescriptionText, (0, 0))
                             screen.blit(TaskTextSurface, (ScreenWidth * 1 / 10, ScreenHeight * i / 5 + j * 40 + 40))
                         break
-
             pygame.display.update()
