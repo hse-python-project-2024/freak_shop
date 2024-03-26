@@ -47,7 +47,8 @@ class Game:
 
                         # Shop card click checks
                         for i in range(10):
-                            for j in range(Shop.CardsInShop[i] - 1, -1, -1):
+                            AlreadyClicked = False
+                            for j in range(Shop.CardsInShop[i] - 1, Shop.DiscountedCardsInShop[i] -1, -1):
                                 WidthAdd = i / 8 + 1 / 100
                                 HeightAdd = 1 / 100
                                 if i >= 5:
@@ -56,25 +57,51 @@ class Game:
                                 CardRect = Rect(ScreenWidth * (2 / 10 + WidthAdd),
                                                 ScreenHeight * (HeightAdd + j / 50), 140, 200)
                                 if CardRect.collidepoint(MousePosition):
-                                    if GameBoard.ClickedShopCards[i] > j:
+                                    if GameBoard.ClickedShopCards[i] + Shop.DiscountedCardsInShop[i] > j:
                                         GameBoard.ClickedShopCards[i] -= 1
                                     else:
                                         GameBoard.ClickedShopCards[i] += 1
-                                    print(GameBoard.ClickedShopCards)
+                                    AlreadyClicked = True
                                     break
+                            if not AlreadyClicked:
+                                for j in range(Shop.DiscountedCardsInShop[i] -1, -1, -1):
+                                    WidthAdd = i / 8 + 1 / 100
+                                    HeightAdd = 1 / 100
+                                    if i >= 5:
+                                        WidthAdd = (i - 5) / 8 - 1 / 25 - 1 / 100
+                                        HeightAdd += 9 / 30
+                                    CardRect = Rect(ScreenWidth * (2 / 10 + WidthAdd),
+                                                    ScreenHeight * (HeightAdd + j / 50), 140, 200)
+                                    if CardRect.collidepoint(MousePosition):
+                                        if GameBoard.ClickedShopCardsDiscounted[i] > j:
+                                            GameBoard.ClickedShopCardsDiscounted[i] -= 1
+                                        else:
+                                            GameBoard.ClickedShopCardsDiscounted[i] += 1
+                                        break
 
                         # Hand card click checks
                         for i in range(10):
-                            for j in range(Player.CardsInHand[i] - 1, -1, -1):
+                            AlreadyClicked = False
+                            for j in range(Player.CardsInHand[i] - 1, Player.DiscountedCardsInHand[i] - 1, -1):
                                 CardRect = Rect(ScreenWidth * (1 / 30 + i / 12),
                                                 ScreenHeight * (6 / 10 + j / 50) + 20, 140, 200)
                                 if CardRect.collidepoint(MousePosition):
-                                    if GameBoard.ClickedPlayerCards[i] > j:
+                                    if GameBoard.ClickedPlayerCards[i] + Player.DiscountedCardsInHand[i] > j:
                                         GameBoard.ClickedPlayerCards[i] -= 1
                                     else:
                                         GameBoard.ClickedPlayerCards[i] += 1
-                                    print(GameBoard.ClickedPlayerCards)
+                                    AlreadyClicked = True
                                     break
+                            if not AlreadyClicked:
+                                for j in range(Player.DiscountedCardsInHand[i] - 1, -1, -1):
+                                    CardRect = Rect(ScreenWidth * (1 / 30 + i / 12),
+                                                    ScreenHeight * (6 / 10 + j / 50) + 20, 140, 200)
+                                    if CardRect.collidepoint(MousePosition):
+                                        if GameBoard.ClickedPlayerCardsDiscounted[i] > j:
+                                            GameBoard.ClickedPlayerCardsDiscounted[i] -= 1
+                                        else:
+                                            GameBoard.ClickedPlayerCardsDiscounted[i] += 1
+                                        break
 
             pressed_keys = pygame.key.get_pressed()
             if pressed_keys[K_ESCAPE]:

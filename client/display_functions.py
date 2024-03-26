@@ -66,7 +66,7 @@ class GameBoardView:
                     if self.ClickedPlayerCardsDiscounted[i] > DisplayedDiscountedSelected:
                         DisplayedDiscountedSelected += 1
                         ShowSelected = True
-                if self.ClickedPlayerCards[i] > DisplayedSeclected:
+                elif self.ClickedPlayerCards[i] > DisplayedSeclected:
                     DisplayedSeclected += 1
                     ShowSelected = True
                 if ShowSelected:
@@ -97,7 +97,7 @@ class GameBoardView:
                     if self.ClickedShopCardsDiscounted[i] > DisplayedDiscountedSelected:
                         DisplayedDiscountedSelected += 1
                         ShowSelected = True
-                if self.ClickedShopCards[i] > DisplayedSeclected:
+                elif self.ClickedShopCards[i] > DisplayedSeclected:
                     DisplayedSeclected += 1
                     ShowSelected = True
                 if ShowSelected:
