@@ -101,10 +101,10 @@ class GameBoardView:
                     DisplayedSeclected += 1
                     ShowSelected = True
                 if ShowSelected:
-                    screen.blit(self.CardImagesSelected[i][ShowDiscount], (ScreenWidth * (2 / 10 + WidthAdd),
+                    screen.blit(self.CardImagesSelected[i][ShowDiscount], (ScreenWidth * (2 / 10 + WidthAdd) - 80,
                                                                            ScreenHeight * (HeightAdd + j / 50)))
                 else:
-                    screen.blit(self.CardImages[i][ShowDiscount], (ScreenWidth * (2 / 10 + WidthAdd),
+                    screen.blit(self.CardImages[i][ShowDiscount], (ScreenWidth * (2 / 10 + WidthAdd) - 80 ,
                                                                    ScreenHeight * (HeightAdd + j / 50)))
 
     def display_player_list(self, Game):

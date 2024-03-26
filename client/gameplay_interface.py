@@ -48,13 +48,13 @@ class Game:
                         # Shop card click checks
                         for i in range(10):
                             AlreadyClicked = False
-                            for j in range(Shop.CardsInShop[i] - 1, Shop.DiscountedCardsInShop[i] -1, -1):
+                            for j in range(Shop.CardsInShop[i] - 1, Shop.DiscountedCardsInShop[i] - 1, -1):
                                 WidthAdd = i / 8 + 1 / 100
                                 HeightAdd = 1 / 100
                                 if i >= 5:
                                     WidthAdd = (i - 5) / 8 - 1 / 25 - 1 / 100
                                     HeightAdd += 9 / 30
-                                CardRect = Rect(ScreenWidth * (2 / 10 + WidthAdd),
+                                CardRect = Rect(ScreenWidth * (2 / 10 + WidthAdd) - 80,
                                                 ScreenHeight * (HeightAdd + j / 50), 140, 200)
                                 if CardRect.collidepoint(MousePosition):
                                     if GameBoard.ClickedShopCards[i] + Shop.DiscountedCardsInShop[i] > j:
@@ -64,13 +64,13 @@ class Game:
                                     AlreadyClicked = True
                                     break
                             if not AlreadyClicked:
-                                for j in range(Shop.DiscountedCardsInShop[i] -1, -1, -1):
+                                for j in range(Shop.DiscountedCardsInShop[i] - 1, -1, -1):
                                     WidthAdd = i / 8 + 1 / 100
                                     HeightAdd = 1 / 100
                                     if i >= 5:
                                         WidthAdd = (i - 5) / 8 - 1 / 25 - 1 / 100
                                         HeightAdd += 9 / 30
-                                    CardRect = Rect(ScreenWidth * (2 / 10 + WidthAdd),
+                                    CardRect = Rect(ScreenWidth * (2 / 10 + WidthAdd) - 80,
                                                     ScreenHeight * (HeightAdd + j / 50), 140, 200)
                                     if CardRect.collidepoint(MousePosition):
                                         if GameBoard.ClickedShopCardsDiscounted[i] > j:

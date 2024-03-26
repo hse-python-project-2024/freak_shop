@@ -2,6 +2,7 @@ from interface_setup import *
 import time
 from facade import ClientRequests
 
+
 class MenuView:
     def show_enter_menu(self, DataBaseRequester):
         ReturnToMenu = 0
@@ -32,7 +33,7 @@ class MenuView:
                         active = 2
                     elif ConfirmButton.collidepoint(MousePosition):
                         active = 0
-                        LoginSuccess = DataBaseRequester.login_user(LoginInput,  PasswordInput)
+                        LoginSuccess = DataBaseRequester.login_user(LoginInput, PasswordInput)
                         print(LoginSuccess)
                         if LoginSuccess.status.info == "OK":
                             ReturnToMenu = 2
@@ -48,9 +49,9 @@ class MenuView:
                         active = 0
                 if event.type == KEYDOWN:
                     if event.key == K_DOWN:
-                        active += 1*(active < 2)
+                        active += 1 * (active < 2)
                     elif event.key == K_UP:
-                        active -= 1*(active > 1)
+                        active -= 1 * (active > 1)
                     else:
                         if active == 1:
                             if event.key == K_BACKSPACE:
@@ -76,7 +77,6 @@ class MenuView:
                                     ErrorMessage = LoginSuccess.status.info
                                     error_message_show = True
 
-
             pressed_keys = pygame.key.get_pressed()
             if pressed_keys[K_ESCAPE]:
                 ReturnToMenu = 1
@@ -101,7 +101,8 @@ class MenuView:
                 EyeIconImage = pygame.image.load("src/img/EyeIconCrossed.png").convert_alpha()
                 screen.blit(pygame.transform.scale(EyeIconImage, (250, 160)),
                             (ScreenWidth / 80 - 10, ScreenHeight * 6 / 10 - 10))
-                PassowrdInputText = RegistrationFont.render('*' * len(PasswordInput) + (active == 2) * '|', False, (0, 0, 0))
+                PassowrdInputText = RegistrationFont.render('*' * len(PasswordInput) + (active == 2) * '|', False,
+                                                            (0, 0, 0))
                 screen.blit(PassowrdInputText, (PasswordButton.left, PasswordButton.center[1] - 10))
 
             BackIconImage = pygame.image.load("src/img/BackIcon.png").convert_alpha()
@@ -131,7 +132,7 @@ class MenuView:
         RepeatPasswordButton = Rect(ScreenWidth * 5 / 38, ScreenHeight * 7 / 10 + 40, 1000, 150)
         ConfirmButton = Rect(ScreenWidth * 27 / 38, ScreenHeight / 3 - 40, 400, 400)
         EyeIconButton1 = Rect(ScreenWidth / 80, ScreenHeight / 2 - 20, 220, 180)
-        EyeIconButton2 = Rect(ScreenWidth / 80, ScreenHeight * 7/ 10 - 20, 220, 180)
+        EyeIconButton2 = Rect(ScreenWidth / 80, ScreenHeight * 7 / 10 - 20, 220, 180)
         BackButton = Rect(ScreenWidth * 6 / 7, ScreenHeight * 1 / 30, 180, 180)
         LoginInput = ""
         PasswordInput = ""
@@ -181,9 +182,9 @@ class MenuView:
                         active = 0
                 if event.type == KEYDOWN:
                     if event.key == K_DOWN:
-                        active += 1*(active < 4)
+                        active += 1 * (active < 4)
                     elif event.key == K_UP:
-                        active -= 1*(active > 1)
+                        active -= 1 * (active > 1)
                     else:
                         if active == 1:
                             if event.key == K_BACKSPACE:
@@ -215,7 +216,8 @@ class MenuView:
                                 RepeatPasswordInput += event.unicode
                         if active == 0:
                             if event.key == K_RETURN:
-                                RegisterSuccess = DataBaseRequester.register_user(LoginInput, NicknameInput, PasswordInput,
+                                RegisterSuccess = DataBaseRequester.register_user(LoginInput, NicknameInput,
+                                                                                  PasswordInput,
                                                                                   RepeatPasswordInput)
                                 print(RegisterSuccess)
                                 if RegisterSuccess.info == "Пользователь добавлен":
@@ -254,21 +256,24 @@ class MenuView:
             else:
                 EyeIconImage = pygame.image.load("src/img/EyeIconCrossed.png").convert_alpha()
                 screen.blit(pygame.transform.scale(EyeIconImage, (250, 160)),
-                            (ScreenWidth / 80 - 10, ScreenHeight  / 2 + 20))
-                PassowrdInputText = RegistrationFont.render('*' * len(PasswordInput) + (active == 3) * '|', False, (0, 0, 0))
+                            (ScreenWidth / 80 - 10, ScreenHeight / 2 + 20))
+                PassowrdInputText = RegistrationFont.render('*' * len(PasswordInput) + (active == 3) * '|', False,
+                                                            (0, 0, 0))
                 screen.blit(PassowrdInputText, (PasswordButton.left, PasswordButton.center[1] - 10))
 
             if repeat_password_show:
                 EyeIconImage = pygame.image.load("src/img/EyeIcon.png").convert_alpha()
                 screen.blit(pygame.transform.scale(EyeIconImage, (220, 180)),
                             (ScreenWidth / 80, ScreenHeight * 7 / 10 + 20))
-                RepeatPassowrdInputText = RegistrationFont.render(RepeatPasswordInput + (active == 4) * '|', False, (0, 0, 0))
+                RepeatPassowrdInputText = RegistrationFont.render(RepeatPasswordInput + (active == 4) * '|', False,
+                                                                  (0, 0, 0))
                 screen.blit(RepeatPassowrdInputText, (RepeatPasswordButton.left, RepeatPasswordButton.center[1] - 35))
             else:
                 EyeIconImage = pygame.image.load("src/img/EyeIconCrossed.png").convert_alpha()
                 screen.blit(pygame.transform.scale(EyeIconImage, (250, 160)),
                             (ScreenWidth / 80 - 10, ScreenHeight * 7 / 10 + 30))
-                RepeatPassowrdInputText = RegistrationFont.render('*' * len(RepeatPasswordInput) + (active == 4) * '|', False, (0, 0, 0))
+                RepeatPassowrdInputText = RegistrationFont.render('*' * len(RepeatPasswordInput) + (active == 4) * '|',
+                                                                  False, (0, 0, 0))
                 screen.blit(RepeatPassowrdInputText, (RepeatPasswordButton.left, RepeatPasswordButton.center[1] - 10))
 
             BackIconImage = pygame.image.load("src/img/BackIcon.png").convert_alpha()
@@ -303,7 +308,7 @@ class MenuView:
                     if EnterButton.collidepoint(pygame.mouse.get_pos()):
                         ReturnType = self.show_enter_menu(DataBaseRequester)
                     elif RegistrationButton.collidepoint(pygame.mouse.get_pos()):
-                       ReturnType = self.show_resgistration_menu(DataBaseRequester)
+                        ReturnType = self.show_resgistration_menu(DataBaseRequester)
                     elif BackButton.collidepoint(pygame.mouse.get_pos()):
                         sys.exit()
 
@@ -326,7 +331,7 @@ class MenuView:
             screen.blit(RegistrationText, (RegistrationButton.center[0] - 285, RegistrationButton.center[1] - 40))
             pygame.display.update()
 
-    def show_ingame_menu(self,DataBaseRequester ):
+    def show_ingame_menu(self, DataBaseRequester):
         JoinGameButton = Rect(ScreenWidth * 10 / 38, ScreenHeight / 20 + 40, 850, 200)
         CreateGameButton = Rect(ScreenWidth * 10 / 38, ScreenHeight / 4 + 40, 850, 200)
         SettingsButton = Rect(ScreenWidth * 10 / 38, ScreenHeight * 4 / 9 + 45, 850, 200)
@@ -367,7 +372,7 @@ class MenuView:
 
     def message_show(self, message):
         MessageRect = Rect(ScreenWidth / 2 - (100 + len(message) * 15), ScreenHeight / 4 + 50,
-                                220 + len(message) * 30, 350)
+                           220 + len(message) * 30, 350)
         pygame.draw.rect(screen, MessageBackgroundColor, MessageRect)
         MessageText = RegistrationFont.render(message, False, (0, 0, 0))
         screen.blit(MessageText,
