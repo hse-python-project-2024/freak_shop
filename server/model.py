@@ -452,7 +452,7 @@ class Core:
 
         Output:
 
-        - -1:               server can't host more games
+        - -9
 
         - positive number:  game_id"""
         if len(GAMES) == MX_GAME_ID:
@@ -469,19 +469,19 @@ class Core:
 
         Output:
 
-         - 0:   ok
+         - 0
 
-         - -1:  game not found
+         - -1
 
-         - -2:  player not found
+         - -2
 
-         - -3:  player is already in this game
+         - -3
 
-         - -4:  game has already started
+         - -6
 
-         - -5:  game is already over
+         - -7
 
-         - -6:  maximum number of players are in the game"""
+         - -8"""
         if game_id not in GAMES:
             return -1
         if player_id not in PLAYERS:
@@ -503,13 +503,13 @@ class Core:
 
         Output:
 
-         - 0:   ok
+         - 0
 
-         - -1:  game not found
+         - -1
 
-         - -2:  player not found
+         - -2
 
-         - -3:  player is not in this game"""
+         - -4"""
         if game_id not in GAMES:
             return -1
         if player_id not in PLAYERS:
@@ -525,15 +525,15 @@ class Core:
 
         Output:
 
-         - 0:   ok
+         - 0
 
-         - -1:  game not found
+         - -1
 
-         - -2:  player not found
+         - -2
 
-         - -3:  game has already started
+         - -6
 
-         - -4:  game is already over"""
+         - -7"""
         if game_id not in GAMES:
             return -1
         if player_id not in PLAYERS:
@@ -553,7 +553,7 @@ class Core:
 
         - positive number: player_id
 
-        - -1: game not found"""
+        - -1"""
 
         if game_id not in GAMES:
             return -1
@@ -565,13 +565,13 @@ class Core:
 
         Output:
 
-        - tuple(0, list[int]): ok and list of card ids
+        - tuple(0, list[int]): list of card ids
 
-        - tuple(-1, []): game not found
+        - tuple(-1, [])
 
-        - tuple(-2, []): game hasn't started yet
+        - tuple(-5, [])
 
-        - tuple(-3, []): game is already over"""
+        - tuple(-7, [])"""
 
         if game_id not in GAMES:
             return -1, []
@@ -587,17 +587,17 @@ class Core:
 
         Output:
 
-        - tuple(0, list[int]): ok and list of card ids
+        - tuple(0, list[int]): list of card ids
 
-        - tuple(-1, []): game not found
+        - tuple(-1, [])
 
-        - tuple(-2, []): player not found
+        - tuple(-2, [])
 
-        - tuple(-3, []): player not in the game
+        - tuple(-4, [])
 
-        - tuple(-4, []): game hasn't started yet
+        - tuple(-5, [])
 
-        - tuple(-5, []): game is already over"""
+        - tuple(-7, [])"""
 
         if game_id not in GAMES:
             return -1, []
