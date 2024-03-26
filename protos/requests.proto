@@ -19,7 +19,7 @@ message Status{
 }
 
 message Id{
-  optional Status status = 1;
+  Status status = 1;
   int32 id = 2;
 }
 
