@@ -84,16 +84,16 @@ class Deck:
 
         Description of the goal can be found in the rulebook."""
         return 2 * (self.cats[Items] // 2) + \
-            4 * (self.cats[Pets] // 2) + \
-            5 * (self.cats[Employees] // 2)
+               4 * (self.cats[Pets] // 2) + \
+               5 * (self.cats[Employees] // 2)
 
     def check_three_is_better_than_two(self):
         """Return number of points earned through the goal "Three is better than two".
 
         Description of the goal can be found in the rulebook."""
         return 2 * (self.cats[Items] // 3) + \
-            4 * (self.cats[Pets] // 3) + \
-            5 * (self.cats[Employees] // 3)
+               4 * (self.cats[Pets] // 3) + \
+               5 * (self.cats[Employees] // 3)
 
     def check_the_sum_of_all_fears(self):
         """Return number of points earned through the goal "The sum of all fears".
@@ -115,6 +115,9 @@ class Deck:
 
         Description of the goal can be found in the rulebook."""
         return 10 - self.merch_vals.count(0)
+
+    def get_cards(self):
+        return self.card_ids
 
     def get_val_cnt(self, val):
         """Return the current number of cards with the given value."""
@@ -175,6 +178,10 @@ class Player:
         """Remove cards from the deck used in the given game."""
         self.decks[game_id].sell_cards(card_ids)
 
+    def get_cards(self, game_id):
+        deck = self.decks[game_id]
+        return deck.get_cards()
+
     def get_val_cnt(self, game_id, val):
         """Return the current number of cards with the given value."""
         return self.decks[game_id].get_val_cnt(val)
@@ -218,43 +225,44 @@ class Game:
         self.stage = WAITING
         self.unused = deque()
 
+    def get_players(self):
+        """Return list of players
+
+        Output:
+
+        - list[player_id]"""
+        return self.players
+
+    def get_stage(self):
+        """Return current game stage
+
+        Output:
+
+        - 0: WAITING
+        - 1: RUNNING
+        - 2: RESULTS"""
+        return self.stage
+
     def add_player(self, player_id):
         """Add player."""
-        if player_id not in PLAYERS:
-            return "Player not found"
-        if player_id in self.players:
-            return "The player has already joined"
-        if self.stage == RUNNING:
-            return "The game has already started"
-        if self.stage == RESULTS:
-            return "The game is already over"
-        if len(self.players) == 5:
-            return "The game is already full"
         self.players.append(player_id)
         PLAYERS[player_id].join_game(self.id)
-        return "ok"
 
     def change_player_readiness(self, player_id):
         """Change the readiness status of the player with the given id.
         'Ready' changes into 'not ready' and vice versa.
 
         If after the change all the players are ready, the game starts."""
-        if player_id not in self.players:
-            return "Player not found"
         PLAYERS[player_id].change_readiness(self.id)
         if all(PLAYERS[player_id].is_ready()):
             self.start()
-        return "ok"
 
     def kick_player(self, player_id):
         """Remove player from the game."""
-        if player_id not in self.players:
-            return "Player is not in the game"
         self.players.remove(player_id)
         PLAYERS[player_id].leave_game(self.id)
         if not self.players:
             GAMES.pop(self.id)
-        return "ok"
 
     def start(self):
         """Start the game."""
@@ -310,6 +318,13 @@ class Game:
 
         if not self.restock():
             self.finish()
+
+    def get_current_player(self):
+        """Returns id of the current player."""
+        return self.players[self.cur_player]
+
+    def get_shop_cards(self):
+        return self.shop
 
     def add_card_to_shop(self):
         """Add a new card from the queue to the shop."""
@@ -401,7 +416,6 @@ WAITING = 0
 RUNNING = 1
 RESULTS = 2
 
-# Global dicts with the cards and currently active players and games
 GAMES = {}
 PLAYERS = {}
 CARDS = [Card(card_id=0, value=0, is_merch=False, category=Closed),
@@ -427,3 +441,174 @@ CARDS = [Card(card_id=0, value=0, is_merch=False, category=Closed),
          Card(category=20, value=10, is_merch=False, card_id=Employees)]
 
 MX_GAME_ID = 50
+
+
+class Core:
+    def __init__(self):
+        pass
+
+    def create_game(self):
+        """Start new game session.
+
+        Output:
+
+        - -1:               server can't host more games
+
+        - positive number:  game_id"""
+        if len(GAMES) == MX_GAME_ID:
+            return -1
+        new_game_id = randint(1, MX_GAME_ID)
+        while new_game_id in GAMES.keys():
+            new_game_id = randint(1, MX_GAME_ID)
+        new_game = Game(new_game_id)
+        GAMES[new_game_id] = new_game
+        return new_game_id
+
+    def join_game(self, game_id, player_id):
+        """Add player to a game.
+
+        Output:
+
+         - 0:   ok
+
+         - -1:  game not found
+
+         - -2:  player not found
+
+         - -3:  player is already in this game
+
+         - -4:  game has already started
+
+         - -5:  game is already over
+
+         - -6:  maximum number of players are in the game"""
+        if game_id not in GAMES:
+            return -1
+        if player_id not in PLAYERS:
+            return -2
+        game = GAMES[game_id]
+        if player_id in game.get_players():
+            return -3
+        if game.get_stage() == RUNNING:
+            return -4
+        if game.get_stage() == RESULTS:
+            return -5
+        if len(game.get_players()) == 5:
+            return -6
+        game.add_player(player_id)
+        return 0
+
+    def leave_game(self, game_id, player_id):
+        """Kick player from a game.
+
+        Output:
+
+         - 0:   ok
+
+         - -1:  game not found
+
+         - -2:  player not found
+
+         - -3:  player is not in this game"""
+        if game_id not in GAMES:
+            return -1
+        if player_id not in PLAYERS:
+            return -2
+        game = GAMES[game_id]
+        if player_id not in game.get_players():
+            return -3
+        game.kick_player(player_id)
+        return 0
+
+    def change_readiness(self, game_id, player_id):
+        """Add player to a game.
+
+        Output:
+
+         - 0:   ok
+
+         - -1:  game not found
+
+         - -2:  player not found
+
+         - -3:  game has already started
+
+         - -4:  game is already over"""
+        if game_id not in GAMES:
+            return -1
+        if player_id not in PLAYERS:
+            return -2
+        game = GAMES[game_id]
+        if game.get_stage() == RUNNING:
+            return -3
+        if game.get_stage() == RESULTS:
+            return -4
+        game.change_player_readiness(player_id)
+        return 0
+
+    def current_player(self, game_id):
+        """Return id of the player that is currently making a move.
+
+        Output:
+
+        - positive number: player_id
+
+        - -1: game not found"""
+
+        if game_id not in GAMES:
+            return -1
+        game = GAMES[game_id]
+        return game.get_current_player()
+
+    def get_shop_cards(self, game_id):
+        """Return list of cards currently in the shop
+
+        Output:
+
+        - tuple(0, list[int]): ok and list of card ids
+
+        - tuple(-1, []): game not found
+
+        - tuple(-2, []): game hasn't started yet
+
+        - tuple(-3, []): game is already over"""
+
+        if game_id not in GAMES:
+            return -1, []
+        game = GAMES[game_id]
+        if game.get_stage == WAITING:
+            return -2, []
+        if game.get_stage == RESULTS:
+            return -3, []
+        return game.get_shop_cards()
+
+    def get_player_cards(self, game_id, player_id):
+        """Return list of player's cards
+
+        Output:
+
+        - tuple(0, list[int]): ok and list of card ids
+
+        - tuple(-1, []): game not found
+
+        - tuple(-2, []): player not found
+
+        - tuple(-3, []): player not in the game
+
+        - tuple(-4, []): game hasn't started yet
+
+        - tuple(-5, []): game is already over"""
+
+        if game_id not in GAMES:
+            return -1, []
+        game = GAMES[game_id]
+        if player_id not in PLAYERS:
+            return -2, []
+        player = PLAYERS[player_id]
+        if player_id not in game.get_players():
+            return -3, []
+        if game.get_stage == WAITING:
+            return -4, []
+        if game.get_stage == RESULTS:
+            return -5, []
+        return player.get_cards(game_id)
