@@ -34,21 +34,21 @@ if __name__ == "__main__":
                 ViewModelEntity.login_user(Return[1][0], Return[1][1])
                 if ViewModelEntity.info_window is None:
                     Menu.reset_menu_info()
-                ViewModelEntity.go_to_initial_window()
+                # ViewModelEntity.go_to_initial_window()
             elif Return[0] == ReturnStatus.quit:
                 time.sleep(0.1)
-                ViewModelEntity.go_to_initial_window()
+                # ViewModelEntity.go_to_initial_window()
 
         elif CurrentWindow == ViewWindows.registration:
             Return = Menu.show_resgistration_menu()
             if Return[0] == ReturnStatus.register:
                 ViewModelEntity.register_user(Return[1][0], Return[1][1], Return[1][2], Return[1][3])
-                ViewModelEntity.go_to_initial_window()
+                # ViewModelEntity.go_to_initial_window()
                 if ViewModelEntity.info_window is None:
                     Menu.reset_menu_info()
             elif Return[0] == ReturnStatus.quit:
                 time.sleep(0.1)
-                ViewModelEntity.go_to_initial_window()
+                # ViewModelEntity.go_to_initial_window()
 
         elif CurrentWindow == ViewWindows.main_menu:
             Return = Menu.show_main_menu()
