@@ -22,13 +22,17 @@ class ViewModel:
         self.info_window = None
         self.user_name = None
         self.user_id = None
+        self.user_login = None
         self.game_id = None
         self.card = []
 
-    def put_info_window(self, info: str):
-        self.info_window = info
-        time.sleep(2)
+    def put_and_sleep(self, _info: str, _time: float = 2) -> None:
+        self.info_window = _info
+        time.sleep(_time)
         self.info_window = None
+
+    def put_info_window(self, _info: str, _time: float = 2) -> None:
+        threading.Thread(target=self.put_and_sleep, args=(_info, _time), daemon=True).start()
 
     def go_to_main_menu_window(self):
         self.card = []
@@ -55,8 +59,9 @@ class ViewModel:
     def login_user(self, _user_login: str, _user_password: str):
         response = self.req.login_user(_user_login=_user_login, _password=_user_password)
         if response.status == 0:
-            self.user_id = response.id
-            self.user_name = response.name
+            self.user_id = response.user_info.id
+            self.user_name = response.user_info.name
+            self.user_login = response.user_info.login
             self.go_to_main_menu_window()
         else:
             self.put_info_window(str(response.status))
@@ -65,6 +70,8 @@ class ViewModel:
         response = self.req.register_user(_user_login=_user_login, _user_name=_user_name, _password1=_user_password1,
                                           _password2=_user_password2)
         if response.status == 0:
+            self.put_info_window("Пользователь успешно добавлен")
+        else:
             self.put_info_window(str(response.status))
 
     def run(self):
