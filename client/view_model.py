@@ -1,7 +1,6 @@
 import threading
 import time
 from facade import ClientRequests
-
 import enum
 
 
@@ -45,24 +44,28 @@ class ViewModel:
         self.user_id, self.user_name, self.game_id = None, None, None
         self.window = ViewWindows.registration
 
+    def go_to_initial_window(self):
+        self.user_id, self.user_name, self.game_id = None, None, None
+        self.window = ViewWindows.initial_menu
+
     def sign_out(self):
         self.user_id, self.user_name = None, None
         self.window = ViewWindows.initial_menu
 
     def login_user(self, _user_login: str, _user_password: str):
         response = self.req.login_user(_user_login=_user_login, _password=_user_password)
-        if response.status.is_done:
+        if response.status == 0:
             self.user_id = response.id
             self.user_name = response.name
             self.go_to_main_menu_window()
         else:
-            self.put_info_window(response.status.info)
+            self.put_info_window(str(response.status))
 
     def register_user(self, _user_login: str, _user_name: str, _user_password1: str, _user_password2: str):
         response = self.req.register_user(_user_login=_user_login, _user_name=_user_name, _password1=_user_password1,
                                           _password2=_user_password2)
-        if response.is_done:
-            self.put_info_window(response.info)
+        if response.status == 0:
+            self.put_info_window(str(response.status))
 
     def run(self):
         threading.Thread(target=self.current_status, args=(0.1), daemon=True).start()
