@@ -3,31 +3,54 @@ syntax = "proto3";
 package great;
 
 service DbService {
-  rpc GetUserById (Id) returns (ResponseUser);
-  rpc RegisterUser (NewUser) returns (Status);
+  rpc RegisterUser (NewUser) returns (IsDone);
   rpc LoginUser (NewUser) returns (ResponseUser);
-  rpc CreateGame(NoParameters) returns (Id);
-  rpc JoinGame(ChangePlayerState) returns (Status);
-  rpc LeaveGame(ChangePlayerState) returns (Status);
-  rpc ChangeReadiness(ChangePlayerState) returns (Status);
-  rpc GetState(Id) returns (State);
+  rpc GetUserById (Id) returns (ResponseUser);
+
+  rpc CreateGame(Id) returns (IdResponse);
+  rpc JoinGame(GameUserId) returns (IsDone);
+  rpc LeaveGame(GameUserId) returns (IsDone);
+  rpc ChangeReadiness(GameUserId) returns (IsDone);
+
+  rpc GetGoals(Id) returns (GoalList);
+  rpc GetUsersInSession(Id) returns (UsersInSession);
+
+  rpc GetShopCards(Id) returns (CardsResponse);
+  rpc GetUserCards(Id) returns (CardsResponse); // ?
+
+  rpc GetPointsCount(GameUserId) returns (PointsCount);
+  rpc WhoseMove(Id) returns (IdResponse);
+  rpc MakeMove(PickedCards) returns (IsDone);
+
 }
 
-message Status{
-  bool is_done = 1;
-  string info = 2;
+message IsDone{
+  int32 status = 1;
+}
+
+message IdResponse{
+  int32 status = 1;
+  int32 id = 2;
 }
 
 message Id{
-  Status status = 1;
-  int32 id = 2;
+  int32 id = 1;
+}
+
+message UserInfo{
+  int32 id = 1;
+  string login = 2;
+  string name = 3;
+}
+
+message UsersInSession{
+  int32 status = 1;
+  repeated UserInfo users_info = 2;
 }
 
 message ResponseUser{
-  Status status = 1;
-  int32 id = 2;
-  string login = 3;
-  string name = 4;
+  int32 status = 1;
+  UserInfo user_info = 2;
 }
 
 message NewUser{
@@ -37,15 +60,18 @@ message NewUser{
   string password2 = 4;
 }
 
-message NoParameters{}
-
-message ChangePlayerState{
+message GameUserId{
   int32 game_id = 1;
-  int32 player_id = 2;
+  int32 user_id = 2;
 }
 
 message CardList{
   repeated int32 card_ids = 1;
+}
+
+message PointsCount{
+  int32 status = 1;
+  int32 count = 2;
 }
 
 message GoalState{
@@ -53,20 +79,18 @@ message GoalState{
   int32 point = 2;
 }
 
-message GoalDict{
+message GoalList{
   repeated GoalState goals = 1;
 }
 
-message PlayerState{
-  int32 player_id = 1;
-  CardList card_ids = 2;
-  GoalDict goals = 3;
+message CardsResponse{
+  int32 status = 1;
+  repeated int32 card_id = 2;
 }
 
-message State{
-  bool status = 1;
-  string info = 2;
-  string stage = 3;
-  CardList cards_in_shop = 4;
-  repeated PlayerState players_i = 5;
+message PickedCards{
+  int32 user_id = 1;
+  int32 game_id = 2;
+  repeated int32 card_in_hand = 3;
+  repeated int32 card_in_shop = 4;
 }
