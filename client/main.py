@@ -77,5 +77,7 @@ if __name__ == '__main__':
             _login = input("Enter login:\n")
             _password = input("Enter password:\n")
             response = client.login_user(_login, _password)
-            print(response.status)
-            print(response)
+            if response.status == 0:
+                print(response.status, response.user_info.id, response.user_info.login, response.user_info.name)
+            else:
+                print(response.status)
