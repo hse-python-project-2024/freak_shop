@@ -1,54 +1,63 @@
 from display_functions import GameBoardView
 from gameplay_info_classes import GameInfo, PlayerInfo, ShopInfo
 from interface_setup import *
+from menu import ReturnStatus
 
 
-class Game:
+class GameView:
     def __init__(self, NewGameInfo):
         self.Info = NewGameInfo
         self.EndTurnButtonRect = Rect(ScreenWidth * 6 / 7, ScreenHeight * 3 / 4, 250, 250)
 
-    def StartGame(self):
-        # get player and shop info
-        Player = PlayerInfo()
-        Shop = ShopInfo()
-        TaskImagesRects = list()
-        UpdateStatus = 1
-        GameBoard = GameBoardView()
-        while True:
-            IsMyTurn = True  # Ask server about this
-            # get new Player and Shop Info
-            NewPlayer = PlayerInfo()
-            NewShop = ShopInfo()
+        self.TaskImagesRects = list()
+        self.GameBoard = GameBoardView()
 
-            if NewPlayer != Player or NewShop != Shop:
-                UpdateStatus = 1
-                Player = NewPlayer
-                Shop = NewShop
+        self.Player = PlayerInfo()
+        self.Shop = ShopInfo()
+        self.IsMyTurn = True
 
-            if UpdateStatus == 1:
-                screen.fill(BackgroundColor)
-                GameBoard.display_shop_image()
-                GameBoard.display_player_cards(Player)
-                GameBoard.display_shop_cards(Shop)
-                GameBoard.display_player_list(self.Info)
-                GameBoard.display_end_turn_button(False)
-                TaskImagesRects = GameBoard.display_task_list(self.Info)
-                UpdateStatus = 0
+    def update_game_info(self, NewPlayer, NewShop):
+        self.Player = NewPlayer
+        self.Shop = NewShop
 
-            for event in pygame.event.get():
-                if event.type == QUIT:
-                    sys.exit()
-                if event.type == MOUSEBUTTONDOWN:
-                    if IsMyTurn:
-                        MousePosition = pygame.mouse.get_pos()
-                        if self.EndTurnButtonRect.collidepoint(MousePosition):
-                            GameBoard.reset()
+    def ShowMainGameWindow(self):
+        screen.fill(BackgroundColor)
+        self.GameBoard.display_shop_image()
+        self.GameBoard.display_player_cards(self.Player)
+        self.GameBoard.display_shop_cards(self.Shop)
+        self.GameBoard.display_player_list(self.Info)
+        self.GameBoard.display_end_turn_button(False)
+        TaskImagesRects = self.GameBoard.display_task_list(self.Info)
 
-                        # Shop card click checks
-                        for i in range(10):
-                            AlreadyClicked = False
-                            for j in range(Shop.CardsInShop[i] - 1, Shop.DiscountedCardsInShop[i] - 1, -1):
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                sys.exit()
+            if event.type == MOUSEBUTTONDOWN:
+                if self.IsMyTurn:
+                    MousePosition = pygame.mouse.get_pos()
+                    if self.EndTurnButtonRect.collidepoint(MousePosition):
+                        self.GameBoard.reset()
+
+                    # Shop card click checks
+                    for i in range(10):
+                        AlreadyClicked = False
+                        for j in range(self.Shop.CardsInShop[i] - 1, self.Shop.DiscountedCardsInShop[i] - 1, -1):
+                            WidthAdd = i / 8 + 1 / 100
+                            HeightAdd = 1 / 100
+                            if i >= 5:
+                                WidthAdd = (i - 5) / 8 - 1 / 25 - 1 / 100
+                                HeightAdd += 9 / 30
+                            CardRect = Rect(ScreenWidth * (2 / 10 + WidthAdd) - 80,
+                                            ScreenHeight * (HeightAdd + j / 50), 140, 200)
+                            if CardRect.collidepoint(MousePosition):
+                                if self.GameBoard.ClickedShopCards[i] + self.Shop.DiscountedCardsInShop[i] > j:
+                                    self.GameBoard.ClickedShopCards[i] -= 1
+                                else:
+                                    self.GameBoard.ClickedShopCards[i] += 1
+                                AlreadyClicked = True
+                                break
+                        if not AlreadyClicked:
+                            for j in range(self.Shop.DiscountedCardsInShop[i] - 1, -1, -1):
                                 WidthAdd = i / 8 + 1 / 100
                                 HeightAdd = 1 / 100
                                 if i >= 5:
@@ -57,69 +66,51 @@ class Game:
                                 CardRect = Rect(ScreenWidth * (2 / 10 + WidthAdd) - 80,
                                                 ScreenHeight * (HeightAdd + j / 50), 140, 200)
                                 if CardRect.collidepoint(MousePosition):
-                                    if GameBoard.ClickedShopCards[i] + Shop.DiscountedCardsInShop[i] > j:
-                                        GameBoard.ClickedShopCards[i] -= 1
+                                    if self.GameBoard.ClickedShopCardsDiscounted[i] > j:
+                                        self.GameBoard.ClickedShopCardsDiscounted[i] -= 1
                                     else:
-                                        GameBoard.ClickedShopCards[i] += 1
-                                    AlreadyClicked = True
+                                        self.GameBoard.ClickedShopCardsDiscounted[i] += 1
                                     break
-                            if not AlreadyClicked:
-                                for j in range(Shop.DiscountedCardsInShop[i] - 1, -1, -1):
-                                    WidthAdd = i / 8 + 1 / 100
-                                    HeightAdd = 1 / 100
-                                    if i >= 5:
-                                        WidthAdd = (i - 5) / 8 - 1 / 25 - 1 / 100
-                                        HeightAdd += 9 / 30
-                                    CardRect = Rect(ScreenWidth * (2 / 10 + WidthAdd) - 80,
-                                                    ScreenHeight * (HeightAdd + j / 50), 140, 200)
-                                    if CardRect.collidepoint(MousePosition):
-                                        if GameBoard.ClickedShopCardsDiscounted[i] > j:
-                                            GameBoard.ClickedShopCardsDiscounted[i] -= 1
-                                        else:
-                                            GameBoard.ClickedShopCardsDiscounted[i] += 1
-                                        break
 
-                        # Hand card click checks
-                        for i in range(10):
-                            AlreadyClicked = False
-                            for j in range(Player.CardsInHand[i] - 1, Player.DiscountedCardsInHand[i] - 1, -1):
+                    # Hand card click checks
+                    for i in range(10):
+                        AlreadyClicked = False
+                        for j in range(self.Player.CardsInHand[i] - 1, self.Player.DiscountedCardsInHand[i] - 1, -1):
+                            CardRect = Rect(ScreenWidth * (1 / 30 + i / 12),
+                                            ScreenHeight * (6 / 10 + j / 50) + 20, 140, 200)
+                            if CardRect.collidepoint(MousePosition):
+                                if self.GameBoard.ClickedPlayerCards[i] + self.Player.DiscountedCardsInHand[i] > j:
+                                    self.GameBoard.ClickedPlayerCards[i] -= 1
+                                else:
+                                    self.GameBoard.ClickedPlayerCards[i] += 1
+                                AlreadyClicked = True
+                                break
+                        if not AlreadyClicked:
+                            for j in range(self.Player.DiscountedCardsInHand[i] - 1, -1, -1):
                                 CardRect = Rect(ScreenWidth * (1 / 30 + i / 12),
                                                 ScreenHeight * (6 / 10 + j / 50) + 20, 140, 200)
                                 if CardRect.collidepoint(MousePosition):
-                                    if GameBoard.ClickedPlayerCards[i] + Player.DiscountedCardsInHand[i] > j:
-                                        GameBoard.ClickedPlayerCards[i] -= 1
+                                    if self.GameBoard.ClickedPlayerCardsDiscounted[i] > j:
+                                        self.GameBoard.ClickedPlayerCardsDiscounted[i] -= 1
                                     else:
-                                        GameBoard.ClickedPlayerCards[i] += 1
-                                    AlreadyClicked = True
+                                        self.GameBoard.ClickedPlayerCardsDiscounted[i] += 1
                                     break
-                            if not AlreadyClicked:
-                                for j in range(Player.DiscountedCardsInHand[i] - 1, -1, -1):
-                                    CardRect = Rect(ScreenWidth * (1 / 30 + i / 12),
-                                                    ScreenHeight * (6 / 10 + j / 50) + 20, 140, 200)
-                                    if CardRect.collidepoint(MousePosition):
-                                        if GameBoard.ClickedPlayerCardsDiscounted[i] > j:
-                                            GameBoard.ClickedPlayerCardsDiscounted[i] -= 1
-                                        else:
-                                            GameBoard.ClickedPlayerCardsDiscounted[i] += 1
-                                        break
 
-            pressed_keys = pygame.key.get_pressed()
-            if pressed_keys[K_ESCAPE]:
-                sys.exit()
+        pressed_keys = pygame.key.get_pressed()
+        if pressed_keys[K_ESCAPE]:
+            Returnee = [ReturnStatus.quit,[""]]
+            return Returnee
 
-            if self.EndTurnButtonRect.collidepoint(pygame.mouse.get_pos()):
-                GameBoard.display_end_turn_button(True)
-            else:
-                GameBoard.display_end_turn_button(False)
-                # Display Tasks text when hovering over them
-                for i in range(3):
-                    if TaskImagesRects[i].collidepoint(pygame.mouse.get_pos()):
-                        for j in range(len(Task_Descriptions[self.Info.Tasks[i] - 1])):
-                            TaskDescriptionText = TaskFont.render(Task_Descriptions[self.Info.Tasks[i] - 1][j], False,
-                                                                  (0, 0, 0))
-                            TaskTextSurface = pygame.Surface(TaskDescriptionText.get_size())
-                            TaskTextSurface.fill(BackgroundColor)
-                            TaskTextSurface.blit(TaskDescriptionText, (0, 0))
-                            screen.blit(TaskTextSurface, (ScreenWidth * 1 / 10, ScreenHeight * i / 5 + j * 40 + 40))
-                        break
-            pygame.display.update()
+        if self.EndTurnButtonRect.collidepoint(pygame.mouse.get_pos()):
+            self.GameBoard.display_end_turn_button(True)
+        else:
+            self.GameBoard.display_end_turn_button(False)
+            # Display Tasks text when hovering over them
+            for i in range(3):
+                if TaskImagesRects[i].collidepoint(pygame.mouse.get_pos()):
+                    self.GameBoard.display_tasks_text(self.Info.Tasks,i)
+                    break
+
+        Returnee = [ReturnStatus.stay, [""]]
+        return Returnee
+

@@ -52,6 +52,10 @@ class ViewModel:
         self.user_id, self.user_name, self.game_id = None, None, None
         self.window = ViewWindows.initial_menu
 
+    def start_game(self):
+        self.user_id, self.user_name, self.game_id = None, None, None
+        self.window = ViewWindows.game
+
     def sign_out(self):
         self.user_id, self.user_name = None, None
         self.window = ViewWindows.initial_menu

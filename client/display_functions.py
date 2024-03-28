@@ -132,6 +132,15 @@ class GameBoardView:
             ind += 1
         return TaskImagesRects
 
+    def display_tasks_text(self, Tasks, TaskNumber):
+        for j in range(len(Task_Descriptions[Tasks[TaskNumber] - 1])):
+            TaskDescriptionText = TaskFont.render(Task_Descriptions[Tasks[TaskNumber] - 1][j], False,
+                                                  (0, 0, 0))
+            TaskTextSurface = pygame.Surface(TaskDescriptionText.get_size())
+            TaskTextSurface.fill(BackgroundColor)
+            TaskTextSurface.blit(TaskDescriptionText, (0, 0))
+            screen.blit(TaskTextSurface, (ScreenWidth * 1 / 10, ScreenHeight * TaskNumber / 5 + j * 40 + 40))
+
     def reset(self):
         self.ClickedPlayerCards = [0] * 10
         self.ClickedShopCards = [0] * 10
