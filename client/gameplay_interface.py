@@ -21,20 +21,13 @@ class Game:
             NewPlayer = PlayerInfo()
             NewShop = ShopInfo()
 
-            if NewPlayer != Player or NewShop != Shop:
-                UpdateStatus = 1
-                Player = NewPlayer
-                Shop = NewShop
-
-            if UpdateStatus == 1:
-                screen.fill(BackgroundColor)
-                GameBoard.display_shop_image()
-                GameBoard.display_player_cards(Player)
-                GameBoard.display_shop_cards(Shop)
-                GameBoard.display_player_list(self.Info)
-                GameBoard.display_end_turn_button(False)
-                TaskImagesRects = GameBoard.display_task_list(self.Info)
-                UpdateStatus = 0
+            screen.fill(BackgroundColor)
+            GameBoard.display_shop_image()
+            GameBoard.display_player_cards(Player)
+            GameBoard.display_shop_cards(Shop)
+            GameBoard.display_player_list(self.Info)
+            GameBoard.display_end_turn_button(False)
+            TaskImagesRects = GameBoard.display_task_list(self.Info)
 
             for event in pygame.event.get():
                 if event.type == QUIT:
