@@ -16,7 +16,7 @@ class ViewWindows(enum.Enum):
 
 
 class ViewModel:
-    def __init__(self):
+    def __init__(self):  # нужно добавить поле готовности игрока
         self.req = ClientRequests()
         self.window = ViewWindows.initial_menu
         self.info_window = None
@@ -26,7 +26,13 @@ class ViewModel:
         self.game_id = None
         self.card = []
 
+    def reset_all_info(self):
+        self.user_id, self.user_name, self.game_id, self.user_login = None, None, None, None
+        self.card = []
+
     def put_and_sleep(self, _info: str, _time: float = 2) -> None:
+        while self.info_window is not None:
+            time.sleep(0.1)
         self.info_window = _info
         time.sleep(_time)
         self.info_window = None
@@ -45,19 +51,18 @@ class ViewModel:
         self.window = ViewWindows.login
 
     def go_to_registration_window(self):
-        self.user_id, self.user_name, self.game_id = None, None, None
+        self.reset_all_info()
         self.window = ViewWindows.registration
 
     def go_to_initial_window(self):
-        self.user_id, self.user_name, self.game_id = None, None, None
+        self.reset_all_info()
         self.window = ViewWindows.initial_menu
 
-    def start_game(self):
-        self.user_id, self.user_name, self.game_id = None, None, None
+    def go_to_game_menu(self):
         self.window = ViewWindows.game
 
     def sign_out(self):
-        self.user_id, self.user_name = None, None
+        self.reset_all_info()
         self.window = ViewWindows.initial_menu
 
     def login_user(self, _user_login: str, _user_password: str):
@@ -75,6 +80,7 @@ class ViewModel:
                                           _password2=_user_password2)
         if response.status == 0:
             self.put_info_window("Пользователь успешно добавлен")
+            self.window = ViewWindows.initial_menu
         else:
             self.put_info_window(str(response.status))
 

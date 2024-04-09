@@ -1,4 +1,4 @@
-from facade import ClientRequests
+from ..facade import ClientRequests
 
 if __name__ == '__main__':
     client = ClientRequests()
