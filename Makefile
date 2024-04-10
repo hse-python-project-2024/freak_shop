@@ -42,7 +42,6 @@ prepare_client: client_env
 
 venv_client:
 	. ./client/venv/bin/activate
-	. ./client/venv/bin/activate
 
 
 run_client: venv_client
@@ -54,3 +53,9 @@ clean_client:
 	rm -rf client/venv
 	rm -rf client/requests_pb2.py
 	rm -rf client/requests_pb2_grpc.py
+
+test_client:
+	PYTHONPATH=$(PWD)/client $(PYTHON_CLIENT) -m client.tests.test_view_model
+
+end_to_end_requests:
+	PYTHONPATH=$(PWD)/client $(PYTHON_CLIENT) -m client.tests.end_to_end_requests
