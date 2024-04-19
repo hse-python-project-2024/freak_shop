@@ -6,20 +6,22 @@ from gameplay_info_classes import GameInfo
 from facade import ClientRequests
 from view_model import ViewModel
 from view_model import ViewWindows
+from view_model import Languages
 from menu import ReturnStatus
 
 if __name__ == "__main__":
     CurrentGame = GameView(GameInfo(1, [1, 9, 5], 4, ["Pasha", "Sasha", "Nagibator228", "Боб"]))
+    # Preparing all needed class objects
     ViewModelEntity = ViewModel()
     Menu = MenuView()
     LastWindow = ViewWindows.initial_menu
     while True:
-        CurrentWindow = ViewModelEntity.window
+        CurrentWindow = ViewModelEntity.window # Check what window to display right now
         if CurrentWindow != LastWindow:
             LastWindow = CurrentWindow
             Menu.reset_menu_info()
 
-        if CurrentWindow == ViewWindows.initial_menu:
+        if CurrentWindow == ViewWindows.initial_menu: # Behaviour in Initial Menu
             Return = Menu.show_start_menu()
             if Return[0] == ReturnStatus.quit:
                 sys.exit()
@@ -28,7 +30,7 @@ if __name__ == "__main__":
             elif Return[0] == ReturnStatus.go_to_register:
                 ViewModelEntity.go_to_registration_window()
 
-        elif CurrentWindow == ViewWindows.login:
+        elif CurrentWindow == ViewWindows.login: # Behaviour in Login Menu
             Return = Menu.show_login_menu()
             if Return[0] == ReturnStatus.login:
                 ViewModelEntity.login_user(Return[1][0], Return[1][1])
@@ -39,19 +41,17 @@ if __name__ == "__main__":
                 time.sleep(0.1)
                 ViewModelEntity.go_to_initial_window()
 
-        elif CurrentWindow == ViewWindows.registration:
+        elif CurrentWindow == ViewWindows.registration: # Behaviour in Registration Menu
             Return = Menu.show_resgistration_menu()
             if Return[0] == ReturnStatus.register:
                 ViewModelEntity.register_user(Return[1][0], Return[1][1], Return[1][2], Return[1][3])
                 if ViewModelEntity.info_window is None:
                     Menu.reset_menu_info()
-                    # success should lead to main menu
-                    ViewModelEntity.go_to_initial_window()
             elif Return[0] == ReturnStatus.quit:
                 time.sleep(0.1)
                 ViewModelEntity.go_to_initial_window()
 
-        elif CurrentWindow == ViewWindows.main_menu:
+        elif CurrentWindow == ViewWindows.main_menu: # Behaviour in Main Menu
             Return = Menu.show_main_menu()
             if Return[0] == ReturnStatus.quit:
                 sys.exit()

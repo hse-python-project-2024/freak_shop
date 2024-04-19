@@ -15,6 +15,7 @@ class GameView:
         self.Player = PlayerInfo()
         self.Shop = ShopInfo()
         self.IsMyTurn = True
+        self.MyPosition = 0 # should ask from server
 
     def update_game_info(self, NewPlayer, NewShop):
         self.Player = NewPlayer
@@ -25,7 +26,7 @@ class GameView:
         self.GameBoard.display_shop_image()
         self.GameBoard.display_player_cards(self.Player)
         self.GameBoard.display_shop_cards(self.Shop)
-        self.GameBoard.display_player_list(self.Info)
+        self.GameBoard.display_player_list(self.Info, self.MyPosition)
         self.GameBoard.display_end_turn_button(False)
         TaskImagesRects = self.GameBoard.display_task_list(self.Info)
 

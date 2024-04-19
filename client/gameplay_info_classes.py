@@ -17,3 +17,6 @@ class GameInfo:
         self.PlayerAmount = AmountOfPlayers
         self.PlayersNicknames = NicknamesOfPlayers
         self.Tasks = CurrentTasks
+        self.Scores = [0] * AmountOfPlayers
+    def update_scores(self, NewScoreArray):
+        self.Scores = NewScoreArray

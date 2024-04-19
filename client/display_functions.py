@@ -107,10 +107,13 @@ class GameBoardView:
                     screen.blit(self.CardImages[i][ShowDiscount], (ScreenWidth * (2 / 10 + WidthAdd) - 80 ,
                                                                    ScreenHeight * (HeightAdd + j / 50)))
 
-    def display_player_list(self, Game):
+    def display_player_list(self, Game, PlayerPosition):
         for i in range(Game.PlayerAmount):
             screen.blit(self.PlayerIcon, (ScreenWidth * 4 / 5, ScreenHeight * i / 8))
-            PlayerNameText = TextFont.render(Game.PlayersNicknames[i], False, (0, 0, 0))
+            if i != PlayerPosition:
+                PlayerNameText = TextFont.render(Game.PlayersNicknames[i], False, (0, 0, 0))
+            else:
+                PlayerNameText = TextFont.render("Вы", False, (0, 0, 0))
             screen.blit(PlayerNameText, (ScreenWidth * 4 / 5 + 150, ScreenHeight * i / 8 + 60))
 
     def display_end_turn_button(self, activated):
