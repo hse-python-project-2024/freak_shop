@@ -293,18 +293,18 @@ class Game:
     def move(self, player_id, sold_cards_ids, bought_cards_ids):
         """Handle a player's move. Restock the shop after a valid move
         and finish game if the "Closed Shop" card is pulled."""
-        if player_id == self.cur_player and sold_cards_ids and bought_cards_ids:
-            return
         good_deal = True
         val0 = CARDS[sold_cards_ids[0]].value
         for card_id in sold_cards_ids:
-            if CARDS[card_id].value != val0:
+            card = CARDS[card_id]
+            if card.value != val0:
                 good_deal = False
                 break
         if good_deal:
             val0 = CARDS[bought_cards_ids[0]].value
             for card_id in bought_cards_ids:
-                if CARDS[card_id].value != val0:
+                card = CARDS[card_id]
+                if card.value != val0:
                     good_deal = False
                     break
             if good_deal:
@@ -313,8 +313,14 @@ class Game:
         sum_bought = sum(CARDS[card_id].value for card_id in bought_cards_ids)
         fair_price = (sum_sold == sum_bought)
         if good_deal or fair_price:
-            PLAYERS[player_id].sell_cards(self.id, sold_cards_ids)
-            PLAYERS[player_id].add_cards(self.id, bought_cards_ids)
+            player = PLAYERS[player_id]
+            player.sell_cards(self.id, sold_cards_ids)
+            player.add_cards(self.id, bought_cards_ids)
+
+            player.update_goals()
+            self.check_neighbors_festival()
+            self.check_fashion_at_lowest_price()
+            self.check_not_the_same_values()
 
         if not self.restock():
             self.finish()
@@ -585,7 +591,7 @@ class Core:
             return 2
         if game.get_stage == RESULTS:
             return 3
-        return game.get_shop_cards()
+        return 0, game.get_shop_cards()
 
     def get_player_cards(self, game_id, player_id):
         """Return list of player's cards
@@ -617,3 +623,9 @@ class Core:
         if game.get_stage == RESULTS:
             return 5
         return 0, player.get_cards(game_id)
+
+    def get_players(self, game_id):
+        if game_id not in GAMES:
+            return 1
+        game = GAMES[game_id]
+        return 0, game.get_players()
