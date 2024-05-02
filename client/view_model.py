@@ -13,6 +13,8 @@ class ViewWindows(enum.Enum):
     waiting_room = 6
     game = 7
     game_result = 8
+    leaderboard = 9
+    settings = 10
 
 
 class Languages(enum.Enum):

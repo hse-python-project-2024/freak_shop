@@ -11,25 +11,13 @@ class ReturnStatus(enum.Enum):
     go_to_login = 4
     go_to_register = 5
     start_game = 6
+    leaderboard = 7
 
 
 class MenuView:
     def __init__(self):
-        self.LoginText = RegistrationFont.render("Логин :", False, (0, 0, 0))
-        self.NicknameText = RegistrationFont.render("Имя :", False, (0, 0, 0))
-        self.PasswordText = RegistrationFont.render("Пароль : ", False, (0, 0, 0))
-        self.RepeatPasswordText = RegistrationFont.render("Повторите пароль : ", False, (0, 0, 0))
-        self.ConfirmTextLogin = RegistrationFont.render("Войти", False, (0, 0, 0))
-        self.ConfirmTextRegistration = RegistrationFont.render("Регистрация", False, (0, 0, 0))
-
-        self.LoginTextInitial = RegistrationFont.render("Войти", False, (0, 0, 0))
-        self.RegistrationTextInitial = RegistrationFont.render("Зарегестрироваться", False, (0, 0, 0))
-        self.BackButton = Rect(ScreenWidth * 6 / 7, ScreenHeight * 1 / 30, 180, 180)
-
-        self.JoinGameText = RegistrationFont.render("Присоединиться к игре", False, (0, 0, 0))
-        self.CreateGameText = RegistrationFont.render("Создать игру", False, (0, 0, 0))
-        self.SettingsText = RegistrationFont.render("Настройки", False, (0, 0, 0))
-        self.RankingsText = RegistrationFont.render("Списки лидеров", False, (0, 0, 0))
+        self.lang = Languages.russian
+        self.reset_menu_language(self.lang)
 
         self.EnterButtonInitial = Rect(ScreenWidth * 11 / 38, ScreenHeight / 6, 800, 250)
         self.RegistrationButtonInitial = Rect(ScreenWidth * 11 / 38, ScreenHeight / 2, 800, 250)
@@ -75,6 +63,24 @@ class MenuView:
         self.active = 0
         self.password_show = False
         self.repeat_password_show = False
+
+        # Changing the language of all menus
+    def reset_menu_language(self,new_lang):
+        self.LoginText = RegistrationFont.render(LoginTexts[new_lang], False, (0, 0, 0))
+        self.NicknameText = RegistrationFont.render(NicknameTexts[new_lang], False, (0, 0, 0))
+        self.PasswordText = RegistrationFont.render(PasswordTexts[new_lang], False, (0, 0, 0))
+        self.RepeatPasswordText = RegistrationFont.render(RepeatPasswordTexts[new_lang], False, (0, 0, 0))
+        self.ConfirmTextLogin = RegistrationFont.render(ConfirmTexts[new_lang], False, (0, 0, 0))
+        self.ConfirmTextRegistration = RegistrationFont.render(RegistrationTexts[new_lang], False, (0, 0, 0))
+
+        self.LoginTextInitial = RegistrationFont.render(ConfirmTexts[new_lang], False, (0, 0, 0))
+        self.RegistrationTextInitial = RegistrationFont.render(InitialRegistrationTexts[new_lang], False, (0, 0, 0))
+        self.BackButton = Rect(ScreenWidth * 6 / 7, ScreenHeight * 1 / 30, 180, 180)
+
+        self.JoinGameText = RegistrationFont.render(JoinGameTexts[new_lang], False, (0, 0, 0))
+        self.CreateGameText = RegistrationFont.render(CreateGameTexts[new_lang], False, (0, 0, 0))
+        self.SettingsText = RegistrationFont.render(SettingsTexts[new_lang], False, (0, 0, 0))
+        self.RankingsText = RegistrationFont.render(LeaderbordTexts[new_lang], False, (0, 0, 0))
 
     def show_login_menu(self):
         screen.fill(RegistrationBackgroundColor)

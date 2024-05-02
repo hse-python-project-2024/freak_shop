@@ -21,13 +21,13 @@ class GameView:
         self.Player = NewPlayer
         self.Shop = NewShop
 
-    def ShowMainGameWindow(self):
+    def ShowMainGameWindow(self,lang):
         screen.fill(BackgroundColor)
         self.GameBoard.display_shop_image()
         self.GameBoard.display_player_cards(self.Player)
         self.GameBoard.display_shop_cards(self.Shop)
-        self.GameBoard.display_player_list(self.Info, self.MyPosition)
-        self.GameBoard.display_end_turn_button(False)
+        self.GameBoard.display_player_list(self.Info, self.MyPosition,lang)
+        self.GameBoard.display_end_turn_button(False,lang)
         TaskImagesRects = self.GameBoard.display_task_list(self.Info)
 
         for event in pygame.event.get():
@@ -103,13 +103,13 @@ class GameView:
             return Returnee
 
         if self.EndTurnButtonRect.collidepoint(pygame.mouse.get_pos()):
-            self.GameBoard.display_end_turn_button(True)
+            self.GameBoard.display_end_turn_button(True,lang)
         else:
-            self.GameBoard.display_end_turn_button(False)
+            self.GameBoard.display_end_turn_button(False,lang)
             # Display Tasks text when hovering over them
             for i in range(3):
                 if TaskImagesRects[i].collidepoint(pygame.mouse.get_pos()):
-                    self.GameBoard.display_tasks_text(self.Info.Tasks,i)
+                    self.GameBoard.display_tasks_text(self.Info.Tasks,i,lang)
                     break
 
         Returnee = [ReturnStatus.stay, [""]]

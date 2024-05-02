@@ -59,9 +59,28 @@ if __name__ == "__main__":
                 ViewModelEntity.start_game()
 
         elif CurrentWindow == ViewWindows.game:
-            Return = CurrentGame.ShowMainGameWindow()
+            Return = CurrentGame.ShowMainGameWindow(ViewModelEntity.language)
             if Return[0] == ReturnStatus.quit:
                 sys.exit()
+
+        # TODO all those menus(dont have visual at the moment to do it:
+
+        elif CurrentWindow == ViewWindows.connecting_by_code:
+            pass
+
+        elif CurrentWindow == ViewWindows.leaderboard:
+            pass
+
+        elif CurrentWindow == ViewWindows.waiting_room:
+            pass
+
+        elif CurrentWindow == ViewWindows.game_result:
+            pass
+
+        elif CurrentWindow == ViewWindows.settings:
+            pass
+
+        # TODO create the changing of language menu + options for it
 
         # Show messages
         Message = ViewModelEntity.info_window
