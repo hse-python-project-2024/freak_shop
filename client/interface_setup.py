@@ -126,14 +126,16 @@ ConfirmTexts =["Войти","Enter"]
 RegistrationTexts = ["Регистрация", "Registration"]
 InitialRegistrationTexts = ["Зарегестрироваться", "Register"]
 
-JoinGameTexts = ["Присоединиться к игре", "Join the game by code"]
+JoinGameTexts = ["Присоединиться к игре", "     Join the new game  "]
 CreateGameTexts = ["Создать игру", "Create the game"]
-SettingsTexts = ["Настройки", "Settings"]
-LeaderbordTexts = ["Списки лидеров", "Leaderboard"]
+SettingsTexts = ["Настройки", "  Settings"]
+LeaderbordTexts = ["Списки лидеров", "    Leaderboard"]
 
 LanguageSettingsTexts = ["Язык :","Language :"]
 
 GameCodeTexts = ["Код игры :", "Game code :"]
+
+ReadyTexts = ["Готов","Ready"]
 
 RuText = "Ru"
 EnText = "En"
@@ -147,4 +149,6 @@ screen = pygame.display.set_mode((ScreenWidth, ScreenHeight))
 
 TextFont = pygame.font.SysFont('Comic Sans MS', 40)
 TaskFont = pygame.font.SysFont('Comic Sans MS', 25)
+PlayerNicknameInLobbyFont = pygame.font.SysFont('Comic Sans MS', 60)
 RegistrationFont = pygame.font.SysFont('Comic Sans MS', 80)
+CodeFont = pygame.font.SysFont('Comic Sans MS', 120)

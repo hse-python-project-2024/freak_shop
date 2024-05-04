@@ -13,16 +13,18 @@ if __name__ == "__main__":
     CurrentGame = GameView(GameInfo(1, [1, 9, 5], 4, ["Pasha", "Sasha", "Nagibator228", "Боб"]))
     # Preparing all needed class objects
     ViewModelEntity = ViewModel()
-    DefaultLanguage = Languages.russian # TODO remove later(or maybe just move)
+    DefaultLanguage = Languages.russian  # TODO remove later(or maybe just move)
     Menu = MenuView(DefaultLanguage)
     LastWindow = ViewWindows.initial_menu
+    # LastWindow = ViewWindows.waiting_room  # code for windows design testing
+    # ViewModelEntity.window = ViewWindows.waiting_room
     while True:
-        CurrentWindow = ViewModelEntity.window # Check what window to display right now
+        CurrentWindow = ViewModelEntity.window  # Check what window to display right now
         if CurrentWindow != LastWindow:
             LastWindow = CurrentWindow
             Menu.reset_menu_info()
 
-        if CurrentWindow == ViewWindows.initial_menu: # Behaviour in Initial Menu
+        if CurrentWindow == ViewWindows.initial_menu:  # Behaviour in Initial Menu
             Return = Menu.show_start_menu()
             if Return[0] == ReturnStatus.quit:
                 sys.exit()
@@ -31,7 +33,7 @@ if __name__ == "__main__":
             elif Return[0] == ReturnStatus.go_to_register:
                 ViewModelEntity.go_to_registration_window()
 
-        elif CurrentWindow == ViewWindows.login: # Behaviour in Login Menu
+        elif CurrentWindow == ViewWindows.login:  # Behaviour in Login Menu
             Return = Menu.show_login_menu()
             if Return[0] == ReturnStatus.login:
                 ViewModelEntity.login_user(Return[1][0], Return[1][1])
@@ -42,7 +44,7 @@ if __name__ == "__main__":
                 time.sleep(0.1)
                 ViewModelEntity.go_to_initial_window()
 
-        elif CurrentWindow == ViewWindows.registration: # Behaviour in Registration Menu
+        elif CurrentWindow == ViewWindows.registration:  # Behaviour in Registration Menu
             Return = Menu.show_resgistration_menu()
             if Return[0] == ReturnStatus.register:
                 ViewModelEntity.register_user(Return[1][0], Return[1][1], Return[1][2], Return[1][3])
@@ -52,12 +54,14 @@ if __name__ == "__main__":
                 time.sleep(0.1)
                 ViewModelEntity.go_to_initial_window()
 
-        elif CurrentWindow == ViewWindows.main_menu: # Behaviour in Main Menu
+        elif CurrentWindow == ViewWindows.main_menu:  # Behaviour in Main Menu
             Return = Menu.show_main_menu()
             if Return[0] == ReturnStatus.quit:
                 sys.exit()
-            elif Return[0] == ReturnStatus.start_game:
-                ViewModelEntity.start_game()
+            elif Return[0] == ReturnStatus.join_lobby:
+                pass  # TODO add actual lobby join
+            elif Return[0] == ReturnStatus.create_lobby:
+                ViewModelEntity.window = ViewWindows.waiting_room  # TODO add actual lobby create
             elif Return[0] == ReturnStatus.settings:
                 ViewModelEntity.go_to_settings_window()
 
@@ -74,13 +78,19 @@ if __name__ == "__main__":
         elif CurrentWindow == ViewWindows.leaderboard:
             pass
 
-        elif CurrentWindow == ViewWindows.waiting_room:
-            pass
-
+        elif CurrentWindow == ViewWindows.waiting_room:  # Behaviour in Lobby
+            # Here we need to ask about all the player info, which for now is defaulted
+            PlayerAmount = 3
+            PlayerNicknames = ["Lol", "Kek", "Cheburek"]
+            PlayerReadySignes = [0, 0, 1]
+            Return = Menu.show_lobby(PlayerAmount, PlayerNicknames, PlayerReadySignes)
+            if Return[0] == ReturnStatus.quit:
+                ViewModelEntity.go_to_main_menu_window()
+            # TODO add actual checking of ready and stuff
         elif CurrentWindow == ViewWindows.game_result:
             pass
 
-        elif CurrentWindow == ViewWindows.settings: # Behaviour in Settings Menu
+        elif CurrentWindow == ViewWindows.settings:  # Behaviour in Settings Menu
             Return = Menu.show_settings_menu()
             if Return[0] == ReturnStatus.quit:
                 ViewModelEntity.go_to_main_menu_window()
@@ -100,5 +110,3 @@ if __name__ == "__main__":
         if Message is not None:
             Menu.show_message(Message)
         pygame.display.update()
-
-

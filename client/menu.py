@@ -13,10 +13,13 @@ class ReturnStatus(enum.Enum):
     settings = 7
     leaderboard = 8
     change_lang = 9
+    join_lobby = 10
+    create_lobby = 11
 
 
 class MenuView:
     def __init__(self, language):
+        self.ReadyText = None
         self.LanguageSettingText = None
         self.RegistrationTextInitial = None
         self.BackButton = None
@@ -57,20 +60,31 @@ class MenuView:
         self.ConfirmButtonRegistration = Rect(ScreenWidth * 27 / 38, ScreenHeight / 3 - 40, 400, 400)
         self.EyeIconButton1 = Rect(ScreenWidth / 80, ScreenHeight / 2 - 20, 220, 180)
         self.EyeIconButton2 = Rect(ScreenWidth / 80, ScreenHeight * 7 / 10 - 20, 220, 180)
+
         # Buttons for Main Menu
         self.JoinGameButton = Rect(ScreenWidth * 10 / 38, ScreenHeight / 20 + 40, 850, 200)
         self.CreateGameButton = Rect(ScreenWidth * 10 / 38, ScreenHeight / 4 + 40, 850, 200)
         self.SettingsButton = Rect(ScreenWidth * 10 / 38, ScreenHeight * 4 / 9 + 45, 850, 200)
         self.RankingsButton = Rect(ScreenWidth * 10 / 38, ScreenHeight * 2 / 3 + 25, 850, 200)
+
         # Buttons for Settings Menu
         self.RuButton = Rect(ScreenWidth * 10 / 38, ScreenHeight * 1 / 5, 350, 200)
         self.EnButton = Rect(ScreenWidth * 20 / 38, ScreenHeight * 1 / 5, 350, 200)
+
+        # Buttons for Lobby
+        self.ReadyButton = Rect(ScreenWidth * 14 / 38, ScreenHeight * 4 / 5, 450, 100)
+
         # Images of password show|hide
         self.BackIconImage = pygame.image.load("src/img/BackIcon.png").convert_alpha()
         self.EyeIconImage = pygame.image.load("src/img/EyeIcon.png").convert_alpha()
         self.EyeIconImageCrossed = pygame.image.load("src/img/EyeIconCrossed.png").convert_alpha()
 
-        self.ReturnToMenu = 0
+        self.PlayerIcon = pygame.transform.scale(pygame.image.load("src/img/Player_Icon.png").convert_alpha(),
+                                                 (180, 180))
+        self.JoinedPlayerCard = (pygame.transform.scale(pygame.image.load("src/img/Joined_Player_Icon.png").convert(),
+                                                        (240, 320)))
+
+        self.LobbyCode = "ABCDE"  # TODO think about how to get it
         self.LoginInput = ""
         self.PasswordInput = ""
         self.RepeatPasswordInput = ""
@@ -80,7 +94,6 @@ class MenuView:
         self.repeat_password_show = False
 
     def reset_menu_info(self):
-        self.ReturnToMenu = 0
         self.LoginInput = ""
         self.PasswordInput = ""
         self.RepeatPasswordInput = ""
@@ -111,6 +124,8 @@ class MenuView:
         self.RankingsText = RegistrationFont.render(LeaderbordTexts[new_lang], False, (0, 0, 0))
 
         self.LanguageSettingText = RegistrationFont.render(LanguageSettingsTexts[new_lang], False, (0, 0, 0))
+
+        self.ReadyText = RegistrationFont.render(ReadyTexts[new_lang], False, (0, 0, 0))
 
     def show_login_menu(self):
         screen.fill(RegistrationBackgroundColor)
@@ -362,7 +377,10 @@ class MenuView:
                 sys.exit()
             if event.type == MOUSEBUTTONDOWN:
                 if self.JoinGameButton.collidepoint(pygame.mouse.get_pos()):
-                    Returnee = [ReturnStatus.start_game, [""]]
+                    # TODO (well or add lobby creation here, not sure)
+                    pass
+                elif self.CreateGameButton.collidepoint(pygame.mouse.get_pos()):
+                    Returnee = [ReturnStatus.create_lobby, [""]]
                     return Returnee
                 elif self.BackButton.collidepoint(pygame.mouse.get_pos()):
                     Returnee = [ReturnStatus.quit, [""]]
@@ -414,31 +432,37 @@ class MenuView:
         Returnee = [ReturnStatus.stay, [""]]
         return Returnee
 
-    def show_lobby(self):
+# TODO display people who are ready
+    def show_lobby(self,player_amount,player_nicknames,player_ready_signes):
         screen.fill(RegistrationBackgroundColor)
         for event in pygame.event.get():
             if event.type == QUIT:
                 sys.exit()
             if event.type == MOUSEBUTTONDOWN:
-                if self.RuButton.collidepoint(pygame.mouse.get_pos()):
-                    Returnee = [ReturnStatus.change_lang, ["ru"]]
-                    return Returnee
-                elif self.EnButton.collidepoint(pygame.mouse.get_pos()):
-                    Returnee = [ReturnStatus.change_lang, ["en"]]
-                    return Returnee
-                elif self.BackButton.collidepoint(pygame.mouse.get_pos()):
+                if self.BackButton.collidepoint(pygame.mouse.get_pos()):
                     Returnee = [ReturnStatus.quit, [""]]
                     return Returnee
+                elif self.ReadyButton.collidepoint(pygame.mouse.get_pos()):
+                    pass  # TODO add real interaction
         pressed_keys = pygame.key.get_pressed()
         if pressed_keys[K_ESCAPE]:
             sys.exit()
-        pygame.draw.rect(screen, RegistrationButtonColor, self.RuButton)
-        pygame.draw.rect(screen, RegistrationButtonColor, self.EnButton)
-        screen.blit(RuText, (self.RuButton.center[0] - 325, self.RuButton.center[1] - 35))
-        screen.blit(EnText, (self.EnButton.center[0] - 185, self.EnButton.center[1] - 35))
-        screen.blit(self.LanguageSettingText, (self.RuButton.center[0] - 150, self.RuButton.center[1] - 35))
+        for j in range(5):
+            screen.blit(self.PlayerIcon, (50 + ScreenWidth * j / 6, ScreenHeight * 1 / 8))
+        for i in range(player_amount):
+            PlayerNameText = PlayerNicknameInLobbyFont.render(player_nicknames[i], False, (0, 0, 0))
+            screen.blit(PlayerNameText, (ScreenWidth * i / 6 + 139 - len(player_nicknames[i])*13, ScreenHeight * 1 / 8 + 180))
+            screen.blit(self.JoinedPlayerCard,
+                        (ScreenWidth * i / 6 + 30, ScreenHeight * 3 / 7-70))
         screen.blit(pygame.transform.scale(self.BackIconImage, (180, 180)),
                     (ScreenWidth * 6 / 7, ScreenHeight * 1 / 30))
+        pygame.draw.rect(screen, RegistrationButtonColor, self.ReadyButton)
+        screen.blit(self.ReadyText,
+                    (ScreenWidth * 17 / 38, ScreenHeight * 4 / 5 + 30))
+        LobbyCodeText = CodeFont.render(self.LobbyCode, False, (0, 0, 0))
+        screen.blit(LobbyCodeText,
+                    (ScreenWidth * 1 / 2 - 155, ScreenHeight * 1 / 19))
+
         Returnee = [ReturnStatus.stay, [""]]
         return Returnee
 
