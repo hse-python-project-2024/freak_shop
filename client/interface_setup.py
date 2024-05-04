@@ -114,18 +114,30 @@ Task_Descriptions = [
      ]]
 
 EndTurnTexts = ["Совершить обмен","Exchange"]
+
 YouTexts = ["Вы","You"]
+
 LoginTexts = ["Логин :","Login :"]
 NicknameTexts = ["Имя :","Name :"]
 PasswordTexts = ["Пароль : ","Password :"]
 RepeatPasswordTexts = ["Повторите пароль : ","Repeat the password :"]
+
 ConfirmTexts =["Войти","Enter"]
 RegistrationTexts = ["Регистрация", "Registration"]
 InitialRegistrationTexts = ["Зарегестрироваться", "Register"]
+
 JoinGameTexts = ["Присоединиться к игре", "Join the game by code"]
 CreateGameTexts = ["Создать игру", "Create the game"]
 SettingsTexts = ["Настройки", "Settings"]
 LeaderbordTexts = ["Списки лидеров", "Leaderboard"]
+
+LanguageSettingsTexts = ["Язык :","Language :"]
+
+GameCodeTexts = ["Код игры :", "Game code :"]
+
+RuText = "Ru"
+EnText = "En"
+
 
 pygame.init()
 pygame.display.set_caption("Freak Shop")

@@ -1,5 +1,4 @@
 from interface_setup import *
-import time
 import enum
 
 
@@ -11,23 +10,46 @@ class ReturnStatus(enum.Enum):
     go_to_login = 4
     go_to_register = 5
     start_game = 6
-    leaderboard = 7
+    settings = 7
+    leaderboard = 8
+    change_lang = 9
 
 
 class MenuView:
-    def __init__(self):
-        self.lang = Languages.russian
-        self.reset_menu_language(self.lang)
+    def __init__(self, language):
+        self.LanguageSettingText = None
+        self.RegistrationTextInitial = None
+        self.BackButton = None
+        self.JoinGameText = None
+        self.CreateGameText = None
+        self.SettingsText = None
+        self.RankingsText = None
+        self.LoginTextInitial = None
+        self.ConfirmTextRegistration = None
+        self.ConfirmTextLogin = None
+        self.PasswordText = None
+        self.NicknameText = None
+        self.LoginText = None
+        self.RepeatPasswordText = None
 
+        self.RuText = RegistrationFont.render(RuText, False, (0, 0, 0))
+        self.EnText = RegistrationFont.render(EnText, False, (0, 0, 0))
+
+        self.lang = language
+        self.change_menu_language(self.lang)
+
+        # Buttons for Initial Menu
         self.EnterButtonInitial = Rect(ScreenWidth * 11 / 38, ScreenHeight / 6, 800, 250)
         self.RegistrationButtonInitial = Rect(ScreenWidth * 11 / 38, ScreenHeight / 2, 800, 250)
         self.BackButtonInitial = Rect(ScreenWidth * 6 / 7, ScreenHeight * 1 / 30, 180, 180)
 
+        # Buttons for Login Menu
         self.LoginButtonLogin = Rect(ScreenWidth * 5 / 38, ScreenHeight / 5, 1000, 150)
         self.PasswordButtonLogin = Rect(ScreenWidth * 5 / 38, ScreenHeight * 6 / 10, 1000, 150)
         self.ConfirmButtonLogin = Rect(ScreenWidth * 27 / 38, ScreenHeight / 3 - 40, 400, 400)
         self.EyeIconButtonLogin = Rect(ScreenWidth / 80, ScreenHeight * 6 / 10 - 20, 220, 180)
 
+        # Buttons for Registration Menu
         self.LoginButtonRegistration = Rect(ScreenWidth * 5 / 38, ScreenHeight / 12 + 20, 1000, 150)
         self.NicknameButtonRegistration = Rect(ScreenWidth * 5 / 38, ScreenHeight / 4 + 60, 1000, 150)
         self.PasswordButtonRegistration = Rect(ScreenWidth * 5 / 38, ScreenHeight / 2 + 20, 1000, 150)
@@ -35,12 +57,15 @@ class MenuView:
         self.ConfirmButtonRegistration = Rect(ScreenWidth * 27 / 38, ScreenHeight / 3 - 40, 400, 400)
         self.EyeIconButton1 = Rect(ScreenWidth / 80, ScreenHeight / 2 - 20, 220, 180)
         self.EyeIconButton2 = Rect(ScreenWidth / 80, ScreenHeight * 7 / 10 - 20, 220, 180)
-
+        # Buttons for Main Menu
         self.JoinGameButton = Rect(ScreenWidth * 10 / 38, ScreenHeight / 20 + 40, 850, 200)
         self.CreateGameButton = Rect(ScreenWidth * 10 / 38, ScreenHeight / 4 + 40, 850, 200)
         self.SettingsButton = Rect(ScreenWidth * 10 / 38, ScreenHeight * 4 / 9 + 45, 850, 200)
         self.RankingsButton = Rect(ScreenWidth * 10 / 38, ScreenHeight * 2 / 3 + 25, 850, 200)
-
+        # Buttons for Settings Menu
+        self.RuButton = Rect(ScreenWidth * 10 / 38, ScreenHeight * 1 / 5, 350, 200)
+        self.EnButton = Rect(ScreenWidth * 20 / 38, ScreenHeight * 1 / 5, 350, 200)
+        # Images of password show|hide
         self.BackIconImage = pygame.image.load("src/img/BackIcon.png").convert_alpha()
         self.EyeIconImage = pygame.image.load("src/img/EyeIcon.png").convert_alpha()
         self.EyeIconImageCrossed = pygame.image.load("src/img/EyeIconCrossed.png").convert_alpha()
@@ -65,7 +90,10 @@ class MenuView:
         self.repeat_password_show = False
 
         # Changing the language of all menus
-    def reset_menu_language(self,new_lang):
+
+    def change_menu_language(self, new_language):
+        new_lang = new_language.value  # We actually need the value to iterate through strings
+        self.lang = new_language
         self.LoginText = RegistrationFont.render(LoginTexts[new_lang], False, (0, 0, 0))
         self.NicknameText = RegistrationFont.render(NicknameTexts[new_lang], False, (0, 0, 0))
         self.PasswordText = RegistrationFont.render(PasswordTexts[new_lang], False, (0, 0, 0))
@@ -81,6 +109,8 @@ class MenuView:
         self.CreateGameText = RegistrationFont.render(CreateGameTexts[new_lang], False, (0, 0, 0))
         self.SettingsText = RegistrationFont.render(SettingsTexts[new_lang], False, (0, 0, 0))
         self.RankingsText = RegistrationFont.render(LeaderbordTexts[new_lang], False, (0, 0, 0))
+
+        self.LanguageSettingText = RegistrationFont.render(LanguageSettingsTexts[new_lang], False, (0, 0, 0))
 
     def show_login_menu(self):
         screen.fill(RegistrationBackgroundColor)
@@ -179,8 +209,8 @@ class MenuView:
                 elif self.RepeatPasswordButtonRegistration.collidepoint(MousePosition):
                     self.active = 4
                 elif self.ConfirmButtonRegistration.collidepoint(MousePosition):
-                    Returnee = [ReturnStatus.register,[self.LoginInput, self.NicknameInput, self.PasswordInput,
-                                                                      self.RepeatPasswordInput]]
+                    Returnee = [ReturnStatus.register, [self.LoginInput, self.NicknameInput, self.PasswordInput,
+                                                        self.RepeatPasswordInput]]
                     return Returnee
                 elif self.EyeIconButton1.collidepoint(MousePosition):
                     self.password_show = not self.password_show
@@ -240,41 +270,53 @@ class MenuView:
         pygame.draw.rect(screen, RegistrationButtonColor, self.PasswordButtonRegistration)
         pygame.draw.rect(screen, RegistrationButtonColor, self.RepeatPasswordButtonRegistration)
         pygame.draw.rect(screen, RegistrationButtonColor, self.ConfirmButtonRegistration)
-        screen.blit(self.LoginText, (self.LoginButtonRegistration.midtop[0] - 100, self.LoginButtonRegistration.midtop[1] - 80))
-        screen.blit(self.NicknameText, (self.NicknameButtonRegistration.midtop[0] - 80, self.NicknameButtonRegistration.midtop[1] - 60))
-        screen.blit(self.PasswordText, (self.PasswordButtonRegistration.midtop[0] - 120, self.PasswordButtonRegistration.midtop[1] - 60))
-        screen.blit(self.RepeatPasswordText, (self.RepeatPasswordButtonRegistration.midtop[0] - 220, self.RepeatPasswordButtonRegistration.midtop[1] - 60))
-        screen.blit(self.ConfirmTextRegistration, (self.ConfirmButtonRegistration.center[0] - 180, self.ConfirmButtonRegistration.center[1] - 20))
+        screen.blit(self.LoginText,
+                    (self.LoginButtonRegistration.midtop[0] - 100, self.LoginButtonRegistration.midtop[1] - 80))
+        screen.blit(self.NicknameText,
+                    (self.NicknameButtonRegistration.midtop[0] - 80, self.NicknameButtonRegistration.midtop[1] - 60))
+        screen.blit(self.PasswordText,
+                    (self.PasswordButtonRegistration.midtop[0] - 120, self.PasswordButtonRegistration.midtop[1] - 60))
+        screen.blit(self.RepeatPasswordText, (
+        self.RepeatPasswordButtonRegistration.midtop[0] - 220, self.RepeatPasswordButtonRegistration.midtop[1] - 60))
+        screen.blit(self.ConfirmTextRegistration,
+                    (self.ConfirmButtonRegistration.center[0] - 180, self.ConfirmButtonRegistration.center[1] - 20))
 
         LoginInputText = RegistrationFont.render(self.LoginInput + (self.active == 1) * '|', False, (0, 0, 0))
         NicknameInputText = RegistrationFont.render(self.NicknameInput + (self.active == 2) * '|', False, (0, 0, 0))
         screen.blit(LoginInputText, (self.LoginButtonRegistration.left, self.LoginButtonRegistration.center[1] - 35))
-        screen.blit(NicknameInputText, (self.NicknameButtonRegistration.left, self.NicknameButtonRegistration.center[1] - 35))
+        screen.blit(NicknameInputText,
+                    (self.NicknameButtonRegistration.left, self.NicknameButtonRegistration.center[1] - 35))
 
         if self.password_show:
             screen.blit(pygame.transform.scale(self.EyeIconImage, (220, 180)),
                         (ScreenWidth / 80, ScreenHeight / 2 + 10))
             PasswordInputText = RegistrationFont.render(self.PasswordInput + (self.active == 3) * '|', False, (0, 0, 0))
-            screen.blit(PasswordInputText, (self.PasswordButtonRegistration.left, self.PasswordButtonRegistration.center[1] - 35))
+            screen.blit(PasswordInputText,
+                        (self.PasswordButtonRegistration.left, self.PasswordButtonRegistration.center[1] - 35))
         else:
             screen.blit(pygame.transform.scale(self.EyeIconImageCrossed, (250, 160)),
                         (ScreenWidth / 80 - 10, ScreenHeight / 2 + 20))
             PasswordInputText = RegistrationFont.render('*' * len(self.PasswordInput) + (self.active == 3) * '|', False,
                                                         (0, 0, 0))
-            screen.blit(PasswordInputText, (self.PasswordButtonRegistration.left, self.PasswordButtonRegistration.center[1] - 10))
+            screen.blit(PasswordInputText,
+                        (self.PasswordButtonRegistration.left, self.PasswordButtonRegistration.center[1] - 10))
 
         if self.repeat_password_show:
             screen.blit(pygame.transform.scale(self.EyeIconImage, (220, 180)),
                         (ScreenWidth / 80, ScreenHeight * 7 / 10 + 20))
-            RepeatPasswordInputText = RegistrationFont.render(self.RepeatPasswordInput + (self.active == 4) * '|', False,
+            RepeatPasswordInputText = RegistrationFont.render(self.RepeatPasswordInput + (self.active == 4) * '|',
+                                                              False,
                                                               (0, 0, 0))
-            screen.blit(RepeatPasswordInputText, (self.RepeatPasswordButtonRegistration.left, self.RepeatPasswordButtonRegistration.center[1] - 35))
+            screen.blit(RepeatPasswordInputText, (
+            self.RepeatPasswordButtonRegistration.left, self.RepeatPasswordButtonRegistration.center[1] - 35))
         else:
             screen.blit(pygame.transform.scale(self.EyeIconImageCrossed, (250, 160)),
                         (ScreenWidth / 80 - 10, ScreenHeight * 7 / 10 + 30))
-            RepeatPasswordInputText = RegistrationFont.render('*' * len(self.RepeatPasswordInput) + (self.active == 4) * '|',
-                                                              False, (0, 0, 0))
-            screen.blit(RepeatPasswordInputText, (self.RepeatPasswordButtonRegistration.left, self.RepeatPasswordButtonRegistration.center[1] - 10))
+            RepeatPasswordInputText = RegistrationFont.render(
+                '*' * len(self.RepeatPasswordInput) + (self.active == 4) * '|',
+                False, (0, 0, 0))
+            screen.blit(RepeatPasswordInputText, (
+            self.RepeatPasswordButtonRegistration.left, self.RepeatPasswordButtonRegistration.center[1] - 10))
         screen.blit(pygame.transform.scale(self.BackIconImage, (180, 180)),
                     (ScreenWidth * 6 / 7, ScreenHeight * 1 / 30))
 
@@ -325,6 +367,9 @@ class MenuView:
                 elif self.BackButton.collidepoint(pygame.mouse.get_pos()):
                     Returnee = [ReturnStatus.quit, [""]]
                     return Returnee
+                elif self.SettingsButton.collidepoint(pygame.mouse.get_pos()):
+                    Returnee = [ReturnStatus.settings, [""]]
+                    return Returnee
         pressed_keys = pygame.key.get_pressed()
         if pressed_keys[K_ESCAPE]:
             sys.exit()
@@ -336,6 +381,62 @@ class MenuView:
         screen.blit(self.CreateGameText, (self.CreateGameButton.center[0] - 185, self.CreateGameButton.center[1] - 35))
         screen.blit(self.SettingsText, (self.SettingsButton.center[0] - 150, self.SettingsButton.center[1] - 35))
         screen.blit(self.RankingsText, (self.RankingsButton.center[0] - 230, self.RankingsButton.center[1] - 35))
+        screen.blit(pygame.transform.scale(self.BackIconImage, (180, 180)),
+                    (ScreenWidth * 6 / 7, ScreenHeight * 1 / 30))
+        Returnee = [ReturnStatus.stay, [""]]
+        return Returnee
+
+    def show_settings_menu(self):
+        screen.fill(RegistrationBackgroundColor)
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                sys.exit()
+            if event.type == MOUSEBUTTONDOWN:
+                if self.RuButton.collidepoint(pygame.mouse.get_pos()):
+                    Returnee = [ReturnStatus.change_lang, ["ru"]]
+                    return Returnee
+                elif self.EnButton.collidepoint(pygame.mouse.get_pos()):
+                    Returnee = [ReturnStatus.change_lang, ["en"]]
+                    return Returnee
+                elif self.BackButton.collidepoint(pygame.mouse.get_pos()):
+                    Returnee = [ReturnStatus.quit, [""]]
+                    return Returnee
+        pressed_keys = pygame.key.get_pressed()
+        if pressed_keys[K_ESCAPE]:
+            sys.exit()
+        pygame.draw.rect(screen, RegistrationButtonColor, self.RuButton)
+        pygame.draw.rect(screen, RegistrationButtonColor, self.EnButton)
+        screen.blit(self.RuText, (self.RuButton.center[0] - 35, self.RuButton.center[1] - 25))
+        screen.blit(self.EnText, (self.EnButton.center[0] - 35, self.EnButton.center[1] - 25))
+        screen.blit(self.LanguageSettingText, (self.RuButton.center[0] + 150, self.RuButton.center[1] - 200))
+        screen.blit(pygame.transform.scale(self.BackIconImage, (180, 180)),
+                    (ScreenWidth * 6 / 7, ScreenHeight * 1 / 30))
+        Returnee = [ReturnStatus.stay, [""]]
+        return Returnee
+
+    def show_lobby(self):
+        screen.fill(RegistrationBackgroundColor)
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                sys.exit()
+            if event.type == MOUSEBUTTONDOWN:
+                if self.RuButton.collidepoint(pygame.mouse.get_pos()):
+                    Returnee = [ReturnStatus.change_lang, ["ru"]]
+                    return Returnee
+                elif self.EnButton.collidepoint(pygame.mouse.get_pos()):
+                    Returnee = [ReturnStatus.change_lang, ["en"]]
+                    return Returnee
+                elif self.BackButton.collidepoint(pygame.mouse.get_pos()):
+                    Returnee = [ReturnStatus.quit, [""]]
+                    return Returnee
+        pressed_keys = pygame.key.get_pressed()
+        if pressed_keys[K_ESCAPE]:
+            sys.exit()
+        pygame.draw.rect(screen, RegistrationButtonColor, self.RuButton)
+        pygame.draw.rect(screen, RegistrationButtonColor, self.EnButton)
+        screen.blit(RuText, (self.RuButton.center[0] - 325, self.RuButton.center[1] - 35))
+        screen.blit(EnText, (self.EnButton.center[0] - 185, self.EnButton.center[1] - 35))
+        screen.blit(self.LanguageSettingText, (self.RuButton.center[0] - 150, self.RuButton.center[1] - 35))
         screen.blit(pygame.transform.scale(self.BackIconImage, (180, 180)),
                     (ScreenWidth * 6 / 7, ScreenHeight * 1 / 30))
         Returnee = [ReturnStatus.stay, [""]]

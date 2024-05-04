@@ -13,7 +13,8 @@ if __name__ == "__main__":
     CurrentGame = GameView(GameInfo(1, [1, 9, 5], 4, ["Pasha", "Sasha", "Nagibator228", "Боб"]))
     # Preparing all needed class objects
     ViewModelEntity = ViewModel()
-    Menu = MenuView()
+    DefaultLanguage = Languages.russian # TODO remove later(or maybe just move)
+    Menu = MenuView(DefaultLanguage)
     LastWindow = ViewWindows.initial_menu
     while True:
         CurrentWindow = ViewModelEntity.window # Check what window to display right now
@@ -57,13 +58,15 @@ if __name__ == "__main__":
                 sys.exit()
             elif Return[0] == ReturnStatus.start_game:
                 ViewModelEntity.start_game()
+            elif Return[0] == ReturnStatus.settings:
+                ViewModelEntity.go_to_settings_window()
 
         elif CurrentWindow == ViewWindows.game:
             Return = CurrentGame.ShowMainGameWindow(ViewModelEntity.language)
             if Return[0] == ReturnStatus.quit:
                 sys.exit()
 
-        # TODO all those menus(dont have visual at the moment to do it:
+        # TODO all those menus(dont have visual at the moment to do it):
 
         elif CurrentWindow == ViewWindows.connecting_by_code:
             pass
@@ -77,10 +80,20 @@ if __name__ == "__main__":
         elif CurrentWindow == ViewWindows.game_result:
             pass
 
-        elif CurrentWindow == ViewWindows.settings:
-            pass
-
-        # TODO create the changing of language menu + options for it
+        elif CurrentWindow == ViewWindows.settings: # Behaviour in Settings Menu
+            Return = Menu.show_settings_menu()
+            if Return[0] == ReturnStatus.quit:
+                ViewModelEntity.go_to_main_menu_window()
+            if Return[0] == ReturnStatus.change_lang:
+                new_lang_str = Return[1][0]
+                new_lang = None
+                if new_lang_str == "ru":  # Changing str into Language type object
+                    new_lang = Languages.russian
+                elif new_lang_str == "en":
+                    new_lang = Languages.english
+                Menu.change_menu_language(new_lang)
+                ViewModelEntity.change_language(new_lang)
+        # TODO fix all the indents of strings that change from languages (if there will be time and will)
 
         # Show messages
         Message = ViewModelEntity.info_window

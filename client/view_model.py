@@ -66,6 +66,10 @@ class ViewModel:
         self.reset_all_info()
         self.window = ViewWindows.initial_menu
 
+    def go_to_settings_window(self):
+        self.reset_all_info()
+        self.window = ViewWindows.settings
+
     def go_to_game_menu(self):
         self.window = ViewWindows.game
 
