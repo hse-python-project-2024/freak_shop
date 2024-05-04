@@ -2,6 +2,7 @@ import threading
 import time
 from facade import ClientRequests
 import enum
+from returns_codes import get_description_ru
 
 
 class ViewWindows(enum.Enum):
@@ -28,6 +29,7 @@ class ViewModel:
         self.user_name = None
         self.user_id = None
         self.user_login = None
+        self.user_readiness = False  # True if user ready else False
         self.game_id = None
         self.card = []
         self.language = language
@@ -36,19 +38,25 @@ class ViewModel:
         self.user_id, self.user_name, self.game_id, self.user_login = None, None, None, None
         self.card = []
 
-    def put_and_sleep(self, _info: str, _time: float = 2) -> None:
+    def put_and_sleep(self, _info: int, _time: float = 2) -> None:
         while self.info_window is not None:
             time.sleep(0.1)
-        self.info_window = _info
+        if self.language == Languages.russian:
+            self.info_window = get_description_ru(_info)
+        elif self.language == Languages.english:
+            self.info_window = str(_info)  # TODO: add english language
+        else:
+            self.info_window = str(_info)
         time.sleep(_time)
         self.info_window = None
 
-    def put_info_window(self, _info: str, _time: float = 2) -> None:
+    def put_info_window(self, _info: int, _time: float = 2) -> None:
         threading.Thread(target=self.put_and_sleep, args=(_info, _time), daemon=True).start()
 
     def go_to_main_menu_window(self):
         self.card = []
         self.game_id = None
+        self.user_readiness = False
         self.window = ViewWindows.main_menu
 
     def go_to_login_window(self):
@@ -79,33 +87,41 @@ class ViewModel:
             self.user_login = response.user_info.login
             self.go_to_main_menu_window()
         else:
-            self.put_info_window(str(response.status))
+            self.put_info_window(_info=response.status)
 
     def register_user(self, _user_login: str, _user_name: str, _user_password1: str, _user_password2: str):
         response = self.req.register_user(_user_login=_user_login, _user_name=_user_name, _password1=_user_password1,
                                           _password2=_user_password2)
         if response.status == 0:
-            self.put_info_window("Пользователь успешно добавлен")
+            self.put_info_window(_info=17, _time=1)
             self.window = ViewWindows.initial_menu
         else:
-            self.put_info_window(str(response.status))
+            self.put_info_window(_info=response.status)
 
-    def change_language(self, new_language):
+    def change_language(self, new_language: Languages):
         self.language = new_language
 
-    def run(self):
+    def change_user_readiness(self):
+        response = self.req.change_readiness(_game_id=self.game_id, _user_id=self.user_id)
+        if response.status == 0:
+            self.user_readiness = not self.user_readiness
+        else:
+            self.put_info_window(_info=response.status)
+
+    def run_all_game_requests(self):
         threading.Thread(target=self.current_status, args=(0.1), daemon=True).start()
         threading.Thread(target=self.all_cards, args=(0.2), daemon=True).start()
 
     def current_status(self, sleep_time: float):
         while True:
-            # self.status = req.
+            if self.game_id is None:
+                break
+            # self.status = self.req.
             time.sleep(sleep_time)
 
     def all_cards(self, sleep_time: float):
         while True:
-            if self.status == 0:  # если мы играем
-                # response = req
-                # parse args
-                pass
+            if self.game_id is None:
+                break
+            # self.card = self.req...
             time.sleep(sleep_time)
