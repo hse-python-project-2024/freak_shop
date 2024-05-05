@@ -658,6 +658,17 @@ class Core:
         return 0, game.get_players()
 
     def make_move(self, game_id, player_id, sold_cards, bought_cards):
+        if game_id not in GAMES:
+            return 1
+        game = GAMES[game_id]
+        if player_id not in PLAYERS:
+            return 2
+        if player_id not in game.get_players():
+            return 3
+        if game.get_stage() == WAITING:
+            return 4
+        if game.get_stage() == RESULTS:
+            return 5
         if not sold_cards:
             return 18
         if not bought_cards:
@@ -672,18 +683,9 @@ class Core:
                 return 21
             if card_id < 0 or card_id >= len(CARDS):
                 return 22
-        if game_id not in GAMES:
-            return 1
-        game = GAMES[game_id]
-        if player_id not in PLAYERS:
-            return 2
-        if player_id not in game.get_players():
-            return 3
-        if game.get_stage() == WAITING:
-            return 4
-        if game.get_stage() == RESULTS:
-            return 5
         res = game.move(player_id, sold_cards, bought_cards)
         if res:
             return 20
         return 0
+
+    # def get_goals(self, game_id, player_id):
