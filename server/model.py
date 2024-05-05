@@ -2,6 +2,30 @@ from collections import deque
 from random import shuffle, randint
 
 
+def check_good_deal(player_card_ids, shop_card_ids):
+    if len(player_card_ids) != len(shop_card_ids):
+        return False
+    val0 = CARDS[player_card_ids[0]].value
+    for card_id in player_card_ids:
+        card = CARDS[card_id]
+        if card.value != val0:
+            return False
+    val1 = CARDS[shop_card_ids[0]].value
+    if val0 == val1:
+        return False
+    for card_id in shop_card_ids:
+        card = CARDS[card_id]
+        if card.value != val1:
+            return False
+    return True
+
+
+def chack_fair_price(player_card_ids, shop_card_ids):
+    sum_sold = sum(CARDS[card_id].value for card_id in player_card_ids)
+    sum_bought = sum(CARDS[card_id].value for card_id in shop_card_ids)
+    return sum_sold == sum_bought
+
+
 class Deck:
     def __init__(self):
         """Data structure that stores its owner's cards and quickly checks if the goals are completed."""
@@ -293,25 +317,8 @@ class Game:
     def move(self, player_id, sold_cards_ids, bought_cards_ids):
         """Handle a player's move. Restock the shop after a valid move
         and finish game if the "Closed Shop" card is pulled."""
-        good_deal = True
-        val0 = CARDS[sold_cards_ids[0]].value
-        for card_id in sold_cards_ids:
-            card = CARDS[card_id]
-            if card.value != val0:
-                good_deal = False
-                break
-        if good_deal:
-            val0 = CARDS[bought_cards_ids[0]].value
-            for card_id in bought_cards_ids:
-                card = CARDS[card_id]
-                if card.value != val0:
-                    good_deal = False
-                    break
-            if good_deal:
-                good_deal = (len(sold_cards_ids) == len(bought_cards_ids))
-        sum_sold = sum(CARDS[card_id].value for card_id in sold_cards_ids)
-        sum_bought = sum(CARDS[card_id].value for card_id in bought_cards_ids)
-        fair_price = (sum_sold == sum_bought)
+        good_deal = check_good_deal(sold_cards_ids, bought_cards_ids)
+        fair_price = chack_fair_price(sold_cards_ids, bought_cards_ids)
         if good_deal or fair_price:
             player = PLAYERS[player_id]
             player.sell_cards(self.id, sold_cards_ids)
@@ -321,9 +328,6 @@ class Game:
             self.check_neighbors_festival()
             self.check_fashion_at_lowest_price()
             self.check_not_the_same_values()
-
-        if not self.restock():
-            self.finish()
 
     def get_current_player(self):
         """Returns id of the current player."""
@@ -652,3 +656,34 @@ class Core:
             return 1
         game = GAMES[game_id]
         return 0, game.get_players()
+
+    def make_move(self, game_id, player_id, sold_cards, bought_cards):
+        if not sold_cards:
+            return 18
+        if not bought_cards:
+            return 19
+        for card_id in sold_cards:
+            if type(card_id) is not int:
+                return 21
+            if card_id < 0 or card_id >= len(CARDS):
+                return 22
+        for card_id in bought_cards:
+            if type(card_id) is not int:
+                return 21
+            if card_id < 0 or card_id >= len(CARDS):
+                return 22
+        if game_id not in GAMES:
+            return 1
+        game = GAMES[game_id]
+        if player_id not in PLAYERS:
+            return 2
+        if player_id not in game.get_players():
+            return 3
+        if game.get_stage() == WAITING:
+            return 4
+        if game.get_stage() == RESULTS:
+            return 5
+        res = game.move(player_id, sold_cards, bought_cards)
+        if res:
+            return 20
+        return 0
