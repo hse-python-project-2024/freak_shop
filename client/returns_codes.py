@@ -10,4 +10,4 @@ code_description_ru = {0: "Успешно", 1: "Игра не найдена", 2
 
 
 def get_description_ru(code: int) -> str:
-    return code_description_ru[code]
+    return code_description_ru.get(code, str(code))
