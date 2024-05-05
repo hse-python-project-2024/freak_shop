@@ -12,7 +12,7 @@ service DbService {
   rpc LeaveGame(GameUserId) returns (IsDone);
   rpc ChangeReadiness(GameUserId) returns (IsDone);
 
-  rpc GetGoals(Id) returns (GoalList);
+  rpc GetGoals(GameUserId) returns (GoalList);
   rpc GetUsersInSession(Id) returns (UsersInSession);
 
   rpc GetShopCards(Id) returns (CardsResponse);
@@ -80,7 +80,8 @@ message GoalState{
 }
 
 message GoalList{
-  repeated GoalState goals = 1;
+  int32 status = 1;
+  repeated GoalState goals = 2;
 }
 
 message CardsResponse{

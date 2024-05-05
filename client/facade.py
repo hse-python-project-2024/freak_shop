@@ -38,8 +38,8 @@ class ClientRequests:
         request = requests_pb2.GameUserId(game_id=_game_id, user_id=_user_id)
         return self.stub.ChangeReadiness(request)
 
-    def get_goals(self, _game_id: int):
-        request = requests_pb2.Id(id=_game_id)
+    def get_goals(self, _game_id: int, _user_id: int):
+        request = requests_pb2.GameUserId(game_id=_game_id, user_id=_user_id)
         return self.stub.GetGoals(request)
 
     def get_user_in_session(self, _game_id: int):

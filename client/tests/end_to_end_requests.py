@@ -18,9 +18,12 @@ if __name__ == '__main__':
     response = client.change_readiness(_game_id=1, _user_id=1)
     print(f"status = {response.status}\n")
 
-    # print("Get goals")
-    # response = client.get_goals(_game_id=1)
-    # print(f"status = {response.status}")
+    print("Get goals")
+    response = client.get_goals(_game_id=1, _user_id=50)
+    print(response.status)
+    for my_goal in response.goals:
+        print(f"goal = {my_goal.goal}, point = {my_goal.point}")
+    print()
 
     print("Get users in Session")
     response = client.get_user_in_session(_game_id=1)
@@ -28,6 +31,7 @@ if __name__ == '__main__':
     i = 1
     for user in response.users_info:
         print(f"user {i}: user id = {user.id}, user login = {user.login}, user name = {user.name}")
+        i += 1
     print()
 
     print("Get shop cards")
@@ -53,7 +57,7 @@ if __name__ == '__main__':
     print(f"status = {response.status}, move user_id = {response.id}\n")
 
     print("Make Move")
-    response = client.whose_move(_game_id=1)
+    response = client.make_move(_game_id=0, _user_id=1, hand_cards=(1, 2, 3), shop_cards=(4, 5, 6))
     print(f"status = {response.status}\n")
 
     while True:
