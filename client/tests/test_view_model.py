@@ -31,6 +31,9 @@ class TestClientRequests(unittest.TestCase):
         self.assertEqual(model.game_id, None)
         self.assertEqual(model.my_card, [])
         self.assertEqual(model.shop_card, [])
+        self.assertEqual(model.goals, dict())
+        self.assertEqual(model.users_in_session, dict())
+        self.assertEqual(model.whose_move, None)
 
     def test_init(self):
         new_model = ViewModel()
