@@ -72,19 +72,28 @@ class MenuView:
         self.EnButton = Rect(ScreenWidth * 20 / 38, ScreenHeight * 1 / 5, 350, 200)
 
         # Buttons for Lobby
-        self.ReadyButton = Rect(ScreenWidth * 14 / 38, ScreenHeight * 4 / 5, 450, 100)
+        self.ReadyButton = Rect(ScreenWidth * 14 / 38, ScreenHeight * 4 / 5 + 50, 450, 100)
 
         # Images of password show|hide
         self.BackIconImage = pygame.image.load("src/img/BackIcon.png").convert_alpha()
         self.EyeIconImage = pygame.image.load("src/img/EyeIcon.png").convert_alpha()
         self.EyeIconImageCrossed = pygame.image.load("src/img/EyeIconCrossed.png").convert_alpha()
 
+        # Icons for the Lobby
         self.PlayerIcon = pygame.transform.scale(pygame.image.load("src/img/Player_Icon.png").convert_alpha(),
                                                  (180, 180))
         self.JoinedPlayerCard = (pygame.transform.scale(pygame.image.load("src/img/Joined_Player_Icon.png").convert(),
                                                         (240, 320)))
+        self.ReadiedUpIconDeactivated = pygame.transform.scale(pygame.image.load("src/img/End_Turn_Icon.png").convert_alpha(),
+                                                  (200, 200))
+        self.ReadiedUpIconActivated = pygame.transform.scale(
+            pygame.image.load("src/img/End_Turn_Icon_Activated.png").convert_alpha(),
+            (200, 200))
 
+        # Code for joining the lobby
         self.LobbyCode = "ABCDE"  # TODO think about how to get it
+
+        # Variables for registration/login
         self.LoginInput = ""
         self.PasswordInput = ""
         self.RepeatPasswordInput = ""
@@ -338,7 +347,7 @@ class MenuView:
         Returnee = [ReturnStatus.stay, [""]]
         return Returnee
 
-    def show_start_menu(self):
+    def show_initial_menu(self):
         screen.fill(RegistrationBackgroundColor)
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -454,11 +463,17 @@ class MenuView:
             screen.blit(PlayerNameText, (ScreenWidth * i / 6 + 139 - len(player_nicknames[i])*13, ScreenHeight * 1 / 8 + 180))
             screen.blit(self.JoinedPlayerCard,
                         (ScreenWidth * i / 6 + 30, ScreenHeight * 3 / 7-70))
-        screen.blit(pygame.transform.scale(self.BackIconImage, (180, 180)),
+            if (player_ready_signes[i]):
+                screen.blit(self.ReadiedUpIconActivated,
+                            (ScreenWidth * i / 6 + 50, ScreenHeight * 3 / 5 + 50))
+            else:
+                screen.blit(self.ReadiedUpIconDeactivated,
+                            (ScreenWidth * i / 6 + 50, ScreenHeight * 3 / 5 + 50))
+            screen.blit(pygame.transform.scale(self.BackIconImage, (180, 180)),
                     (ScreenWidth * 6 / 7, ScreenHeight * 1 / 30))
         pygame.draw.rect(screen, RegistrationButtonColor, self.ReadyButton)
         screen.blit(self.ReadyText,
-                    (ScreenWidth * 17 / 38, ScreenHeight * 4 / 5 + 30))
+                    (ScreenWidth * 17 / 38, ScreenHeight * 4 / 5 + 80))
         LobbyCodeText = CodeFont.render(self.LobbyCode, False, (0, 0, 0))
         screen.blit(LobbyCodeText,
                     (ScreenWidth * 1 / 2 - 155, ScreenHeight * 1 / 19))
