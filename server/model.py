@@ -462,8 +462,8 @@ class Core:
             - 0
 
             - 9
-        -- [1] value:
-            - game_id if status == 0"""
+        -- [1] int if status == 0:
+            - game_id"""
         if len(GAMES) == MX_GAME_ID:
             return 1
         new_game_id = randint(1, MX_GAME_ID)
@@ -479,7 +479,6 @@ class Core:
         Output:
 
         -- status code:
-
              - 0
 
              - 1
@@ -514,13 +513,14 @@ class Core:
 
         Output:
 
-         - 0
+        -- status code:
+             - 0
 
-         - 1
+             - 1
 
-         - 2
+             - 2
 
-         - 4"""
+             - 4"""
         if game_id not in GAMES:
             return 1
         if player_id not in PLAYERS:
@@ -536,15 +536,16 @@ class Core:
 
         Output:
 
-         - 0
+        -- status code
+             - 0
 
-         - 1
+             - 1
 
-         - 2
+             - 2
 
-         - 6
+             - 6
 
-         - 7"""
+             - 7"""
         if game_id not in GAMES:
             return 1
         if player_id not in PLAYERS:
@@ -562,9 +563,13 @@ class Core:
 
         Output:
 
-        - positive number: player_id
+        -- [0] status code:
+            - 0
 
-        - 1"""
+            - 1
+
+        -- [1] int if status == 0:
+            - player_id"""
 
         if game_id not in GAMES:
             return 1
@@ -576,13 +581,17 @@ class Core:
 
         Output:
 
-        - tuple(0, list[int]): list of card ids
+        -- status code:
+            - 0
 
-        - 1
+            - 1
 
-        - 5
+            - 5
 
-        - 7"""
+            - 7
+
+        -- list[int] if status == 0:
+            - list of card ids"""
 
         if game_id not in GAMES:
             return 1
@@ -598,17 +607,21 @@ class Core:
 
         Output:
 
-        - tuple(0, list[int]): list of card ids
+        -- status code:
+            - 0
 
-        - 1
+            - 1
 
-        - 2
+            - 2
 
-        - 4
+            - 4
 
-        - 5
+            - 5
 
-        - 7"""
+            - 7
+
+        -- list[int] if status == 0:
+            - list of cards' ids"""
 
         if game_id not in GAMES:
             return 1
@@ -625,6 +638,16 @@ class Core:
         return 0, player.get_cards(game_id)
 
     def get_players(self, game_id):
+        """Return list of players' ids
+
+        Output:
+
+        -- status code:
+            - 0
+
+            - 1
+        -- list[int] if status == 0:
+            - list of players' ids"""
         if game_id not in GAMES:
             return 1
         game = GAMES[game_id]
