@@ -6,55 +6,82 @@ import grpc
 import requests_pb2_grpc
 import requests_pb2
 
-from random import randint
-
-from model import Server
+from model import Core
 
 
 class Facade(requests_pb2_grpc.DbServiceServicer):
     def __init__(self):
-        _LOGGER = get_logger(__name__)
+        self._LOGGER = get_logger(__name__)
         super().__init__()
         self.db = db_connection.DBConnection()
-        _LOGGER.info("Корректное подлючение фасада")
+        self._LOGGER.info("Корректное подлючение фасада")
 
         self.core = Core()
-
-    def GetUserById(self, request, context):
-        user = self.db.get_user_by_id(_user_id=request.id)
-        status = requests_pb2.Status()
-        if not user[0]:
-            status.is_done = False
-            status.info = user[1]
-            return requests_pb2.ResponseUser(status=status)
-        status.is_done = True
-        return requests_pb2.ResponseUser(status=status, id=user[1], login=user[2], name=user[3])
 
     def RegisterUser(self, request, context):
         result = self.db.add_user(_user_login=request.login, _user_name=request.name, _password_1=request.password1,
                                   _password_2=request.password2)
-        return requests_pb2.Status(is_done=result[0], info=result[1])
+        return requests_pb2.IsDone(status=result)
 
     def LoginUser(self, request, context):
         user = self.db.login_user(_user_login=request.login, _password=request.password1)
-        status = requests_pb2.Status(is_done=True, info="OK")
-        if not user[0]:
-            status.is_done, status.info = False, user[1]
-            return requests_pb2.ResponseUser(status=status)
-        return requests_pb2.ResponseUser(status=status, id=user[1], login=user[2], name=user[3])
+        if user[0] != 0:
+            return requests_pb2.ResponseUser(status=user[0])
+        return requests_pb2.ResponseUser(status=0, id=user[1], login=user[2], name=user[3])
 
-    def CreateGame(self):
+    def GetUserById(self, request, context):
+        user = self.db.get_user_by_id(_user_id=request.id)
+        if user[0] != 0:
+            return requests_pb2.ResponseUser(status=user[0])
+        _user_info = requests_pb2.UserInfo(id=user[1], login=user[2], name=user[3])
+        return requests_pb2.ResponseUser(status=0, user_info=_user_info)
+
+    def CreateGame(self, request, context):
         # self.core.create_game()
-        pass
+        return requests_pb2.IdResponse(status=0, id=1984)
 
     def JoinGame(self, request, context):
         # self.core.join_game()
-        pass
+        return requests_pb2.IsDone(status=0)
 
     def LeaveGame(self, request, context):
         # self.core.leave_game()
-        pass
+        return requests_pb2.IsDone(status=0)
 
     def ChangeReadiness(self, request, context):
         # self.core.change_readiness()
-        pass
+        return requests_pb2.IsDone(status=0)
+
+    # def GetGoals(self, request, context):
+    #     GoalState
+    #     return requests_pb2.GetGoals(request=request)
+
+    def GetUsersInSession(self, request, context):
+        res = requests_pb2.UsersInSession()
+        res.status = 0
+        user_1 = res.users_info.add()
+        user_2 = res.users_info.add()
+        user_1.id, user_1.login, user_1.name = 1, "gabik", "Kamil"
+        user_2.id, user_2.login, user_2.name = 2, "petrovich", "Petya"
+        return res
+
+    def GetShopCards(self, request, context):
+        res = requests_pb2.CardsResponse()
+        res.status = 0
+        res.card_id.extend([1984, 52, 13])
+        return res
+
+    def GetUserCards(self, request, context):
+        res = requests_pb2.CardsResponse()
+        res.status = 0
+        res.card_id.extend([13, 52, 1984])
+        return res
+
+    def GetPointsCount(self, request, context):
+        return requests_pb2.PointsCount(status=0, count=1984)
+
+    def WhoseMove(self, request, context):
+        return requests_pb2.IdResponse(status=0, id=68)
+
+    def MakeMove(self, request, context):
+        return requests_pb2.IsDone(status=0)
