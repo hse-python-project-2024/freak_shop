@@ -8,6 +8,7 @@ from view_model import ViewModel
 from view_model import ViewWindows
 from view_model import Languages
 from menu import ReturnStatus
+import time
 
 if __name__ == "__main__":
     CurrentGame = GameView(GameInfo(1, [1, 9, 5], 4, ["Pasha", "Sasha", "Nagibator228", "Боб"]))
@@ -65,27 +66,36 @@ if __name__ == "__main__":
                 ViewModelEntity.window = ViewWindows.waiting_room  # TODO add actual lobby create
             elif Return[0] == ReturnStatus.settings:
                 ViewModelEntity.go_to_settings_window()
+            elif Return[0] == ReturnStatus.leaderboard:
+                ViewModelEntity.go_to_leaderboard_window()
 
         elif CurrentWindow == ViewWindows.game:
             Return = CurrentGame.ShowMainGameWindow(ViewModelEntity.language)
             if Return[0] == ReturnStatus.quit:
+                time.sleep(0.1)
                 sys.exit()
 
-        # TODO all those menus(dont have visual at the moment to do it):
+        # TODO - remove the pass to replace with real functions
 
         elif CurrentWindow == ViewWindows.connecting_by_code:
             pass
 
         elif CurrentWindow == ViewWindows.leaderboard:
-            pass
+            # TODO - we need to get information about leaders and pass it to the function(for now just framework)
+            Return = Menu.show_leaderboard()
+            if Return[0] == ReturnStatus.quit:
+                time.sleep(0.1)
+                ViewModelEntity.go_to_main_menu_window()
 
         elif CurrentWindow == ViewWindows.waiting_room:  # Behaviour in Lobby
             # Here we need to ask about all the player info, which for now is defaulted
             PlayerAmount = 3
             PlayerNicknames = ["Lol", "Kek", "Cheburek"]
             PlayerReadySignes = [0, 0, 1]
+
             Return = Menu.show_lobby(PlayerAmount, PlayerNicknames, PlayerReadySignes)
             if Return[0] == ReturnStatus.quit:
+                time.sleep(0.1)
                 ViewModelEntity.go_to_main_menu_window()
             # TODO add actual checking of ready and stuff
         elif CurrentWindow == ViewWindows.game_result:
@@ -94,6 +104,7 @@ if __name__ == "__main__":
         elif CurrentWindow == ViewWindows.settings:  # Behaviour in Settings Menu
             Return = Menu.show_settings_menu()
             if Return[0] == ReturnStatus.quit:
+                time.sleep(0.1)
                 ViewModelEntity.go_to_main_menu_window()
             if Return[0] == ReturnStatus.change_lang:
                 new_lang_str = Return[1][0]

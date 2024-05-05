@@ -397,6 +397,9 @@ class MenuView:
                 elif self.SettingsButton.collidepoint(pygame.mouse.get_pos()):
                     Returnee = [ReturnStatus.settings, [""]]
                     return Returnee
+                elif self.RankingsButton.collidepoint(pygame.mouse.get_pos()):
+                    Returnee = [ReturnStatus.leaderboard, [""]]
+                    return Returnee
         pressed_keys = pygame.key.get_pressed()
         if pressed_keys[K_ESCAPE]:
             sys.exit()
@@ -430,7 +433,8 @@ class MenuView:
                     return Returnee
         pressed_keys = pygame.key.get_pressed()
         if pressed_keys[K_ESCAPE]:
-            sys.exit()
+            Returnee = [ReturnStatus.quit, [""]]
+            return Returnee
         pygame.draw.rect(screen, RegistrationButtonColor, self.RuButton)
         pygame.draw.rect(screen, RegistrationButtonColor, self.EnButton)
         screen.blit(self.RuText, (self.RuButton.center[0] - 35, self.RuButton.center[1] - 25))
@@ -455,7 +459,8 @@ class MenuView:
                     pass  # TODO add real interaction
         pressed_keys = pygame.key.get_pressed()
         if pressed_keys[K_ESCAPE]:
-            sys.exit()
+            Returnee = [ReturnStatus.quit, [""]]
+            return Returnee
         for j in range(5):
             screen.blit(self.PlayerIcon, (50 + ScreenWidth * j / 6, ScreenHeight * 1 / 8))
         for i in range(player_amount):
@@ -478,6 +483,26 @@ class MenuView:
         screen.blit(LobbyCodeText,
                     (ScreenWidth * 1 / 2 - 155, ScreenHeight * 1 / 19))
 
+        Returnee = [ReturnStatus.stay, [""]]
+        return Returnee
+
+    def show_leaderboard(self):
+        # TODO add the actual leaderboard
+        screen.fill(RegistrationBackgroundColor)
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                sys.exit()
+            if event.type == MOUSEBUTTONDOWN:
+                if self.BackButton.collidepoint(pygame.mouse.get_pos()):
+                    Returnee = [ReturnStatus.quit, [""]]
+                    return Returnee
+        pressed_keys = pygame.key.get_pressed()
+        if pressed_keys[K_ESCAPE]:
+            Returnee = [ReturnStatus.quit, [""]]
+            return Returnee
+
+        screen.blit(pygame.transform.scale(self.BackIconImage, (180, 180)),
+                    (ScreenWidth * 6 / 7, ScreenHeight * 1 / 30))
         Returnee = [ReturnStatus.stay, [""]]
         return Returnee
 

@@ -70,6 +70,10 @@ class ViewModel:
         self.reset_all_info()
         self.window = ViewWindows.settings
 
+    def go_to_leaderboard_window(self):
+        self.reset_all_info()
+        self.window = ViewWindows.leaderboard
+
     def go_to_game_menu(self):
         self.window = ViewWindows.game
 
