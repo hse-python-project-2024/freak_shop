@@ -238,6 +238,12 @@ class Player:
         self.goals[game_id][too_snob] = self.decks[game_id].check_too_snob()
         self.goals[game_id][the_art_of_bargaining] = self.decks[game_id].check_the_art_of_bargaining()
 
+    def get_goals(self, game_id):
+        return self.goals[game_id]
+
+    def get_points(self, game_id):
+        return sum(self.goals[game_id][goal] for goal in self.goals[game_id])
+
 
 class Game:
     def __init__(self, game_id):
@@ -688,4 +694,48 @@ class Core:
             return 20
         return 0
 
-    # def get_goals(self, game_id, player_id):
+    def get_goals(self, game_id, player_id):
+        if game_id not in GAMES:
+            return 1
+        game = GAMES[game_id]
+        if player_id not in PLAYERS:
+            return 2
+        if player_id not in game.get_players():
+            return 3
+        if game.get_stage() == WAITING:
+            return 4
+        player = PLAYERS[player_id]
+        return 0, player.get_goals(game_id)
+
+    def get_goals_total(self, game_id):
+        if game_id not in GAMES:
+            return 1
+        game = GAMES[game_id]
+        if game.get_stage() == WAITING:
+            return 4
+        res = {}
+        for player_id in game.get_players():
+            res[player_id] = self.get_goals(game_id, player_id)
+
+    def get_points(self, game_id, player_id):
+        if game_id not in GAMES:
+            return 1
+        game = GAMES[game_id]
+        if player_id not in PLAYERS:
+            return 2
+        if player_id not in game.get_players():
+            return 3
+        if game.get_stage() == WAITING:
+            return 4
+        player = PLAYERS[player_id]
+        return 0, player.get_points(game_id)
+
+    def get_points_total(self, game_id):
+        if game_id not in GAMES:
+            return 1
+        game = GAMES[game_id]
+        if game.get_stage() == WAITING:
+            return 4
+        res = {}
+        for player_id in game.get_players():
+            res[player_id] = self.get_points(game_id, player_id)
