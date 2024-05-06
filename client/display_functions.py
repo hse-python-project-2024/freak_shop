@@ -46,12 +46,11 @@ class GameBoardView:
         self.EndTurnIconActivated = pygame.transform.scale(
             pygame.image.load("src/img/End_Turn_Icon_Activated.png").convert_alpha(),
             (250, 250))
-        self.EndTurnText = TextFont.render("Совершить обмен", False, (0, 0, 0))
+
 
     def display_shop_image(self):
         screen.blit(pygame.transform.scale(self.ShopImage, (800, 400)), (ScreenWidth / 4,
                                                                          ScreenHeight / 10))
-
     def display_player_cards(self, CurrentPlayer):
         for i in range(10):
             DisplayedDiscounted = 0
@@ -107,17 +106,18 @@ class GameBoardView:
                     screen.blit(self.CardImages[i][ShowDiscount], (ScreenWidth * (2 / 10 + WidthAdd) - 80 ,
                                                                    ScreenHeight * (HeightAdd + j / 50)))
 
-    def display_player_list(self, Game, PlayerPosition):
+    def display_player_list(self, Game, PlayerPosition,lang):
         for i in range(Game.PlayerAmount):
             screen.blit(self.PlayerIcon, (ScreenWidth * 4 / 5, ScreenHeight * i / 8))
             if i != PlayerPosition:
                 PlayerNameText = TextFont.render(Game.PlayersNicknames[i], False, (0, 0, 0))
             else:
-                PlayerNameText = TextFont.render("Вы", False, (0, 0, 0))
+                PlayerNameText = TextFont.render(YouTexts[lang], False, (0, 0, 0))
             screen.blit(PlayerNameText, (ScreenWidth * 4 / 5 + 150, ScreenHeight * i / 8 + 60))
 
-    def display_end_turn_button(self, activated):
-        screen.blit(self.EndTurnText, (ScreenWidth * 6 / 7 + 15, ScreenHeight * 3 / 4 - 40))
+    def display_end_turn_button(self, activated,lang):
+        EndTurnText = TextFont.render(EndTurnTexts[lang], False, (0, 0, 0))
+        screen.blit(EndTurnText, (ScreenWidth * 6 / 7 + 15, ScreenHeight * 3 / 4 - 40))
         if activated:
             screen.blit(self.EndTurnIconActivated,
                         (ScreenWidth * 6 / 7 + 20, ScreenHeight * 3 / 4 - 30))
@@ -135,9 +135,13 @@ class GameBoardView:
             ind += 1
         return TaskImagesRects
 
-    def display_tasks_text(self, Tasks, TaskNumber):
-        for j in range(len(Task_Descriptions[Tasks[TaskNumber] - 1])):
-            TaskDescriptionText = TaskFont.render(Task_Descriptions[Tasks[TaskNumber] - 1][j], False,
+    def show_scores(self,Game):
+        for i in range(len(Game.Scores)):
+            pass #TODO display the actual scores
+
+    def display_tasks_text(self, Tasks, TaskNumber,lang):
+        for j in range(len(Task_Descriptions[lang][Tasks[TaskNumber] - 1])):
+            TaskDescriptionText = TaskFont.render(Task_Descriptions[lang][Tasks[TaskNumber] - 1][j], False,
                                                   (0, 0, 0))
             TaskTextSurface = pygame.Surface(TaskDescriptionText.get_size())
             TaskTextSurface.fill(BackgroundColor)

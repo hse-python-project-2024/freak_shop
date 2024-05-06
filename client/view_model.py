@@ -14,6 +14,8 @@ class ViewWindows(enum.Enum):
     waiting_room = 6
     game = 7
     game_result = 8
+    leaderboard = 9
+    settings = 10
 
 
 class Languages(enum.Enum):
@@ -84,6 +86,14 @@ class ViewModel:
     def go_to_initial_window(self):
         self.reset_all_info()
         self.window = ViewWindows.initial_menu
+
+    def go_to_settings_window(self):
+        self.reset_all_info()
+        self.window = ViewWindows.settings
+
+    def go_to_leaderboard_window(self):
+        self.reset_all_info()
+        self.window = ViewWindows.leaderboard
 
     def go_to_game_menu(self):
         self.window = ViewWindows.game
