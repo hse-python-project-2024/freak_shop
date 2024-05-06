@@ -17,8 +17,8 @@ if __name__ == "__main__":
     DefaultLanguage = Languages.russian  # TODO remove later(or maybe just move)
     Menu = MenuView(DefaultLanguage)
     LastWindow = ViewWindows.initial_menu
-    # LastWindow = ViewWindows.waiting_room  # code for windows design testing
-    # ViewModelEntity.window = ViewWindows.waiting_room
+    # LastWindow = ViewWindows.game  # code for windows design testing
+    # ViewModelEntity.window = ViewWindows.game
     while True:
         CurrentWindow = ViewModelEntity.window  # Check what window to display right now
         if CurrentWindow != LastWindow:
@@ -47,7 +47,7 @@ if __name__ == "__main__":
                 ViewModelEntity.go_to_initial_window()
 
         elif CurrentWindow == ViewWindows.registration:  # Behaviour in Registration Menu
-            Return = Menu.show_resgistration_menu()
+            Return = Menu.show_registration_menu()
             if Return[0] == ReturnStatus.register:
                 ViewModelEntity.register_user(Return[1][0], Return[1][1], Return[1][2], Return[1][3])
                 if ViewModelEntity.info_window is None:
@@ -60,8 +60,8 @@ if __name__ == "__main__":
             Return = Menu.show_main_menu()
             if Return[0] == ReturnStatus.quit:
                 sys.exit()
-            elif Return[0] == ReturnStatus.join_lobby:
-                pass  # TODO add actual lobby join
+            elif Return[0] == ReturnStatus.go_to_join_lobby:
+                ViewModelEntity.window = ViewWindows.connecting_by_code   # TODO add ViewModel function
             elif Return[0] == ReturnStatus.create_lobby:
                 ViewModelEntity.window = ViewWindows.waiting_room  # TODO add actual lobby create
             elif Return[0] == ReturnStatus.settings:
@@ -75,10 +75,12 @@ if __name__ == "__main__":
                 time.sleep(0.1)
                 sys.exit()
 
-        # TODO - remove the pass to replace with real functions
 
         elif CurrentWindow == ViewWindows.connecting_by_code:
-            pass
+            Return = Menu.show_join_by_code_menu() # TODO add actual joining
+            if Return[0] == ReturnStatus.quit:
+                time.sleep(0.1)
+                ViewModelEntity.go_to_main_menu_window()
 
         elif CurrentWindow == ViewWindows.leaderboard:
             # TODO - we need to get information about leaders and pass it to the function(for now just framework)
@@ -99,7 +101,7 @@ if __name__ == "__main__":
                 ViewModelEntity.go_to_main_menu_window()
             # TODO add actual checking of ready and stuff
         elif CurrentWindow == ViewWindows.game_result:
-            pass
+            pass  # TODO - remove the pass to replace with real functions
 
         elif CurrentWindow == ViewWindows.settings:  # Behaviour in Settings Menu
             Return = Menu.show_settings_menu()

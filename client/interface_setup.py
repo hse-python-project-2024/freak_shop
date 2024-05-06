@@ -131,7 +131,7 @@ CreateGameTexts = ["Создать игру", "Create the game"]
 SettingsTexts = ["Настройки", "  Settings"]
 LeaderbordTexts = ["Списки лидеров", "    Leaderboard"]
 
-LanguageSettingsTexts = ["Язык :","Language :"]
+LanguageSettingsTexts = ["      Язык :","Language :"]
 
 GameCodeTexts = ["Код игры :", "Game code :"]
 
