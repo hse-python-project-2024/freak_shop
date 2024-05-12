@@ -15,11 +15,17 @@ class GameView:
         self.Player = PlayerInfo()
         self.Shop = ShopInfo()
         self.IsMyTurn = True
+        self.CurrentPlayerPosition = 0
         self.MyPosition = 0 # should ask from server
 
-    def update_game_info(self, NewPlayer, NewShop):
+    def update_game_info(self, NewPlayer, NewShop,NewCurPlayer):
         self.Player = NewPlayer
         self.Shop = NewShop
+        self.CurrentPlayerPosition = NewCurPlayer
+        if NewCurPlayer == self.MyPosition:
+            self.IsMyTurn = True
+        else:
+            self.IsMyTurn = False
 
     def ShowMainGameWindow(self,lang):
         screen.fill(BackgroundColor)

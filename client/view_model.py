@@ -95,6 +95,10 @@ class ViewModel:
         self.reset_all_info()
         self.window = ViewWindows.leaderboard
 
+    def go_to_jbc_window(self): # jbc = Join by code
+        self.reset_all_info()
+        self.window = ViewWindows.waiting_room
+
     def go_to_game_menu(self):
         self.window = ViewWindows.game
 
@@ -144,6 +148,10 @@ class ViewModel:
             self.start_game(_game_id=response.id)
         else:
             self.put_info_window(_info=response.status)
+
+    def create_lobby(self):
+        self.create_game()
+        self.window = ViewWindows.waiting_room
 
     def leave_game(self):
         response = self.req.leave_game(_game_id=self.game_id, _user_id=self.user_id)

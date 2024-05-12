@@ -16,6 +16,7 @@ ScreenWidth = 1920
 ScreenHeight = 1080
 MaxLoginLength = 25
 MaxPasswordLength = 25
+DefaultWaitTime = 0.2
 
 # For the texts: russian = 0, english = 1, rest are unimplemented yet
 
@@ -147,6 +148,7 @@ clock = pygame.time.Clock()
 pygame.font.init()
 screen = pygame.display.set_mode((ScreenWidth, ScreenHeight))
 
+# Fonts
 TextFont = pygame.font.SysFont('Comic Sans MS', 40)
 TaskFont = pygame.font.SysFont('Comic Sans MS', 25)
 PlayerNicknameInLobbyFont = pygame.font.SysFont('Comic Sans MS', 60)

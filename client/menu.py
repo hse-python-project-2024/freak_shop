@@ -16,6 +16,7 @@ class ReturnStatus(enum.Enum):
     join_lobby = 10
     create_lobby = 11
     go_to_join_lobby = 12
+    change_readiness = 13
 
 
 class MenuView:
@@ -459,7 +460,7 @@ class MenuView:
         Returnee = [ReturnStatus.stay, [""]]
         return Returnee
 
-    def show_join_by_code_menu(self):
+    def show_join_by_code_menu(self): # TODO think if code should be int or str(for now takes str but needs int)
         screen.fill(RegistrationBackgroundColor)
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -474,6 +475,9 @@ class MenuView:
                     return Returnee
                 elif self.BackButton.collidepoint(MousePosition):
                     Returnee = [ReturnStatus.quit, [""]]
+                    return Returnee
+                elif self.CodeConfirmButton.collidepoint(MousePosition):
+                    Returnee = [ReturnStatus.join_lobby, [int(self.CodeInput)]]
                     return Returnee
                 else:
                     self.active = 0
@@ -521,7 +525,8 @@ class MenuView:
                     Returnee = [ReturnStatus.quit, [""]]
                     return Returnee
                 elif self.ReadyButton.collidepoint(pygame.mouse.get_pos()):
-                    pass  # TODO add real interaction
+                    Returnee = [ReturnStatus.change_readiness, [""]]
+                    return Returnee
         pressed_keys = pygame.key.get_pressed()
         if pressed_keys[K_ESCAPE]:
             Returnee = [ReturnStatus.quit, [""]]
