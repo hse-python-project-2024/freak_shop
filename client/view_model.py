@@ -45,20 +45,19 @@ class ViewModel:
         self.user_login = None
         self._LOGGER.info("View model is initialized correctly")
 
-
-        self.user_readiness = False  # True if user ready else False
         self.game_id = None
         self.my_card = []
         self.shop_card = []
-        self.goals = dict()  # key = name of goal, val = point of this player this person
+        self.goals = dict()  # key = id of goal, val = point of this player this person
         self.language = language
         self.users = []  # list[User]
         self.whose_move = None  # user_id whose move
+        self.mutex = threading.Lock()
 
     def reset_all_info(self):
         self.user_id, self.user_name, self.game_id, self.user_login, self.whose_move = None, None, None, None, None
         self.goals = dict()
-        self.users = list()
+        self.users = []
         self.my_card = []
         self.shop_card = []
 
@@ -81,9 +80,8 @@ class ViewModel:
         self.my_card = []
         self.shop_card = []
         self.goals = dict()
-        self.users = []
         self.game_id = None
-        self.user_readiness = False
+        self.users = []
         self.whose_move = None
         self.window = ViewWindows.main_menu
 
@@ -107,37 +105,11 @@ class ViewModel:
     def go_to_leaderboard_window(self):
         self.window = ViewWindows.leaderboard
 
-    def go_to_jbc_window(self): # jbc = Join by code
+    def go_to_jbc_window(self):  # jbc = Join by code
         self.window = ViewWindows.connecting_by_code
 
-    def go_to_game_menu(self): # Testing only, not needed in real game
+    def go_to_game_menu(self):  # Testing only, not needed in real game
         self.window = ViewWindows.game
-
-    def check_user_readiness(self, sleep_time: float):
-        while True:
-            if self.window != ViewWindows.waiting_room:
-                break
-            start_game = len(self.users) > 1
-            for user in self.users:
-                response = self.req.is_user_ready(_game_id=self.game_id, _user_id=user.id)
-                if response.status == 0:
-                    user.readiness = response.is_true
-                    start_game &= user.readiness
-                else:
-                    self.put_info_window(_info=response.status)
-                    start_game = False
-            if start_game:
-                self.start_game()
-
-            time.sleep(sleep_time)
-
-    def go_to_waiting_room(self, _game_id: int):
-        self.window = ViewWindows.waiting_room
-        self.game_id = _game_id
-        self.users.append(User(_id=self.user_id, _name=self.user_name))
-        threading.Thread(target=self.get_users_in_session, args=(self, 0.4, True), daemon=True).start()
-        threading.Thread(target=self.check_user_readiness, args=(self, 0.2), daemon=True).start()
-
 
     def sign_out(self):
         self.reset_all_info()
@@ -167,9 +139,7 @@ class ViewModel:
 
     def change_user_readiness(self):
         response = self.req.change_readiness(_game_id=self.game_id, _user_id=self.user_id)
-        if response.status == 0:
-            self.user_readiness = not self.user_readiness
-        else:
+        if response.status != 0:
             self.put_info_window(_info=response.status)
 
     def join_game(self, _game_id: int):
@@ -200,89 +170,167 @@ class ViewModel:
             self.put_info_window(_info=response.status)
 
     def start_game(self):
+        self.order_user()
         self.window = ViewWindows.game
         self.run_all_game_requests()
 
-    def run_all_game_requests(self):
-        threading.Thread(target=self.get_goal_points, args=(self, 0.5), daemon=True).start()
-        threading.Thread(target=self.get_users_in_session, args=(self, 0.5), daemon=True).start()
-        threading.Thread(target=self.get_user_cards, args=(self, 0.1), daemon=True).start()
-        threading.Thread(target=self.get_shop_cards, args=(self, 0.1), daemon=True).start()
-        threading.Thread(target=self.get_whose_move, args=(self, 0.1), daemon=True).start()
+    def order_user(self):
+        response = self.req.get_user_in_session(_game_id=self.game_id)
+        if response.status == 0:
+            self.users = []
+            for my_user in response.users_info:
+                self.users.append(User(_id=my_user.id, _name=my_user.name))
+        else:
+            self.put_info_window(_info=response.status, _time=1)
 
-    def get_goal_points(self, sleep_time: float):
+    def go_to_waiting_room(self, _game_id: int):
+        self.window = ViewWindows.waiting_room
+        self.game_id = _game_id
+        self.users.append(User(_id=self.user_id, _name=self.user_name))
+        threading.Thread(target=self.get_users_in_session, args=(0.4, True,), daemon=True).start()
+        threading.Thread(target=self.check_user_readiness, args=(0.2,), daemon=True).start()
+
+    def run_all_game_requests(self):
+        threading.Thread(target=self.get_users_in_session, args=(1,), daemon=True).start()
+        threading.Thread(target=self.get_user_cards, args=(0.2,), daemon=True).start()
+        threading.Thread(target=self.get_shop_cards, args=(0.2,), daemon=True).start()
+        threading.Thread(target=self.get_whose_move, args=(0.2,), daemon=True).start()
+        for user in self.users:
+            threading.Thread(target=self.get_goal_points, args=(0.5, user.id,), daemon=True).start()
+
+    def check_user_readiness(self, sleep_time):
+        self._LOGGER.info(
+            f"start asking users readiness, sleep time = {sleep_time}")
         while True:
-            if self.game_id is None:
-                break
-            response = self.req.get_goals(_game_id=self.game_id, _user_id=self.user_id)
-            if response.status == 0:
-                for my_goal in response.goals:
-                    self.goals[my_goal.goal] = response.goals[my_goal.point]
-            else:
-                self.put_info_window(_info=response.status, _time=1)
-            time.sleep(sleep_time)
+            try:
+                self.mutex.acquire()
+                if self.window != ViewWindows.waiting_room:
+                    break
+                start_game = len(self.users) > 1
+                for user in self.users:
+                    self._LOGGER.info(f"make request is_user_ready with id = {user.id}")
+                    response = self.req.is_user_ready(_game_id=self.game_id, _user_id=user.id)
+                    if response.status == 0:
+                        user.readiness = response.is_true
+                        start_game &= user.readiness
+                    else:
+                        self.put_info_window(_info=response.status)
+                        start_game = False
+                if start_game:
+                    self._LOGGER.info(f"Start game with id = {self.game_id}")
+                    self.start_game()
+            except Exception as e:
+                self._LOGGER.error(f"Exception in check_user_readiness with error {e}")
+            finally:
+                self.mutex.release()
+                time.sleep(sleep_time)
+
+    def get_goal_points(self, sleep_time: float, _user_id: int):
+        while True:
+            try:
+                self.mutex.acquire()
+                if self.game_id is None:
+                    break
+                response = self.req.get_goals(_game_id=self.game_id, _user_id=_user_id)
+                if response.status == 0:
+                    for my_goal in response.goals:
+                        self.goals[my_goal.goal] = response.goals[my_goal.point]
+                else:
+                    self.put_info_window(_info=response.status, _time=1)
+            except Exception as e:
+                self._LOGGER.error(f"Exception in get_goal_points with error {e}")
+            finally:
+                self.mutex.release()
+                time.sleep(sleep_time)
 
     def get_users_in_session(self, sleep_time: float, in_waiting_room=False):
+        self._LOGGER.info(
+            f"start asking users in session, sleep time = {sleep_time}, in waiting room = {in_waiting_room}")
         while True:
-            if self.game_id is None or (in_waiting_room and self.window != ViewWindows.waiting_room):
-                break
-            response = self.req.get_user_in_session(_game_id=self.game_id)
-            if response.status == 0:
-                need_erase = []
-                for user in self.users:
-                    need_erase.append(user.id)
-
-                for my_user in response.users_info:
-                    if my_user.id in need_erase:
-                        need_erase.remove(my_user.id)
-
-                    added = False
+            try:
+                self.mutex.acquire()
+                if self.game_id is None or (in_waiting_room and self.window != ViewWindows.waiting_room):
+                    break
+                self._LOGGER.info("make request get_user_in_session")
+                response = self.req.get_user_in_session(_game_id=self.game_id)
+                if response.status == 0:
+                    need_erase = []
                     for user in self.users:
-                        if user.id == my_user.id:
-                            added = True
-                            break
-                    if not added:
-                        self.users.append(User(_id=my_user.id, _name=my_user.name))
+                        need_erase.append(user.id)
+                    for my_user in response.users_info:
+                        if my_user.id in need_erase:
+                            need_erase.remove(my_user.id)
 
-                for user_id in need_erase:
-                    for i in range(len(self.users)):
-                        if user_id == self.users[i].id:
-                            del self.users[i]
-                            break
+                        added = False
+                        for user in self.users:
+                            if user.id == my_user.id:
+                                added = True
+                                break
+                        if not added:
+                            self.users.append(User(_id=my_user.id, _name=my_user.name))
 
-            else:
-                self.put_info_window(_info=response.status, _time=1)
-            time.sleep(sleep_time)
+                    for user_id in need_erase:
+                        for i in range(len(self.users)):
+                            if user_id == self.users[i].id:
+                                del self.users[i]
+                                break
+                else:
+                    self.put_info_window(_info=response.status, _time=1)
+            except Exception as e:
+                self._LOGGER.error(f"Exception in get_users_in_session with error {e}")
+            finally:
+                self.mutex.release()
+                time.sleep(sleep_time)
 
     def get_user_cards(self, sleep_time: float):
         while True:
-            if self.game_id is None:
-                break
-            response = self.req.get_user_cards(_user_id=self.user_id)
-            if response.status == 0:
-                self.my_card = list(response.card_id)
-            else:
-                self.put_info_window(_info=response.status, _time=1)
-            time.sleep(sleep_time)
+            try:
+                self.mutex.acquire()
+                if self.game_id is None:
+                    break
+                response = self.req.get_user_cards(_user_id=self.user_id)
+                if response.status == 0:
+                    self.my_card = list(response.card_id)
+                else:
+                    self.put_info_window(_info=response.status, _time=1)
+            except Exception as e:
+                self._LOGGER.error(f"Exception in get_user_cards with error {e}")
+            finally:
+                self.mutex.release()
+                time.sleep(sleep_time)
 
     def get_shop_cards(self, sleep_time: float):
         while True:
-            if self.game_id is None:
-                break
-            response = self.req.get_shop_cards(_game_id=self.game_id)
-            if response.status == 0:
-                self.shop_card = list(response.card_id)
-            else:
-                self.put_info_window(_info=response.status, _time=1)
-            time.sleep(sleep_time)
+            try:
+                self.mutex.acquire()
+                if self.game_id is None:
+                    break
+                response = self.req.get_shop_cards(_game_id=self.game_id)
+                if response.status == 0:
+                    self.shop_card = list(response.card_id)
+                else:
+                    self.put_info_window(_info=response.status, _time=1)
+            except Exception as e:
+                self._LOGGER.error(f"Exception in get_shop_cards with error {e}")
+            finally:
+                self.mutex.release()
+                time.sleep(sleep_time)
 
     def get_whose_move(self, sleep_time: float):
         while True:
-            if self.game_id is None:
-                break
-            response = self.req.whose_move(_game_id=self.game_id)
-            if response.status == 0:
-                self.whose_move = response.id
-            else:
-                self.put_info_window(_info=response.status, _time=1)
-            time.sleep(sleep_time)
+            try:
+                if self.game_id is None:
+                    break
+                response = self.req.whose_move(_game_id=self.game_id)
+                if response.status == 0:
+                    for i in range(len(self.users)):
+                        if self.users[i].id == response.id:
+                            self.whose_move = i
+                            break
+                else:
+                    self.put_info_window(_info=response.status, _time=1)
+            except Exception as e:
+                self._LOGGER.error(f"Exception in get_whose_move with error {e}")
+            finally:
+                self.mutex.release()
+                time.sleep(sleep_time)

@@ -55,7 +55,7 @@ class Facade(requests_pb2_grpc.DbServiceServicer):
 
     def IsUserReady(self, request, context):
         # self.core.is_user_ready()
-        return requests_pb2.Bool(status=0, is_true=True)
+        return requests_pb2.Bool(status=0, is_true=False)
 
     def GetGoals(self, request, context):
         game_id, user_id = request.game_id, request.user_id
