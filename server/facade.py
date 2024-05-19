@@ -68,13 +68,17 @@ class Facade(requests_pb2_grpc.DbServiceServicer):
         return res
 
     def GetUsersInSession(self, request, context):
-        res = requests_pb2.UsersInSession()
-        res.status = 0
-        user_1 = res.users_info.add()
-        user_2 = res.users_info.add()
-        user_1.id, user_1.login, user_1.name = 1, "gabik", "Kamil"
-        user_2.id, user_2.login, user_2.name = 2, "petrovich", "Petya"
-        return res
+        result = requests_pb2.UsersInSession()
+        res = self.core.get_players(request.id)
+        result.status = res[0]
+        if not res[0]:
+            for user_id in res[1]:
+                user = result.users_info.add()
+                user.id = user_id
+                # TODO: database requests
+                user.login = "???"
+                user.name = "!!!"
+        return result
 
     def GetShopCards(self, request, context):
         res = self.core.get_shop_cards(request.game_id, request.user_id)
