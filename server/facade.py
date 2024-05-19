@@ -38,24 +38,24 @@ class Facade(requests_pb2_grpc.DbServiceServicer):
         return requests_pb2.ResponseUser(status=0, user_info=_user_info)
 
     def CreateGame(self, request, context):
-        # self.core.create_game()
-        return requests_pb2.IdResponse(status=0, id=1984)
+        res = self.core.create_game()
+        return requests_pb2.IdResponse(status=res[0], id=res[1])
 
     def JoinGame(self, request, context):
-        # self.core.join_game()
-        return requests_pb2.IsDone(status=0)
+        code = self.core.join_game(request.game_id, request.user_id)
+        return requests_pb2.IsDone(status=code)
 
     def LeaveGame(self, request, context):
-        # self.core.leave_game()
-        return requests_pb2.IsDone(status=0)
+        code = self.core.leave_game(request.game_id, request.user_id)
+        return requests_pb2.IsDone(status=code)
 
     def ChangeReadiness(self, request, context):
-        # self.core.change_readiness()
-        return requests_pb2.IsDone(status=0)
+        code = self.core.change_readiness(request.game_id, request.user_id)
+        return requests_pb2.IsDone(status=code)
 
     def IsUserReady(self, request, context):
-        # self.core.is_user_ready()
-        return requests_pb2.Bool(status=0, is_true=False)
+        res = self.core.check_readiness(request.game_id, request.user_id)
+        return requests_pb2.Bool(status=res[0], is_true=res[1])
 
     def GetGoals(self, request, context):
         game_id, user_id = request.game_id, request.user_id
@@ -77,22 +77,28 @@ class Facade(requests_pb2_grpc.DbServiceServicer):
         return res
 
     def GetShopCards(self, request, context):
-        res = requests_pb2.CardsResponse()
-        res.status = 0
-        res.card_id.extend([1984, 52, 13])
-        return res
+        res = self.core.get_shop_cards(request.game_id, request.user_id)
+        result = requests_pb2.CardsResponse()
+        result.status = res[0]
+        result.card_id.extend(res[1])
+        return result
 
     def GetUserCards(self, request, context):
-        res = requests_pb2.CardsResponse()
-        res.status = 0
-        res.card_id.extend([13, 52, 1984])
-        return res
+        res = self.core.get_player_cards(request.game_id, request.user_id)
+        result = requests_pb2.CardsResponse()
+        result.status = res[0]
+        result.card_id.extend(res[1])
+        return result
 
     def GetPointsCount(self, request, context):
-        return requests_pb2.PointsCount(status=0, count=1984)
+        res = self.core.get_points(request.game_id, request.user_id)
+        return requests_pb2.PointsCount(status=res[0], count=res[1])
 
     def WhoseMove(self, request, context):
-        return requests_pb2.IdResponse(status=0, id=68)
+        res = self.core.current_player(request.id)
+        return requests_pb2.IdResponse(status=res[0], id=res[1])
 
     def MakeMove(self, request, context):
-        return requests_pb2.IsDone(status=0)
+        code = self.core.make_move(request.game_id, request.user_id, request.card_in_hand,
+                                   request.card_in_shop)
+        return requests_pb2.IsDone(status=code)

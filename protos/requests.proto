@@ -17,7 +17,7 @@ service DbService {
   rpc GetUsersInSession(Id) returns (UsersInSession);
 
   rpc GetShopCards(Id) returns (CardsResponse);
-  rpc GetUserCards(Id) returns (CardsResponse); // ?
+  rpc GetUserCards(GameUserId) returns (CardsResponse);
 
   rpc GetPointsCount(GameUserId) returns (PointsCount);
   rpc WhoseMove(Id) returns (IdResponse);

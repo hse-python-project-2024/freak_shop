@@ -278,6 +278,10 @@ class Game:
         self.players.append(player_id)
         PLAYERS[player_id].join_game(self.id)
 
+    def check_readiness(self, player_id):
+        player = PLAYERS[player_id]
+        return player.is_ready(self.id)
+
     def change_player_readiness(self, player_id):
         """Change the readiness status of the player with the given id.
         'Ready' changes into 'not ready' and vice versa.
@@ -475,7 +479,7 @@ class Core:
         -- [1] int if status == 0:
             - game_id"""
         if len(GAMES) == MX_GAME_ID:
-            return 1
+            return 1, -1
         new_game_id = randint(1, MX_GAME_ID)
         while new_game_id in GAMES.keys():
             new_game_id = randint(1, MX_GAME_ID)
@@ -541,6 +545,18 @@ class Core:
         game.kick_player(player_id)
         return 0
 
+    def check_readiness(self, game_id, player_id):
+        if game_id not in GAMES:
+            return 1, 0
+        if player_id not in PLAYERS:
+            return 2, 0
+        game = GAMES[game_id]
+        if game.get_stage() == RUNNING:
+            return 3, 0
+        if game.get_stage() == RESULTS:
+            return 4, 0
+        return 0, game.check_readiness(player_id)
+
     def change_readiness(self, game_id, player_id):
         """Add player to a game.
 
@@ -582,9 +598,9 @@ class Core:
             - player_id"""
 
         if game_id not in GAMES:
-            return 1
+            return 1, -1
         game = GAMES[game_id]
-        return game.get_current_player()
+        return 0, game.get_current_player()
 
     def get_shop_cards(self, game_id):
         """Return list of cards currently in the shop
@@ -604,12 +620,12 @@ class Core:
             - list of card ids"""
 
         if game_id not in GAMES:
-            return 1
+            return 1, -1
         game = GAMES[game_id]
         if game.get_stage == WAITING:
-            return 2
+            return 2, -1
         if game.get_stage == RESULTS:
-            return 3
+            return 3, -1
         return 0, game.get_shop_cards()
 
     def get_player_cards(self, game_id, player_id):
@@ -634,17 +650,17 @@ class Core:
             - list of cards' ids"""
 
         if game_id not in GAMES:
-            return 1
+            return 1, -1
         game = GAMES[game_id]
         if player_id not in PLAYERS:
-            return 2
+            return 2, -1
         player = PLAYERS[player_id]
         if player_id not in game.get_players():
-            return 3
+            return 3, -1
         if game.get_stage == WAITING:
-            return 4
+            return 4, -1
         if game.get_stage == RESULTS:
-            return 5
+            return 5, -1
         return 0, player.get_cards(game_id)
 
     def get_players(self, game_id):
@@ -659,7 +675,7 @@ class Core:
         -- list[int] if status == 0:
             - list of players' ids"""
         if game_id not in GAMES:
-            return 1
+            return 1, -1
         game = GAMES[game_id]
         return 0, game.get_players()
 
@@ -696,14 +712,14 @@ class Core:
 
     def get_goals(self, game_id, player_id):
         if game_id not in GAMES:
-            return 1
+            return 1, -1
         game = GAMES[game_id]
         if player_id not in PLAYERS:
-            return 2
+            return 2, -1
         if player_id not in game.get_players():
-            return 3
+            return 3, -1
         if game.get_stage() == WAITING:
-            return 4
+            return 4, -1
         player = PLAYERS[player_id]
         return 0, player.get_goals(game_id)
 
@@ -716,26 +732,28 @@ class Core:
         res = {}
         for player_id in game.get_players():
             res[player_id] = self.get_goals(game_id, player_id)
+        return res
 
     def get_points(self, game_id, player_id):
         if game_id not in GAMES:
-            return 1
+            return 1, -1
         game = GAMES[game_id]
         if player_id not in PLAYERS:
-            return 2
+            return 2, -1
         if player_id not in game.get_players():
-            return 3
+            return 3, -1
         if game.get_stage() == WAITING:
-            return 4
+            return 4, -1
         player = PLAYERS[player_id]
         return 0, player.get_points(game_id)
 
     def get_points_total(self, game_id):
         if game_id not in GAMES:
-            return 1
+            return 1, -1
         game = GAMES[game_id]
         if game.get_stage() == WAITING:
-            return 4
+            return 4, -1
         res = {}
         for player_id in game.get_players():
             res[player_id] = self.get_points(game_id, player_id)
+        return res
