@@ -287,6 +287,10 @@ class Game:
         if all(PLAYERS[player_id].is_ready()):
             self.start()
 
+    def check_readiness(self, player_id):
+        player = PLAYERS[player_id]
+        return player.is_ready(self.id)
+
     def kick_player(self, player_id):
         """Remove player from the game."""
         self.players.remove(player_id)
@@ -567,6 +571,18 @@ class Core:
             return 4
         game.change_player_readiness(player_id)
         return 0
+
+    def check_readiness(self, game_id, player_id):
+        if game_id not in GAMES:
+            return 1
+        if player_id not in PLAYERS:
+            return 2
+        game = GAMES[game_id]
+        if game.get_stage() == RUNNING:
+            return 3
+        if game.get_stage() == RESULTS:
+            return 4
+        return game.check_readiness(player_id)
 
     def current_player(self, game_id):
         """Return id of the player that is currently making a move.
