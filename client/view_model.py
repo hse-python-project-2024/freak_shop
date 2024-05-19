@@ -97,16 +97,13 @@ class ViewModel:
         self.window = ViewWindows.initial_menu
 
     def go_to_settings_window(self):
-        self.reset_all_info()
         self.window = ViewWindows.settings
 
     def go_to_leaderboard_window(self):
-        self.reset_all_info()
         self.window = ViewWindows.leaderboard
 
     def go_to_jbc_window(self): # jbc = Join by code
-        self.reset_all_info()
-        self.window = ViewWindows.waiting_room
+        self.window = ViewWindows.connecting_by_code
 
     def go_to_game_menu(self): # Testing only, not needed in real game
         self.window = ViewWindows.game
@@ -133,8 +130,10 @@ class ViewModel:
     def go_to_waiting_room(self, _game_id: int):
         self.window = ViewWindows.waiting_room
         self.game_id = _game_id
+        self.users.append(User(_id=self.user_id, _name=self.user_name))
         threading.Thread(target=self.get_users_in_session, args=(self, 0.4, True), daemon=True).start()
         threading.Thread(target=self.check_user_readiness, args=(self, 0.2), daemon=True).start()
+
 
     def sign_out(self):
         self.reset_all_info()
@@ -182,10 +181,6 @@ class ViewModel:
             self.go_to_waiting_room(_game_id=response.id)
         else:
             self.put_info_window(_info=response.status)
-
-    def create_lobby(self):
-        self.create_game()
-        self.window = ViewWindows.waiting_room
 
     def leave_game(self):
         response = self.req.leave_game(_game_id=self.game_id, _user_id=self.user_id)

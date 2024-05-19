@@ -18,6 +18,7 @@ if __name__ == "__main__":
     DefaultLanguage = Languages.russian  # TODO remove later(or maybe just move)
     Menu = MenuView(DefaultLanguage)
     LastWindow = ViewWindows.initial_menu
+    IsGameStarted = False
     # LastWindow = ViewWindows.game  # code for windows design testing
     # ViewModelEntity.window = ViewWindows.game
     while True:
@@ -64,24 +65,31 @@ if __name__ == "__main__":
             elif Return[0] == ReturnStatus.go_to_join_lobby:
                 ViewModelEntity.go_to_jbc_window()
             elif Return[0] == ReturnStatus.create_lobby:
-                ViewModelEntity.create_lobby()
+                ViewModelEntity.create_game()
+                time.sleep(0.1)
             elif Return[0] == ReturnStatus.settings:
                 ViewModelEntity.go_to_settings_window()
             elif Return[0] == ReturnStatus.leaderboard:
                 ViewModelEntity.go_to_leaderboard_window()
 
         elif CurrentWindow == ViewWindows.game:
+            if not IsGameStarted:
+                IsGameStarted = True
+                NewGameInfo = GameInfo(ViewModelEntity.goals.keys(), PlayerAmount, PlayerNicknames)  # TODO fix so it works
+                CurrentGame.update_start_game_status(NewGameInfo)
             CurrentGame.update_game_info(ViewModelEntity.my_card,ViewModelEntity.shop_card
                                          ,ViewModelEntity.whose_move)
             Return = CurrentGame.ShowMainGameWindow(ViewModelEntity.language)
             if Return[0] == ReturnStatus.quit:
                 time.sleep(0.1)
+                IsGameStarted = False
                 ViewModelEntity.leave_game()
 
         elif CurrentWindow == ViewWindows.connecting_by_code:
             Return = Menu.show_join_by_code_menu()
             if Return[0] == ReturnStatus.join_lobby:
                 ViewModelEntity.join_game(Return[1][0])
+                time.sleep(1)
             elif Return[0] == ReturnStatus.quit:
                 time.sleep(0.1)
                 ViewModelEntity.go_to_main_menu_window()
@@ -94,21 +102,18 @@ if __name__ == "__main__":
                 ViewModelEntity.go_to_main_menu_window()
 
         elif CurrentWindow == ViewWindows.waiting_room:  # Behaviour in Lobby
-            ViewModelEntity.get_users_in_session(DefaultWaitTime)
-            PlayerAmount = len(ViewModelEntity.users_in_session)
-            PlayerNicknames = ViewModelEntity.users_in_session.values()
-            PlayerReadySignes = [0, 0, 1] # TODO other players ready signs + check if syntax correct
-
-            Return = Menu.show_lobby(PlayerAmount, PlayerNicknames, PlayerReadySignes)
+            PlayerAmount = len(ViewModelEntity.users)
+            PlayerNicknames = []
+            PlayerReadySinges = []
+            for i in range(PlayerAmount):
+                PlayerNicknames.append(ViewModelEntity.users[i].name)
+                PlayerReadySinges.append(ViewModelEntity.users[i].readiness)
+            Return = Menu.show_lobby(PlayerAmount, PlayerNicknames, PlayerReadySinges,ViewModelEntity.game_id)
             if Return[0] == ReturnStatus.change_readiness:
                 ViewModelEntity.change_user_readiness()
             elif Return[0] == ReturnStatus.quit:
                 time.sleep(0.1)
                 ViewModelEntity.leave_game()
-
-            if True: # TODO add actual game start when everyone is ready with goal and player nickname getting
-                NewGameInfo = GameInfo(ViewModelEntity.goals.keys(), PlayerAmount, PlayerNicknames)
-                CurrentGame.update_start_game_status(NewGameInfo)
 
         elif CurrentWindow == ViewWindows.game_result:
             pass  # TODO - remove the pass to replace with real functions

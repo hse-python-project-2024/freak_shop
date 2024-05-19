@@ -40,8 +40,9 @@ class GameView:
         self.GameBoard.display_shop_image()
         self.GameBoard.display_player_cards(self.Player)
         self.GameBoard.display_shop_cards(self.Shop)
-        self.GameBoard.display_player_list(self.Info, self.MyPosition,lang)
+        self.GameBoard.display_player_list(self.Info, self.Info.MyPosition,lang,self.CurrentPlayerPosition)
         self.GameBoard.display_end_turn_button(False,lang)
+        self.GameBoard.display_scores(self.Info)
         TaskImagesRects = self.GameBoard.display_task_list(self.Info)
 
         for event in pygame.event.get():

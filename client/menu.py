@@ -98,9 +98,6 @@ class MenuView:
             pygame.image.load("src/img/End_Turn_Icon_Activated.png").convert_alpha(),
             (200, 200))
 
-        # Code for joining the lobby
-        self.LobbyCode = "ABCDE"  # TODO think about how to get it
-
         # Variables for registration/login
         self.LoginInput = ""
         self.PasswordInput = ""
@@ -460,7 +457,7 @@ class MenuView:
         Returnee = [ReturnStatus.stay, [""]]
         return Returnee
 
-    def show_join_by_code_menu(self): # TODO think if code should be int or str(for now takes str but needs int)
+    def show_join_by_code_menu(self):
         screen.fill(RegistrationBackgroundColor)
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -471,7 +468,7 @@ class MenuView:
                     self.active = 1
                 elif self.CodeConfirmButton.collidepoint(MousePosition):
                     self.active = 0
-                    Returnee = [ReturnStatus.quit, [self.CodeInput]] # TODO add actual join here
+                    Returnee = [ReturnStatus.join_lobby, [int(self.CodeInput)]]
                     return Returnee
                 elif self.BackButton.collidepoint(MousePosition):
                     Returnee = [ReturnStatus.quit, [""]]
@@ -490,13 +487,14 @@ class MenuView:
                         if event.key == K_BACKSPACE:
                             self.CodeInput = self.CodeInput[:-1]
                         elif event.key == K_RETURN:
-                            Returnee = [ReturnStatus.quit, [self.CodeInput]] # TODO add actual join here
+                            Returnee = [ReturnStatus.join_lobby, [int(self.CodeInput)]]
                             return Returnee
                         elif len(self.CodeInput) < MaxLoginLength:
-                            self.CodeInput += event.unicode
+                            if event.unicode.isnumeric():
+                                self.CodeInput += event.unicode
                     if self.active == 0:
                         if event.key == K_RETURN:
-                            Returnee = [ReturnStatus.quit, [self.CodeInput]] # TODO add actual join here
+                            Returnee = [ReturnStatus.join_lobby, [int(self.CodeInput)]]
                             return Returnee
         pressed_keys = pygame.key.get_pressed()
         if pressed_keys[K_ESCAPE]:
@@ -515,7 +513,7 @@ class MenuView:
         return Returnee
 
     # TODO display people who are ready
-    def show_lobby(self, player_amount, player_nicknames, player_ready_signes):
+    def show_lobby(self, player_amount, player_nicknames, player_ready_signes,lobby_code):
         screen.fill(RegistrationBackgroundColor)
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -550,10 +548,11 @@ class MenuView:
         pygame.draw.rect(screen, RegistrationButtonColor, self.ReadyButton)
         screen.blit(self.ReadyText,
                     (ScreenWidth * 17 / 38, ScreenHeight * 4 / 5 + 80))
-        LobbyCodeText = CodeFont.render(self.LobbyCode, False, (0, 0, 0))
+        LobbyCodeText = CodeFont.render(str(lobby_code), False, (0, 0, 0))
         screen.blit(LobbyCodeText,
                     (ScreenWidth * 1 / 2 - 155, ScreenHeight * 1 / 19))
-
+        screen.blit(pygame.transform.scale(self.BackIconImage, (180, 180)),
+                    (ScreenWidth * 6 / 7, ScreenHeight * 1 / 30))
         Returnee = [ReturnStatus.stay, [""]]
         return Returnee
 

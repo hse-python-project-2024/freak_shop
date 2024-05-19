@@ -41,6 +41,8 @@ class GameBoardView:
             self.TaskImages.append(pygame.transform.scale(pygame.image.load(TaskName).convert(), (140, 200)))
         self.PlayerIcon = pygame.transform.scale(pygame.image.load("src/img/Player_Icon.png").convert_alpha(),
                                                  (140, 140))
+        self.PlayerIconActive = pygame.transform.scale(pygame.image.load("src/img/Player_Icon_Active.png").convert_alpha(),
+                                                 (140, 140))
         self.EndTurnIcon = pygame.transform.scale(pygame.image.load("src/img/End_Turn_Icon.png").convert_alpha(),
                                                   (250, 250))
         self.EndTurnIconActivated = pygame.transform.scale(
@@ -106,14 +108,22 @@ class GameBoardView:
                     screen.blit(self.CardImages[i][ShowDiscount], (ScreenWidth * (2 / 10 + WidthAdd) - 80 ,
                                                                    ScreenHeight * (HeightAdd + j / 50)))
 
-    def display_player_list(self, Game, PlayerPosition,lang):
+    def display_player_list(self, Game, PlayerPosition,lang, CurrentPlayer):
         for i in range(Game.PlayerAmount):
-            screen.blit(self.PlayerIcon, (ScreenWidth * 4 / 5, ScreenHeight * i / 8))
+            if i == CurrentPlayer:
+                screen.blit(self.PlayerIconActive, (ScreenWidth * 4 / 5 + 40, ScreenHeight * i / 8))
+            else:
+                screen.blit(self.PlayerIcon, (ScreenWidth * 4 / 5 + 40, ScreenHeight * i / 8))
             if i != PlayerPosition:
                 PlayerNameText = TextFont.render(Game.PlayersNicknames[i], False, (0, 0, 0))
             else:
                 PlayerNameText = TextFont.render(YouTexts[lang], False, (0, 0, 0))
-            screen.blit(PlayerNameText, (ScreenWidth * 4 / 5 + 150, ScreenHeight * i / 8 + 60))
+            screen.blit(PlayerNameText, (ScreenWidth * 4 / 5 + 190, ScreenHeight * i / 8 + 60))
+
+    def display_scores(self,Game):
+        for i in range(len(Game.Scores)):
+            ScoreText = TextFont.render(str(Game.Scores[i]), False, (0, 0, 0))
+            screen.blit(ScoreText, (ScreenWidth * 4 / 5, ScreenHeight * i / 8 + 60))
 
     def display_end_turn_button(self, activated,lang):
         EndTurnText = TextFont.render(EndTurnTexts[lang], False, (0, 0, 0))
@@ -134,10 +144,6 @@ class GameBoardView:
                                                           ScreenHeight * ind / 5 + 10))
             ind += 1
         return TaskImagesRects
-
-    def show_scores(self,Game):
-        for i in range(len(Game.Scores)):
-            pass #TODO display the actual scores
 
     def display_tasks_text(self, Tasks, TaskNumber,lang):
         for j in range(len(Task_Descriptions[lang][Tasks[TaskNumber] - 1])):
