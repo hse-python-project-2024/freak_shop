@@ -124,7 +124,6 @@ class ViewModel:
             if start_game:
                 self.start_game()
 
-
             time.sleep(sleep_time)
 
     def go_to_waiting_room(self, _game_id: int):
