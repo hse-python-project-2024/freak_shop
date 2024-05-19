@@ -547,15 +547,15 @@ class Core:
 
     def check_readiness(self, game_id, player_id):
         if game_id not in GAMES:
-            return 1
+            return 1, 0
         if player_id not in PLAYERS:
-            return 2
+            return 2, 0
         game = GAMES[game_id]
         if game.get_stage() == RUNNING:
-            return 3
+            return 3, 0
         if game.get_stage() == RESULTS:
-            return 4
-        return game.check_readiness(player_id)
+            return 4, 0
+        return 0, game.check_readiness(player_id)
 
     def change_readiness(self, game_id, player_id):
         """Add player to a game.
