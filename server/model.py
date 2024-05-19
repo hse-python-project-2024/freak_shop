@@ -278,6 +278,10 @@ class Game:
         self.players.append(player_id)
         PLAYERS[player_id].join_game(self.id)
 
+    def check_readiness(self, player_id):
+        player = PLAYERS[player_id]
+        return player.is_ready(self.id)
+
     def change_player_readiness(self, player_id):
         """Change the readiness status of the player with the given id.
         'Ready' changes into 'not ready' and vice versa.
@@ -286,10 +290,6 @@ class Game:
         PLAYERS[player_id].change_readiness(self.id)
         if all(PLAYERS[player_id].is_ready()):
             self.start()
-
-    def check_readiness(self, player_id):
-        player = PLAYERS[player_id]
-        return player.is_ready(self.id)
 
     def kick_player(self, player_id):
         """Remove player from the game."""
