@@ -1,7 +1,9 @@
 import threading
 import time
 from facade import ClientRequests
+
 import enum
+from logs.logger import get_logger
 from returns_codes import get_description_ru
 
 
@@ -34,12 +36,15 @@ class Languages(enum.Enum):
 
 class ViewModel:
     def __init__(self, language=Languages.russian):  # нужно добавить поле готовности игрока
+        self._LOGGER = get_logger(__name__)
         self.req = ClientRequests()
         self.window = ViewWindows.initial_menu
         self.info_window = None
         self.user_name = None
         self.user_id = None
         self.user_login = None
+        self._LOGGER.info("View model is initialized correctly")
+
 
         self.user_readiness = False  # True if user ready else False
         self.game_id = None
