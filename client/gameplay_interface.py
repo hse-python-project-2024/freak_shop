@@ -16,7 +16,6 @@ class GameView:
         self.Shop = ShopInfo()
         self.IsMyTurn = True
         self.CurrentPlayerPosition = 0
-        self.MyPosition = 0 # should ask from server
 
     def update_game_info(self, PlayerCardList, ShopCardList, NewCurPlayer):
         NewPlayer = PlayerInfo()
@@ -28,7 +27,7 @@ class GameView:
         self.Player = NewPlayer
         self.Shop = NewShop
         self.CurrentPlayerPosition = NewCurPlayer
-        if NewCurPlayer == self.MyPosition:
+        if NewCurPlayer == self.Info.MyPosition:
             self.IsMyTurn = True
         else:
             self.IsMyTurn = False
