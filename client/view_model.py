@@ -5,6 +5,15 @@ import enum
 from returns_codes import get_description_ru
 
 
+class User:
+    def __init__(self, _id, _name):
+        self.id = _id
+        self.name = _name
+        self.readiness = False
+        self.cards = []
+        self.point_count = 0
+
+
 class ViewWindows(enum.Enum):
     initial_menu = 1  # окно, в котором мы предлагаем войти/зарегистрироваться
     registration = 2
@@ -36,13 +45,13 @@ class ViewModel:
         self.shop_card = []
         self.goals = dict()  # key = name of goal, val = point of this player this person
         self.language = language
-        self.users_in_session = dict()  # key = users id, val = their name
+        self.users = []  # list[User]
         self.whose_move = None  # user_id whose move
 
     def reset_all_info(self):
         self.user_id, self.user_name, self.game_id, self.user_login, self.whose_move = None, None, None, None, None
         self.goals = dict()
-        self.users_in_session = dict()
+        self.users = list()
         self.my_card = []
         self.shop_card = []
 
@@ -65,7 +74,7 @@ class ViewModel:
         self.my_card = []
         self.shop_card = []
         self.goals = dict()
-        self.users_in_session = dict()
+        self.users = []
         self.game_id = None
         self.user_readiness = False
         self.whose_move = None
@@ -87,6 +96,31 @@ class ViewModel:
 
     def go_to_game_menu(self):
         self.window = ViewWindows.game
+
+    def check_user_readiness(self, sleep_time: float):
+        while True:
+            if self.window != ViewWindows.waiting_room:
+                break
+            start_game = len(self.users) > 1
+            for user in self.users:
+                response = self.req.is_user_ready(_game_id=self.game_id, _user_id=user.id)
+                if response.status == 0:
+                    user.readiness = response.is_true
+                    start_game &= user.readiness
+                else:
+                    self.put_info_window(_info=response.status)
+                    start_game = False
+            if start_game:
+                self.start_game()
+
+
+            time.sleep(sleep_time)
+
+    def go_to_waiting_room(self, _game_id: int):
+        self.window = ViewWindows.waiting_room
+        self.game_id = _game_id
+        threading.Thread(target=self.get_users_in_session, args=(self, 0.4, True), daemon=True).start()
+        threading.Thread(target=self.check_user_readiness, args=(self, 0.2), daemon=True).start()
 
     def sign_out(self):
         self.reset_all_info()
@@ -124,14 +158,14 @@ class ViewModel:
     def join_game(self, _game_id: int):
         response = self.req.join_game(_game_id=_game_id, _user_id=self.user_id)
         if response.status == 0:
-            self.start_game(_game_id=_game_id)
+            self.go_to_waiting_room(_game_id=_game_id)
         else:
             self.put_info_window(_info=response.status)
 
     def create_game(self):
         response = self.req.creat_game(_user_id=self.user_id)
         if response.status == 0:
-            self.start_game(_game_id=response.id)
+            self.go_to_waiting_room(_game_id=response.id)
         else:
             self.put_info_window(_info=response.status)
 
@@ -143,12 +177,13 @@ class ViewModel:
             self.put_info_window(_info=response.status)
 
     def make_move(self, my_cards: tuple[int], shop_cards: tuple[int]):
-        response = self.req.make_move(_game_id=self.game_id, _user_id=self.user_id, hand_cards=my_cards, shop_cards=shop_cards)
+        response = self.req.make_move(_game_id=self.game_id, _user_id=self.user_id, hand_cards=my_cards,
+                                      shop_cards=shop_cards)
         if response.status != 0:
             self.put_info_window(_info=response.status)
 
-    def start_game(self, _game_id: int):
-        self.game_id = _game_id
+    def start_game(self):
+        self.window = ViewWindows.game
         self.run_all_game_requests()
 
     def run_all_game_requests(self):
@@ -170,14 +205,34 @@ class ViewModel:
                 self.put_info_window(_info=response.status, _time=1)
             time.sleep(sleep_time)
 
-    def get_users_in_session(self, sleep_time: float):
+    def get_users_in_session(self, sleep_time: float, in_waiting_room=False):
         while True:
-            if self.game_id is None:
+            if self.game_id is None or (in_waiting_room and self.window != ViewWindows.waiting_room):
                 break
             response = self.req.get_user_in_session(_game_id=self.game_id)
             if response.status == 0:
+                need_erase = []
+                for user in self.users:
+                    need_erase.append(user.id)
+
                 for my_user in response.users_info:
-                    self.users_in_session[my_user.id] = my_user.name
+                    if my_user.id in need_erase:
+                        need_erase.remove(my_user.id)
+
+                    added = False
+                    for user in self.users:
+                        if user.id == my_user.id:
+                            added = True
+                            break
+                    if not added:
+                        self.users.append(User(_id=my_user.id, _name=my_user.name))
+
+                for user_id in need_erase:
+                    for i in range(len(self.users)):
+                        if user_id == self.users[i].id:
+                            del self.users[i]
+                            break
+
             else:
                 self.put_info_window(_info=response.status, _time=1)
             time.sleep(sleep_time)

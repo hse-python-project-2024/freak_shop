@@ -11,6 +11,7 @@ service DbService {
   rpc JoinGame(GameUserId) returns (IsDone);
   rpc LeaveGame(GameUserId) returns (IsDone);
   rpc ChangeReadiness(GameUserId) returns (IsDone);
+  rpc IsUserReady(GameUserId) returns (Bool);
 
   rpc GetGoals(GameUserId) returns (GoalList);
   rpc GetUsersInSession(Id) returns (UsersInSession);
@@ -26,6 +27,11 @@ service DbService {
 
 message IsDone{
   int32 status = 1;
+}
+
+message Bool{
+  int32 status = 1;
+  bool is_true = 2;
 }
 
 message IdResponse{
@@ -75,7 +81,7 @@ message PointsCount{
 }
 
 message GoalState{
-  string goal = 1;
+  int32 goal = 1;
   int32 point = 2;
 }
 

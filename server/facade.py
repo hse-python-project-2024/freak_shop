@@ -53,14 +53,18 @@ class Facade(requests_pb2_grpc.DbServiceServicer):
         # self.core.change_readiness()
         return requests_pb2.IsDone(status=0)
 
+    def IsUserReady(self, request, context):
+        # self.core.is_user_ready()
+        return requests_pb2.Bool(status=0, is_true=True)
+
     def GetGoals(self, request, context):
         game_id, user_id = request.game_id, request.user_id
         res = requests_pb2.GoalList()
         res.status = 0
         g1, g2, g3 = res.goals.add(), res.goals.add(), res.goals.add()
-        g1.goal, g1.point = str(game_id), user_id  # wtf?
-        g2.goal, g2.point = "200", 300
-        g3.goal, g3.point = "350", 400
+        g1.goal, g1.point = 1, user_id  # wtf?
+        g2.goal, g2.point = 2, 300
+        g3.goal, g3.point = 3, 400
         return res
 
     def GetUsersInSession(self, request, context):
