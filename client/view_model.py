@@ -99,7 +99,7 @@ class ViewModel:
         self.reset_all_info()
         self.window = ViewWindows.waiting_room
 
-    def go_to_game_menu(self):
+    def go_to_game_menu(self): # Testing only, not needed in real game
         self.window = ViewWindows.game
 
     def sign_out(self):

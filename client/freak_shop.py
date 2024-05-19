@@ -9,9 +9,10 @@ from view_model import ViewWindows
 from view_model import Languages
 from menu import ReturnStatus
 import time
-# TODO check if it works(no availiability rn)
+
 if __name__ == "__main__":
-    CurrentGame = GameView(GameInfo(1, [1, 9, 5], 4, ["Pasha", "Sasha", "Nagibator228", "Боб"]))
+    # Default initialization
+    CurrentGame = GameView(GameInfo([1, 2, 3], 2, ["Def1", "Def2"]))
     # Preparing all needed class objects
     ViewModelEntity = ViewModel()
     DefaultLanguage = Languages.russian  # TODO remove later(or maybe just move)
@@ -70,13 +71,12 @@ if __name__ == "__main__":
                 ViewModelEntity.go_to_leaderboard_window()
 
         elif CurrentWindow == ViewWindows.game:
-            ViewModelEntity.run_all_game_requests() # TODO make all this be done only every couple of seconds
             CurrentGame.update_game_info(ViewModelEntity.my_card,ViewModelEntity.shop_card
                                          ,ViewModelEntity.whose_move)
             Return = CurrentGame.ShowMainGameWindow(ViewModelEntity.language)
             if Return[0] == ReturnStatus.quit:
                 time.sleep(0.1)
-                sys.exit()
+                ViewModelEntity.leave_game()
 
         elif CurrentWindow == ViewWindows.connecting_by_code:
             Return = Menu.show_join_by_code_menu()
@@ -105,7 +105,10 @@ if __name__ == "__main__":
             elif Return[0] == ReturnStatus.quit:
                 time.sleep(0.1)
                 ViewModelEntity.leave_game()
-            # TODO add actual game start when everyone is ready with goal and player nickname getting
+
+            if True: # TODO add actual game start when everyone is ready with goal and player nickname getting
+                NewGameInfo = GameInfo(ViewModelEntity.goals.keys(), PlayerAmount, PlayerNicknames)
+                CurrentGame.update_start_game_status(NewGameInfo)
 
         elif CurrentWindow == ViewWindows.game_result:
             pass  # TODO - remove the pass to replace with real functions

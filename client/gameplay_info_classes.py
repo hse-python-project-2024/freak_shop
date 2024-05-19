@@ -11,12 +11,12 @@ class ShopInfo:
 
 
 class GameInfo:
-    def __init__(self, gameID, CurrentTasks, AmountOfPlayers, NicknamesOfPlayers):
-        self.GameId = gameID
+    def __init__(self, CurrentTasks, AmountOfPlayers, NicknamesOfPlayers):
         self.CurrentPlayer = 0
         self.PlayerAmount = AmountOfPlayers
         self.PlayersNicknames = NicknamesOfPlayers
         self.Tasks = CurrentTasks
         self.Scores = [0] * AmountOfPlayers
+
     def update_scores(self, NewScoreArray):
         self.Scores = NewScoreArray
