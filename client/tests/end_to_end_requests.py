@@ -18,6 +18,10 @@ if __name__ == '__main__':
     response = client.change_readiness(_game_id=1, _user_id=1)
     print(f"status = {response.status}\n")
 
+    print("Is user ready")
+    response = client.is_user_ready(_game_id=1, _user_id=1)
+    print(f"status = {response.status}, user ready = {response.is_true}\n")
+
     print("Get goals")
     response = client.get_goals(_game_id=1, _user_id=50)
     print(response.status)
