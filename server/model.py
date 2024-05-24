@@ -153,9 +153,11 @@ class Deck:
 
 
 class Player:
-    def __init__(self, player_id):
+    def __init__(self, player_id, _login, _name):
         """Class that handles operations with a single player."""
         self.id = player_id
+        self.login = _login
+        self.name = _name
         self.decks = {}
         self.goals = {}
         self.ready = {}
@@ -261,7 +263,11 @@ class Game:
         Output:
 
         - list[player_id]"""
-        return self.players
+        res = {}
+        for player_id in self.players:
+            player = PLAYERS[player_id]
+            res[player_id] = {"login": player.login, "name": player.name}
+        return res
 
     def get_stage(self):
         """Return current game stage
@@ -467,9 +473,9 @@ class Core:
     def __init__(self):
         pass
 
-    def log_in_player(self, player_id):
+    def log_in_player(self, player_id, login, name):
         if player_id not in PLAYERS:
-            new_player = Player(player_id)
+            new_player = Player(player_id=player_id, _login=login, _name=name)
             PLAYERS[player_id] = new_player
 
     def create_game(self):
@@ -522,7 +528,7 @@ class Core:
             return 4
         if game.get_stage() == RESULTS:
             return 5
-        if len(game.get_players()) == 5:
+        if len(game.get_players().keys()) == 5:
             return 6
         game.add_player(player_id)
         return 0

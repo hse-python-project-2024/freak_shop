@@ -80,9 +80,8 @@ class Facade(requests_pb2_grpc.DbServiceServicer):
             for user_id in res[1]:
                 user = result.users_info.add()
                 user.id = user_id
-                # TODO: database requests
-                user.login = "???"
-                user.name = "!!!"
+                user.login = res[1][user_id]["login"]
+                user.name = res[1][user_id]["name"]
         return result
 
     def GetShopCards(self, request, context):
