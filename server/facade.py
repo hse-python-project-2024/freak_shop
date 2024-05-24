@@ -27,6 +27,7 @@ class Facade(requests_pb2_grpc.DbServiceServicer):
         user = self.db.login_user(_user_login=request.login, _password=request.password1)
         if user[0] != 0:
             return requests_pb2.ResponseUser(status=user[0])
+        self.core.log_in_player(user[1])
         return requests_pb2.ResponseUser(status=0,
                                          user_info=requests_pb2.UserInfo(id=user[1], login=user[2], name=user[3]))
 

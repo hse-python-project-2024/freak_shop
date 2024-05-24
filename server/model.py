@@ -467,6 +467,11 @@ class Core:
     def __init__(self):
         pass
 
+    def log_in_player(self, player_id):
+        if player_id not in PLAYERS:
+            new_player = Player(player_id)
+            PLAYERS[player_id] = new_player
+
     def create_game(self):
         """Start new game session.
 
