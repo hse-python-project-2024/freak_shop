@@ -19,6 +19,8 @@ class GameView:
 
     def update_game_info(self, PlayerCardList, ShopCardList, NewCurPlayer):
         NewPlayer = PlayerInfo()
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!")
+        print(PlayerCardList)
         NewPlayer.CardsInHand = PlayerCardList[0]
         NewPlayer.DiscountedCardsInHand = PlayerCardList[1]
         NewShop = ShopInfo()
