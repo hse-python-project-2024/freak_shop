@@ -39,11 +39,24 @@ class Facade(requests_pb2_grpc.DbServiceServicer):
         return requests_pb2.ResponseUser(status=0, user_info=_user_info)
 
     def CreateGame(self, request, context):
+        self._LOGGER.info(f"CREATE GAME")
+
         res = self.core.create_game()
+
+        if res[0]:
+            self._LOGGER.info(f"ERROR (GAME NOT CREATED): status={res[0]}")
+        else:
+            self._LOGGER.info(f"GAME CREATED: game_id={res[1]}")
         return requests_pb2.IdResponse(status=res[0], id=res[1])
 
     def JoinGame(self, request, context):
-        code = self.core.join_game(request.game_id, request.user_id)
+        game_id = request.game_id
+        user_id = request.user_id
+        self._LOGGER.info(f"JOIN GAME: game_id={game_id} player_id={user_id}")
+
+        code = self.core.join_game(game_id, user_id)
+
+        self._LOGGER.info(f"RESULT: {code}")
         return requests_pb2.IsDone(status=code)
 
     def LeaveGame(self, request, context):
@@ -51,15 +64,30 @@ class Facade(requests_pb2_grpc.DbServiceServicer):
         return requests_pb2.IsDone(status=code)
 
     def ChangeReadiness(self, request, context):
-        code = self.core.change_readiness(request.game_id, request.user_id)
+        game_id = request.game_id
+        user_id = request.user_id
+        self._LOGGER.info(f"CHANGE READINESS: game_id={game_id} player_id={user_id}")
+
+        code = self.core.change_readiness(game_id=game_id, player_id=user_id)
+
+        self._LOGGER.info(f"RESULT: {code}")
         return requests_pb2.IsDone(status=code)
 
     def IsUserReady(self, request, context):
+        game_id = request.game_id
+        user_id = request.user_id
+        # self._LOGGER.info(f"CHECK READINESS: game_id={game_id} player_id={user_id}")
+
         res = self.core.check_readiness(request.game_id, request.user_id)
+
+        # self._LOGGER.info(f"RESULT: status={res[0]} ready={res[1]}")
         return requests_pb2.Bool(status=res[0], is_true=res[1])
 
     def GetGoals(self, request, context):
-        game_id, user_id = request.game_id, request.user_id
+        game_id = request.game_id
+        user_id = request.user_id
+        self._LOGGER.info(f"GET GOALS: game_id={game_id} player_id={user_id}")
+
         result = requests_pb2.GoalList()
         res = self.core.get_goals(game_id, user_id)
         result.status = res[0]
@@ -70,6 +98,8 @@ class Facade(requests_pb2_grpc.DbServiceServicer):
                 goal.goal = cnt
                 cnt += 1
                 goal.point = res[1][goal_name]
+
+        self._LOGGER.info(f"RESULT: status={res[0]} goals={res[1]}")
         return result
 
     def GetUsersInSession(self, request, context):
@@ -85,17 +115,29 @@ class Facade(requests_pb2_grpc.DbServiceServicer):
         return result
 
     def GetShopCards(self, request, context):
-        res = self.core.get_shop_cards(request.game_id, request.user_id)
+        game_id = request.game_id
+        user_id = request.user_id
+        self._LOGGER.info(f"GET SHOP CARDS: game_id={game_id} player_id={user_id}")
+
+        res = self.core.get_shop_cards(game_id, user_id)
         result = requests_pb2.CardsResponse()
         result.status = res[0]
         result.card_id.extend(res[1])
+
+        self._LOGGER.info(f"RESULT: {res}")
         return result
 
     def GetUserCards(self, request, context):
-        res = self.core.get_player_cards(request.game_id, request.user_id)
+        game_id = request.game_id
+        user_id = request.user_id
+        self._LOGGER.info(f"GET USER CARDS: game_id={game_id} player_id={user_id}")
+
+        res = self.core.get_player_cards(game_id, user_id)
         result = requests_pb2.CardsResponse()
         result.status = res[0]
         result.card_id.extend(res[1])
+
+        self._LOGGER.info(f"RESULT: {res}")
         return result
 
     def GetPointsCount(self, request, context):

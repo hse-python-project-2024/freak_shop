@@ -152,7 +152,11 @@ class ViewModel:
     def create_game(self):
         response = self.req.creat_game(_user_id=self.user_id)
         if response.status == 0:
-            self.go_to_waiting_room(_game_id=response.id)
+            response2 = self.req.join_game(_game_id=response.id, _user_id=self.user_id)
+            if response2.status == 0:
+                self.go_to_waiting_room(_game_id=response.id)
+            else:
+                self.put_info_window(_info=response2.status)
         else:
             self.put_info_window(_info=response.status)
 
@@ -288,6 +292,7 @@ class ViewModel:
                 self.mutex.acquire()
                 if self.game_id is None:
                     break
+                print("?????????????????????????", self.user_id)
                 response = self.req.get_user_cards(_user_id=self.user_id)
                 if response.status == 0:
                     self.my_card = list(response.card_id)

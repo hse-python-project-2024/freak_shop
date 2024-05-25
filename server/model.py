@@ -1,6 +1,8 @@
 from collections import deque
 from random import shuffle, randint
 
+from logs.loggers import get_logger
+
 
 def check_good_deal(player_card_ids, shop_card_ids):
     if len(player_card_ids) != len(shop_card_ids):
@@ -34,11 +36,11 @@ class Deck:
         self.merch_vals = [0] * 11
         self.cats = {Items: 0, Pets: 0, Employees: 0}
 
-    def add_cards(self, *_card_ids):
+    def add_cards(self, _cards):
         """Add cards with the given ids to the deck."""
-        self.card_ids += list(_card_ids)
+        self.card_ids += list(_cards)
         self.card_ids.sort()
-        for card_id in _card_ids:
+        for card_id in _cards:
             card = CARDS[card_id]
             self.vals[card.value] += 1
             if card.is_merch:
@@ -196,9 +198,9 @@ class Player:
         self.goals.pop(game_id)
         self.ready.pop(game_id)
 
-    def add_cards(self, game_id, *card_ids):
+    def add_cards(self, game_id, cards):
         """Add cards to the deck used in the given game."""
-        self.decks[game_id].add_cards(card_ids)
+        self.decks[game_id].add_cards(cards)
 
     def sell_cards(self, game_id, *card_ids):
         """Remove cards from the deck used in the given game."""
@@ -294,7 +296,7 @@ class Game:
 
         If after the change all the players are ready, the game starts."""
         PLAYERS[player_id].change_readiness(self.id)
-        if all(PLAYERS[player_id].is_ready()):
+        if len(self.players) > 1 and all(PLAYERS[i].is_ready(self.id) for i in self.players):
             self.start()
 
     def kick_player(self, player_id):
@@ -306,12 +308,11 @@ class Game:
 
     def start(self):
         """Start the game."""
-        if self.stage != WAITING:
-            return
         self.stage = RUNNING
-        for i, player in enumerate(self.players):
+        for i, player_id in enumerate(self.players):
+            player = PLAYERS[player_id]
             last_card = (10, 12, 14, 16, 18)
-            player.add_cards(game_id=self.id, cards=(2, 4, 6, last_card[i]))
+            player.add_cards(game_id=self.id, cards=(2, 4, 6) + (last_card[i],))
         all_cards = [1] * 4 + [2] * (7 - len(self.players)) + \
                     [3] * 3 + [4] * (7 - len(self.players)) + \
                     [5] * 3 + [6] * (6 - len(self.players)) + \
@@ -323,8 +324,11 @@ class Game:
                     [17] + [18] * (2 - (len(self.players) >= 5)) + \
                     [19] + [20]
         shuffle(all_cards)
-        all_cards.insert(randint(len(all_cards) - 7, len(self.players) - 1), 0)
+        all_cards.insert(randint(len(all_cards) - 7, len(all_cards) - 1), 0)
         self.unused = deque(all_cards)
+
+        if not self.restock():
+            self.finish()
 
     def finish(self):
         """End the game and show the results."""
@@ -345,6 +349,9 @@ class Game:
             self.check_fashion_at_lowest_price()
             self.check_not_the_same_values()
 
+        if not self.restock():
+            self.finish()
+
     def get_current_player(self):
         """Returns id of the current player."""
         return self.players[self.cur_player]
@@ -355,7 +362,10 @@ class Game:
     def add_card_to_shop(self):
         """Add a new card from the queue to the shop."""
         new_card = self.unused.popleft()
-        self.shop.append(new_card)
+        if new_card:
+            self.shop.append(new_card)
+            return True
+        return False
 
     def restock(self):
         """Restock the shop with new cards from the queue."""
@@ -471,7 +481,8 @@ MX_GAME_ID = 50
 
 class Core:
     def __init__(self):
-        pass
+        self._LOGGER = get_logger(__name__)
+        self._LOGGER.info("LETS GOOO")
 
     def log_in_player(self, player_id, login, name):
         if player_id not in PLAYERS:
@@ -490,7 +501,7 @@ class Core:
         -- [1] int if status == 0:
             - game_id"""
         if len(GAMES) == MX_GAME_ID:
-            return 1, -1
+            return 9, -1
         new_game_id = randint(1, MX_GAME_ID)
         while new_game_id in GAMES.keys():
             new_game_id = randint(1, MX_GAME_ID)
@@ -524,12 +535,12 @@ class Core:
         game = GAMES[game_id]
         if player_id in game.get_players():
             return 3
-        if game.get_stage() == RUNNING:
-            return 4
-        if game.get_stage() == RESULTS:
-            return 5
-        if len(game.get_players().keys()) == 5:
+        '''if game.get_stage() == RUNNING:
             return 6
+        if game.get_stage() == RESULTS:
+            return 7'''
+        if len(game.get_players().keys()) == 5:
+            return 8
         game.add_player(player_id)
         return 0
 
@@ -552,7 +563,7 @@ class Core:
             return 2
         game = GAMES[game_id]
         if player_id not in game.get_players():
-            return 3
+            return 4
         game.kick_player(player_id)
         return 0
 
@@ -562,10 +573,10 @@ class Core:
         if player_id not in PLAYERS:
             return 2, 0
         game = GAMES[game_id]
-        if game.get_stage() == RUNNING:
-            return 3, 0
+        '''if game.get_stage() == RUNNING:
+            return 6, 0
         if game.get_stage() == RESULTS:
-            return 4, 0
+            return 7, 0'''
         return 0, game.check_readiness(player_id)
 
     def change_readiness(self, game_id, player_id):
@@ -583,15 +594,16 @@ class Core:
              - 6
 
              - 7"""
+
         if game_id not in GAMES:
             return 1
         if player_id not in PLAYERS:
             return 2
         game = GAMES[game_id]
         if game.get_stage() == RUNNING:
-            return 3
+            return 6
         if game.get_stage() == RESULTS:
-            return 4
+            return 7
         game.change_player_readiness(player_id)
         return 0
 
@@ -634,9 +646,9 @@ class Core:
             return 1, []
         game = GAMES[game_id]
         if game.get_stage == WAITING:
-            return 2, []
+            return 5, []
         if game.get_stage == RESULTS:
-            return 3, []
+            return 7, []
         return 0, game.get_shop_cards()
 
     def get_player_cards(self, game_id, player_id):
@@ -667,11 +679,11 @@ class Core:
             return 2, []
         player = PLAYERS[player_id]
         if player_id not in game.get_players():
-            return 3, []
-        if game.get_stage == WAITING:
             return 4, []
-        if game.get_stage == RESULTS:
+        if game.get_stage == WAITING:
             return 5, []
+        if game.get_stage == RESULTS:
+            return 7, []
         return 0, player.get_cards(game_id)
 
     def get_players(self, game_id):
@@ -697,11 +709,11 @@ class Core:
         if player_id not in PLAYERS:
             return 2
         if player_id not in game.get_players():
-            return 3
-        if game.get_stage() == WAITING:
             return 4
-        if game.get_stage() == RESULTS:
+        if game.get_stage() == WAITING:
             return 5
+        if game.get_stage() == RESULTS:
+            return 7
         if not sold_cards:
             return 18
         if not bought_cards:
@@ -728,22 +740,22 @@ class Core:
         if player_id not in PLAYERS:
             return 2, {}
         if player_id not in game.get_players():
-            return 3, {}
-        if game.get_stage() == WAITING:
             return 4, {}
+        if game.get_stage() == WAITING:
+            return 5, {}
         player = PLAYERS[player_id]
         return 0, player.get_goals(game_id)
 
     def get_goals_total(self, game_id):
         if game_id not in GAMES:
-            return 1
+            return 1, {}
         game = GAMES[game_id]
         if game.get_stage() == WAITING:
-            return 4
+            return 5, {}
         res = {}
         for player_id in game.get_players():
             res[player_id] = self.get_goals(game_id, player_id)
-        return res
+        return 0, res
 
     def get_points(self, game_id, player_id):
         if game_id not in GAMES:
@@ -752,9 +764,9 @@ class Core:
         if player_id not in PLAYERS:
             return 2, -1
         if player_id not in game.get_players():
-            return 3, -1
-        if game.get_stage() == WAITING:
             return 4, -1
+        if game.get_stage() == WAITING:
+            return 5, -1
         player = PLAYERS[player_id]
         return 0, player.get_points(game_id)
 
@@ -763,7 +775,7 @@ class Core:
             return 1, {}
         game = GAMES[game_id]
         if game.get_stage() == WAITING:
-            return 4, {}
+            return 5, {}
         res = {}
         for player_id in game.get_players():
             res[player_id] = self.get_points(game_id, player_id)
