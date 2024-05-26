@@ -54,6 +54,15 @@ class ViewModel:
         self.whose_move = None  # user_id whose move
         self.mutex = threading.Lock()
 
+    def my_pos_in_users(self):
+        self.mutex.acquire()
+        for i in range(len(self.users)):
+            if self.users[i].id == self.user_id:
+                self.mutex.release()
+                return i
+        self.mutex.release()
+        return -1
+
     def reset_all_info(self):
         self.user_id, self.user_name, self.game_id, self.user_login, self.whose_move = None, None, None, None, None
         self.goals = dict()
@@ -141,6 +150,8 @@ class ViewModel:
         response = self.req.change_readiness(_game_id=self.game_id, _user_id=self.user_id)
         if response.status != 0:
             self.put_info_window(_info=response.status)
+        else:
+            self.users[self.my_pos_in_users()].readiness = not self.users[self.my_pos_in_users()].readiness
 
     def join_game(self, _game_id: int):
         response = self.req.join_game(_game_id=_game_id, _user_id=self.user_id)

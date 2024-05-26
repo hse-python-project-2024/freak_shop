@@ -7,7 +7,7 @@ import random
 
 from client.tests.check_model_fields import check_fields, ModelFields
 
-from ..view_model import ViewModel, ViewWindows
+from ..view_model import ViewModel, ViewWindows, User
 
 
 def put_random_value(model):
@@ -26,9 +26,8 @@ def put_not_in_game(model):
     model.my_card = []
     model.shop_card = []
     model.goals = dict()
-    model.users_in_session = dict()
+    model.users = []
     model.game_id = None
-    model.user_readiness = False
     model.whose_move = None
 
 
@@ -37,6 +36,7 @@ class TestClientRequests(unittest.TestCase):
     def setUp(self):
         self.model = ViewModel()
         put_random_value(model=self.model)
+        self.model.users.append(User(_id=self.model.user_id, _name="abacaba"))
 
     def assert_empty_info(self, model):
         self.assertEqual(model.info_window, None)
@@ -47,7 +47,7 @@ class TestClientRequests(unittest.TestCase):
         self.assertEqual(model.my_card, [])
         self.assertEqual(model.shop_card, [])
         self.assertEqual(model.goals, dict())
-        self.assertEqual(model.users_in_session, dict())
+        self.assertEqual(model.users, [])
         self.assertEqual(model.whose_move, None)
 
     def test_init(self):
@@ -164,27 +164,29 @@ class TestClientRequests(unittest.TestCase):
     @patch('client.view_model.ClientRequests.change_readiness')
     def test_change_readiness_not_ok(self, req_mock):
         model_copy = copy.copy(self.model)
-        start_readiness = self.model.user_readiness
+        my_id = self.model.my_pos_in_users()
+        start_readiness = self.model.users[my_id].readiness
         response = MagicMock()
         response.status = -1
         req_mock.return_value = response
         self.model.change_user_readiness()
         req_mock.assert_called_once()
         self.assertEqual(self.model.info_window, "-1")
-        self.assertEqual(self.model.user_readiness, start_readiness)
+        self.assertEqual(self.model.users[my_id].readiness, start_readiness)
         check_fields(self.model, model_copy, [ModelFields.info_window])
 
     @patch('client.view_model.ClientRequests.change_readiness')
     def test_change_readiness_ok(self, req_mock):
         model_copy = copy.copy(self.model)
-        start_readiness = self.model.user_readiness
+        my_id = self.model.my_pos_in_users()
+        start_readiness = self.model.users[my_id].readiness
         response = MagicMock()
         response.status = 0
         req_mock.return_value = response
         self.model.change_user_readiness()
         req_mock.assert_called_once()
-        self.assertEqual(self.model.user_readiness, not start_readiness)
-        check_fields(self.model, model_copy, [ModelFields.user_readiness])
+        self.assertEqual(self.model.users[my_id].readiness, not start_readiness)
+        check_fields(self.model, model_copy, [])
 
 
 if __name__ == "__main__":
