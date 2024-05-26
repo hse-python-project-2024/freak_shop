@@ -17,6 +17,7 @@ class ReturnStatus(enum.Enum):
     create_lobby = 11
     go_to_join_lobby = 12
     change_readiness = 13
+    trade = 14
 
 
 class MenuView:

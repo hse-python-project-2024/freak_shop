@@ -179,6 +179,7 @@ class ViewModel:
             self.put_info_window(_info=response.status)
 
     def make_move(self, my_cards: tuple[int], shop_cards: tuple[int]):
+        self._LOGGER.info(f"make move with player cards:  {my_cards} and shop cards: {shop_cards}")
         response = self.req.make_move(_game_id=self.game_id, _user_id=self.user_id, hand_cards=my_cards,
                                       shop_cards=shop_cards)
         if response.status != 0:
@@ -248,7 +249,7 @@ class ViewModel:
             try:
                 if self.game_id is None:
                     break
-                self._LOGGER.info(f"make request get_goals game_id = {self.game_id}, user_id = {_user_id}")
+                #self._LOGGER.info(f"make request get_goals game_id = {self.game_id}, user_id = {_user_id}")
                 response = self.req.get_goals(_game_id=self.game_id, _user_id=_user_id)
                 if response.status == 0:
                     for my_goal in response.goals:
@@ -269,7 +270,7 @@ class ViewModel:
             try:
                 if self.game_id is None or (in_waiting_room and self.window != ViewWindows.waiting_room):
                     break
-                self._LOGGER.info("make request get_user_in_session")
+                #self._LOGGER.info("make request get_user_in_session")
                 response = self.req.get_user_in_session(_game_id=self.game_id)
                 if response.status == 0:
                     need_erase = []
@@ -308,7 +309,7 @@ class ViewModel:
             try:
                 if self.game_id is None:
                     break
-                self._LOGGER.info(f"make request get_user_cards game_id = {self.game_id}, user_id = {_user_id}")
+                # self._LOGGER.info(f"make request get_user_cards game_id = {self.game_id}, user_id = {_user_id}")
                 response = self.req.get_user_cards(_game_id=self.game_id, _user_id=_user_id)
                 if response.status == 0:
                     self.my_card = list(response.card_id)
@@ -328,7 +329,7 @@ class ViewModel:
             try:
                 if self.game_id is None:
                     break
-                self._LOGGER.info(f"make request get_shop_cards, game_id = {self.game_id}")
+                # self._LOGGER.info(f"make request get_shop_cards, game_id = {self.game_id}")
                 response = self.req.get_shop_cards(_game_id=self.game_id)
                 if response.status == 0:
                     self.shop_card = list(response.card_id)
@@ -348,7 +349,7 @@ class ViewModel:
             try:
                 if self.game_id is None:
                     break
-                self._LOGGER.info(f"make request whose_move, game_id = {self.game_id}")
+                # self._LOGGER.info(f"make request whose_move, game_id = {self.game_id}")
                 response = self.req.whose_move(_game_id=self.game_id)
                 if response.status == 0:
                     for i in range(len(self.users)):

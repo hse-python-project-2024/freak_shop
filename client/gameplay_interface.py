@@ -53,8 +53,16 @@ class GameView:
             if event.type == MOUSEBUTTONDOWN:
                 if self.IsMyTurn:
                     MousePosition = pygame.mouse.get_pos()
-                    if self.EndTurnButtonRect.collidepoint(MousePosition):
+                    if self.EndTurnButtonRect.collidepoint(MousePosition): # Send trade request
+                        PlayerCardsToTrade = [self.GameBoard.ClickedPlayerCards,
+                                              self.GameBoard.ClickedPlayerCardsDiscounted]
+                        ShopCardsToTrade = [self.GameBoard.ClickedShopCards,
+                                            self.GameBoard.ClickedShopCardsDiscounted]
+                        PlayerGoodFormat = card_format_from_full(PlayerCardsToTrade)
+                        ShopGoodFormat = card_format_from_full(ShopCardsToTrade)
+                        Returnee = [ReturnStatus.trade, [PlayerGoodFormat, ShopGoodFormat]]
                         self.GameBoard.reset()
+                        return Returnee
 
                     # Shop card click checks
                     for i in range(10):
@@ -116,18 +124,20 @@ class GameView:
 
         pressed_keys = pygame.key.get_pressed()
         if pressed_keys[K_ESCAPE]:
-            Returnee = [ReturnStatus.quit,[""]]
+            Returnee = [ReturnStatus.quit, [""]]
             return Returnee
 
-        if self.EndTurnButtonRect.collidepoint(pygame.mouse.get_pos()):
+        # Display End Turn button
+        if self.IsMyTurn:
             self.GameBoard.display_end_turn_button(True,lang)
         else:
-            self.GameBoard.display_end_turn_button(False,lang)
-            # Display Tasks text when hovering over them
-            for i in range(3):
-                if TaskImagesRects[i].collidepoint(pygame.mouse.get_pos()):
-                    self.GameBoard.display_tasks_text(self.Info.Tasks,i,lang)
-                    break
+            self.GameBoard.display_end_turn_button(False, lang)
+
+        # Display Tasks text when hovering over them
+        for i in range(3):
+            if TaskImagesRects[i].collidepoint(pygame.mouse.get_pos()):
+                self.GameBoard.display_tasks_text(self.Info.Tasks,i,lang)
+                break
 
         Returnee = [ReturnStatus.stay, [""]]
         return Returnee

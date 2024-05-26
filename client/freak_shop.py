@@ -8,10 +8,12 @@ from view_model import ViewModel
 from view_model import ViewWindows
 from view_model import Languages
 from menu import ReturnStatus
+from logs.logger import get_logger
 import time
 
 if __name__ == "__main__":
     # Preparing all needed class objects
+    _LOGGER = get_logger(__name__)
     CurrentGame = GameView()
     ViewModelEntity = ViewModel()
     DefaultLanguage = Languages.russian  # TODO remove later(or maybe just move)
@@ -78,7 +80,9 @@ if __name__ == "__main__":
                 PlayerNicknames = []
                 for user in ViewModelEntity.users:
                     PlayerNicknames.append(user.name)
-                NewGameInfo = GameInfo(ViewModelEntity.goals.keys(), len(ViewModelEntity.users), PlayerNicknames)
+                NewGameInfo = GameInfo(list(ViewModelEntity.goals.keys()), len(ViewModelEntity.users), PlayerNicknames,
+                                       ViewModelEntity.my_pos_in_users())
+                _LOGGER.info(f"Started game with players:  {PlayerNicknames} on position {ViewModelEntity.my_pos_in_users()}")
                 CurrentGame.update_start_game_status(NewGameInfo)
             CurrentGame.update_game_info(ViewModelEntity.my_card,ViewModelEntity.shop_card
                                          ,ViewModelEntity.whose_move)
@@ -87,6 +91,8 @@ if __name__ == "__main__":
                 time.sleep(0.1)
                 IsGameStarted = False
                 ViewModelEntity.leave_game()
+            elif Return[0] == ReturnStatus.trade:
+                ViewModelEntity.make_move(Return[1][0],Return[1][1])
 
         elif CurrentWindow == ViewWindows.connecting_by_code:
             Return = Menu.show_join_by_code_menu()

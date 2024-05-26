@@ -122,8 +122,8 @@ class GameBoardView:
 
     def display_scores(self,Game):
         for i in range(len(Game.Scores)):
-            ScoreText = TextFont.render(str(Game.Scores[i]), False, (0, 0, 0))
-            screen.blit(ScoreText, (ScreenWidth * 4 / 5, ScreenHeight * i / 8 + 60))
+            ScoreText = ScoresFont.render(str(Game.Scores[i]), False, (0, 0, 0))
+            screen.blit(ScoreText, (ScreenWidth * 4 / 5, ScreenHeight * i / 8 + 40))
 
     def display_end_turn_button(self, activated,lang):
         EndTurnText = TextFont.render(EndTurnTexts[lang.value], False, (0, 0, 0))
@@ -143,6 +143,8 @@ class GameBoardView:
             screen.blit(self.TaskImages[TaskNumber - 1], (ScreenWidth / 50,
                                                           ScreenHeight * ind / 5 + 10))
             ind += 1
+            if ind == 3: # TODO delete , this is COSTYL
+                break
         return TaskImagesRects
 
     def display_tasks_text(self, Tasks, TaskNumber,lang):
