@@ -73,6 +73,7 @@ if __name__ == "__main__":
                 ViewModelEntity.go_to_leaderboard_window()
 
         elif CurrentWindow == ViewWindows.game:
+            time.sleep(1)
             if not IsGameStarted:
                 IsGameStarted = True
                 NewGameInfo = GameInfo(ViewModelEntity.goals.keys(), PlayerAmount, PlayerNicknames)  # TODO fix so it works
