@@ -11,9 +11,8 @@ from menu import ReturnStatus
 import time
 
 if __name__ == "__main__":
-    # Default initialization
-    CurrentGame = GameView(GameInfo([1, 2, 3], 2, ["Def1", "Def2"]))
     # Preparing all needed class objects
+    CurrentGame = GameView()
     ViewModelEntity = ViewModel()
     DefaultLanguage = Languages.russian  # TODO remove later(or maybe just move)
     Menu = MenuView(DefaultLanguage)
@@ -73,10 +72,13 @@ if __name__ == "__main__":
                 ViewModelEntity.go_to_leaderboard_window()
 
         elif CurrentWindow == ViewWindows.game:
-            time.sleep(1)
             if not IsGameStarted:
+                time.sleep(1)
                 IsGameStarted = True
-                NewGameInfo = GameInfo(ViewModelEntity.goals.keys(), PlayerAmount, PlayerNicknames)  # TODO fix so it works
+                PlayerNicknames = []
+                for user in ViewModelEntity.users:
+                    PlayerNicknames.append(user.name)
+                NewGameInfo = GameInfo(ViewModelEntity.goals.keys(), len(ViewModelEntity.users), PlayerNicknames)
                 CurrentGame.update_start_game_status(NewGameInfo)
             CurrentGame.update_game_info(ViewModelEntity.my_card,ViewModelEntity.shop_card
                                          ,ViewModelEntity.whose_move)

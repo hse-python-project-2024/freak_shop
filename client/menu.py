@@ -550,7 +550,7 @@ class MenuView:
                     (ScreenWidth * 17 / 38, ScreenHeight * 4 / 5 + 80))
         LobbyCodeText = CodeFont.render(str(lobby_code), False, (0, 0, 0))
         screen.blit(LobbyCodeText,
-                    (ScreenWidth * 1 / 2 - 155, ScreenHeight * 1 / 19))
+                    (ScreenWidth * 1 / 2 - 95, ScreenHeight * 1 / 19))
         screen.blit(pygame.transform.scale(self.BackIconImage, (180, 180)),
                     (ScreenWidth * 6 / 7, ScreenHeight * 1 / 30))
         Returnee = [ReturnStatus.stay, [""]]
