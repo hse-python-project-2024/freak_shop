@@ -1,5 +1,7 @@
 from collections import deque
-from random import shuffle, randint
+from random import shuffle, randint, choice
+
+from logs.loggers import get_logger
 
 
 def check_good_deal(player_card_ids, shop_card_ids):
@@ -20,7 +22,7 @@ def check_good_deal(player_card_ids, shop_card_ids):
     return True
 
 
-def chack_fair_price(player_card_ids, shop_card_ids):
+def check_fair_price(player_card_ids, shop_card_ids):
     sum_sold = sum(CARDS[card_id].value for card_id in player_card_ids)
     sum_bought = sum(CARDS[card_id].value for card_id in shop_card_ids)
     return sum_sold == sum_bought
@@ -34,18 +36,18 @@ class Deck:
         self.merch_vals = [0] * 11
         self.cats = {Items: 0, Pets: 0, Employees: 0}
 
-    def add_cards(self, *_card_ids):
+    def add_cards(self, _cards):
         """Add cards with the given ids to the deck."""
-        self.card_ids += list(_card_ids)
+        self.card_ids += list(_cards)
         self.card_ids.sort()
-        for card_id in _card_ids:
+        for card_id in _cards:
             card = CARDS[card_id]
             self.vals[card.value] += 1
             if card.is_merch:
                 self.merch_vals[card.value] += 1
             self.cats[card.category] += 1
 
-    def sell_cards(self, *_card_ids):
+    def sell_cards(self, _card_ids):
         """Delete cards with the given ids from the deck."""
         for card_id in _card_ids:
             self.card_ids.remove(card_id)
@@ -153,9 +155,11 @@ class Deck:
 
 
 class Player:
-    def __init__(self, player_id):
+    def __init__(self, player_id, _login, _name):
         """Class that handles operations with a single player."""
         self.id = player_id
+        self.login = _login
+        self.name = _name
         self.decks = {}
         self.goals = {}
         self.ready = {}
@@ -194,11 +198,11 @@ class Player:
         self.goals.pop(game_id)
         self.ready.pop(game_id)
 
-    def add_cards(self, game_id, *card_ids):
+    def add_cards(self, game_id, cards):
         """Add cards to the deck used in the given game."""
-        self.decks[game_id].add_cards(card_ids)
+        self.decks[game_id].add_cards(cards)
 
-    def sell_cards(self, game_id, *card_ids):
+    def sell_cards(self, game_id, card_ids):
         """Remove cards from the deck used in the given game."""
         self.decks[game_id].sell_cards(card_ids)
 
@@ -212,7 +216,7 @@ class Player:
 
     def get_merch_cnt(self, game_id):
         """Return the current number of cards marked as merchandise."""
-        return self.decks[game_id].get_merch.cnt()
+        return self.decks[game_id].get_merch_cnt()
 
     def update_neighbors_festival(self, game_id, points):
         """Set points for the goal "Neighbors' festival" in the given game to the 'points' argument."""
@@ -254,6 +258,7 @@ class Game:
         self.cur_player = 0
         self.stage = WAITING
         self.unused = deque()
+        self.goals = [''] * 3
 
     def get_players(self):
         """Return list of players
@@ -261,7 +266,11 @@ class Game:
         Output:
 
         - list[player_id]"""
-        return self.players
+        res = {}
+        for player_id in self.players:
+            player = PLAYERS[player_id]
+            res[player_id] = {"login": player.login, "name": player.name}
+        return res
 
     def get_stage(self):
         """Return current game stage
@@ -278,13 +287,17 @@ class Game:
         self.players.append(player_id)
         PLAYERS[player_id].join_game(self.id)
 
+    def check_readiness(self, player_id):
+        player = PLAYERS[player_id]
+        return player.is_ready(self.id)
+
     def change_player_readiness(self, player_id):
         """Change the readiness status of the player with the given id.
         'Ready' changes into 'not ready' and vice versa.
 
         If after the change all the players are ready, the game starts."""
         PLAYERS[player_id].change_readiness(self.id)
-        if all(PLAYERS[player_id].is_ready()):
+        if len(self.players) > 1 and all(PLAYERS[i].is_ready(self.id) for i in self.players):
             self.start()
 
     def kick_player(self, player_id):
@@ -296,12 +309,11 @@ class Game:
 
     def start(self):
         """Start the game."""
-        if self.stage != WAITING:
-            return
         self.stage = RUNNING
-        for i, player in enumerate(self.players):
+        for i, player_id in enumerate(self.players):
+            player = PLAYERS[player_id]
             last_card = (10, 12, 14, 16, 18)
-            player.add_cards(game_id=self.id, cards=(2, 4, 6, last_card[i]))
+            player.add_cards(game_id=self.id, cards=(2, 4, 6) + (last_card[i],))
         all_cards = [1] * 4 + [2] * (7 - len(self.players)) + \
                     [3] * 3 + [4] * (7 - len(self.players)) + \
                     [5] * 3 + [6] * (6 - len(self.players)) + \
@@ -313,27 +325,51 @@ class Game:
                     [17] + [18] * (2 - (len(self.players) >= 5)) + \
                     [19] + [20]
         shuffle(all_cards)
-        all_cards.insert(randint(len(all_cards) - 7, len(self.players) - 1), 0)
+        ind = randint(len(all_cards) - 7, len(all_cards) - 1)
+        all_cards.insert(ind, 0)
         self.unused = deque(all_cards)
+
+        self.goals[0] = choice(first_goal)
+        self.goals[1] = choice(second_goal)
+        self.goals[2] = choice(third_goal)
+
+        if not self.restock():
+            self.finish()
 
     def finish(self):
         """End the game and show the results."""
+
         self.stage = RESULTS
 
     def move(self, player_id, sold_cards_ids, bought_cards_ids):
         """Handle a player's move. Restock the shop after a valid move
         and finish game if the "Closed Shop" card is pulled."""
         good_deal = check_good_deal(sold_cards_ids, bought_cards_ids)
-        fair_price = chack_fair_price(sold_cards_ids, bought_cards_ids)
-        if good_deal or fair_price:
-            player = PLAYERS[player_id]
-            player.sell_cards(self.id, sold_cards_ids)
-            player.add_cards(self.id, bought_cards_ids)
+        fair_price = check_fair_price(sold_cards_ids, bought_cards_ids)
+        if not (good_deal or fair_price):
+            return 1
+        player = PLAYERS[player_id]
+        player.sell_cards(self.id, sold_cards_ids)
+        player.add_cards(self.id, bought_cards_ids)
 
-            player.update_goals()
-            self.check_neighbors_festival()
-            self.check_fashion_at_lowest_price()
-            self.check_not_the_same_values()
+        self.shop += sold_cards_ids
+        self.shop.sort()
+
+        player.update_goals(self.id)
+        self.check_neighbors_festival()
+        self.check_fashion_at_lowest_price()
+        self.check_not_the_same_values()
+
+        self.cur_player += 1
+        self.cur_player %= len(self.players)
+
+        if not self.restock():
+            self.finish()
+
+        return 0
+
+    def get_goals(self):
+        return self.goals
 
     def get_current_player(self):
         """Returns id of the current player."""
@@ -345,7 +381,10 @@ class Game:
     def add_card_to_shop(self):
         """Add a new card from the queue to the shop."""
         new_card = self.unused.popleft()
-        self.shop.append(new_card)
+        if new_card:
+            self.shop.append(new_card)
+            return True
+        return False
 
     def restock(self):
         """Restock the shop with new cards from the queue."""
@@ -355,16 +394,17 @@ class Game:
         while len(self.shop) < 5:
             if not self.add_card_to_shop():
                 return False
+        return True
 
     def check_neighbors_festival(self):
         """Give players points earned through the goal "Neighbors' festival".
 
         Description of the goal can be found in the rulebook."""
         for val in range(1, 11):
-            mx_copies = max(PLAYERS[player_id].get_val_cnt(val) for player_id in self.players)
+            mx_copies = max(PLAYERS[player_id].get_val_cnt(self.id, val) for player_id in self.players)
             for player_id in self.players:
                 player = PLAYERS[player_id]
-                if player.get_val_cnt(val) == mx_copies:
+                if player.get_val_cnt(self.id, val) == mx_copies:
                     player.update_neighbors_festival(self.id, 5)
 
     def check_not_the_same_values(self):
@@ -427,6 +467,11 @@ the_art_of_bargaining = "the art of bargaining"
 not_the_same_values = "not the same values"
 fashion_at_lowest_price = "fashion at lowest price"
 
+# Goals by groups
+first_goal = [a_tidy_mansion, obsessed_by_arrangement, gem_of_my_collection, collector]
+second_goal = [neighbors_festival, the_sum_of_all_fears, seeing_double, three_is_better_than_two]
+third_goal = [not_the_same_values, too_snob, the_art_of_bargaining, fashion_at_lowest_price]
+
 # Handles for the game stages
 WAITING = 0
 RUNNING = 1
@@ -461,7 +506,13 @@ MX_GAME_ID = 50
 
 class Core:
     def __init__(self):
-        pass
+        self._LOGGER = get_logger(__name__)
+        self._LOGGER.info("LETS GOOO")
+
+    def log_in_player(self, player_id, login, name):
+        if player_id not in PLAYERS:
+            new_player = Player(player_id=player_id, _login=login, _name=name)
+            PLAYERS[player_id] = new_player
 
     def create_game(self):
         """Start new game session.
@@ -475,13 +526,19 @@ class Core:
         -- [1] int if status == 0:
             - game_id"""
         if len(GAMES) == MX_GAME_ID:
-            return 1
+            return 9, -1
         new_game_id = randint(1, MX_GAME_ID)
         while new_game_id in GAMES.keys():
             new_game_id = randint(1, MX_GAME_ID)
         new_game = Game(new_game_id)
         GAMES[new_game_id] = new_game
         return 0, new_game_id
+
+    def get_stage(self, game_id):
+        if game_id not in GAMES:
+            return 1, 0
+        game = GAMES[game_id]
+        return 0, game.get_stage()
 
     def join_game(self, game_id, player_id):
         """Add player to a game.
@@ -509,12 +566,12 @@ class Core:
         game = GAMES[game_id]
         if player_id in game.get_players():
             return 3
-        if game.get_stage() == RUNNING:
-            return 4
-        if game.get_stage() == RESULTS:
-            return 5
-        if len(game.get_players()) == 5:
+        '''if game.get_stage() == RUNNING:
             return 6
+        if game.get_stage() == RESULTS:
+            return 7'''
+        if len(game.get_players().keys()) == 5:
+            return 8
         game.add_player(player_id)
         return 0
 
@@ -537,9 +594,21 @@ class Core:
             return 2
         game = GAMES[game_id]
         if player_id not in game.get_players():
-            return 3
+            return 4
         game.kick_player(player_id)
         return 0
+
+    def check_readiness(self, game_id, player_id):
+        if game_id not in GAMES:
+            return 1, 0
+        if player_id not in PLAYERS:
+            return 2, 0
+        game = GAMES[game_id]
+        '''if game.get_stage() == RUNNING:
+            return 6, 0
+        if game.get_stage() == RESULTS:
+            return 7, 0'''
+        return 0, game.check_readiness(player_id)
 
     def change_readiness(self, game_id, player_id):
         """Add player to a game.
@@ -556,15 +625,16 @@ class Core:
              - 6
 
              - 7"""
+
         if game_id not in GAMES:
             return 1
         if player_id not in PLAYERS:
             return 2
         game = GAMES[game_id]
         if game.get_stage() == RUNNING:
-            return 3
+            return 6
         if game.get_stage() == RESULTS:
-            return 4
+            return 7
         game.change_player_readiness(player_id)
         return 0
 
@@ -582,9 +652,9 @@ class Core:
             - player_id"""
 
         if game_id not in GAMES:
-            return 1
+            return 1, -1
         game = GAMES[game_id]
-        return game.get_current_player()
+        return 0, game.get_current_player()
 
     def get_shop_cards(self, game_id):
         """Return list of cards currently in the shop
@@ -604,12 +674,12 @@ class Core:
             - list of card ids"""
 
         if game_id not in GAMES:
-            return 1
+            return 1, []
         game = GAMES[game_id]
         if game.get_stage == WAITING:
-            return 2
+            return 5, []
         if game.get_stage == RESULTS:
-            return 3
+            return 7, []
         return 0, game.get_shop_cards()
 
     def get_player_cards(self, game_id, player_id):
@@ -634,17 +704,17 @@ class Core:
             - list of cards' ids"""
 
         if game_id not in GAMES:
-            return 1
+            return 1, []
         game = GAMES[game_id]
         if player_id not in PLAYERS:
-            return 2
+            return 2, []
         player = PLAYERS[player_id]
         if player_id not in game.get_players():
-            return 3
+            return 4, []
         if game.get_stage == WAITING:
-            return 4
+            return 5, []
         if game.get_stage == RESULTS:
-            return 5
+            return 7, []
         return 0, player.get_cards(game_id)
 
     def get_players(self, game_id):
@@ -659,7 +729,7 @@ class Core:
         -- list[int] if status == 0:
             - list of players' ids"""
         if game_id not in GAMES:
-            return 1
+            return 1, []
         game = GAMES[game_id]
         return 0, game.get_players()
 
@@ -670,11 +740,11 @@ class Core:
         if player_id not in PLAYERS:
             return 2
         if player_id not in game.get_players():
-            return 3
-        if game.get_stage() == WAITING:
             return 4
-        if game.get_stage() == RESULTS:
+        if game.get_stage() == WAITING:
             return 5
+        if game.get_stage() == RESULTS:
+            return 7
         if not sold_cards:
             return 18
         if not bought_cards:
@@ -696,46 +766,52 @@ class Core:
 
     def get_goals(self, game_id, player_id):
         if game_id not in GAMES:
-            return 1
+            return 1, {}
         game = GAMES[game_id]
         if player_id not in PLAYERS:
-            return 2
+            return 2, {}
         if player_id not in game.get_players():
-            return 3
+            return 4, {}
         if game.get_stage() == WAITING:
-            return 4
+            return 5, {}
         player = PLAYERS[player_id]
-        return 0, player.get_goals(game_id)
+        player_goals = player.get_goals(game_id)
+        res = {}
+        for goal in game.get_goals():
+            res[goal] = player_goals[goal]
+        return 0, res
 
     def get_goals_total(self, game_id):
         if game_id not in GAMES:
-            return 1
+            return 1, {}
         game = GAMES[game_id]
         if game.get_stage() == WAITING:
-            return 4
+            return 5, {}
         res = {}
         for player_id in game.get_players():
             res[player_id] = self.get_goals(game_id, player_id)
+        return 0, res
 
     def get_points(self, game_id, player_id):
         if game_id not in GAMES:
-            return 1
+            return 1, -1
         game = GAMES[game_id]
         if player_id not in PLAYERS:
-            return 2
+            return 2, -1
         if player_id not in game.get_players():
-            return 3
+            return 4, -1
         if game.get_stage() == WAITING:
-            return 4
+            return 5, -1
         player = PLAYERS[player_id]
         return 0, player.get_points(game_id)
 
     def get_points_total(self, game_id):
         if game_id not in GAMES:
-            return 1
+            return 1, {}
         game = GAMES[game_id]
         if game.get_stage() == WAITING:
-            return 4
+            return 5, {}
         res = {}
         for player_id in game.get_players():
             res[player_id] = self.get_points(game_id, player_id)
+        return res

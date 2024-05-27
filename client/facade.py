@@ -38,8 +38,12 @@ class ClientRequests:
         request = requests_pb2.GameUserId(game_id=_game_id, user_id=_user_id)
         return self.stub.ChangeReadiness(request)
 
-    def get_goals(self, _game_id: int):
-        request = requests_pb2.Id(id=_game_id)
+    def is_user_ready(self, _game_id: int, _user_id: int):
+        request = requests_pb2.GameUserId(game_id=_game_id, user_id=_user_id)
+        return self.stub.IsUserReady(request)
+
+    def get_goals(self, _game_id: int, _user_id: int):
+        request = requests_pb2.GameUserId(game_id=_game_id, user_id=_user_id)
         return self.stub.GetGoals(request)
 
     def get_user_in_session(self, _game_id: int):
@@ -50,8 +54,8 @@ class ClientRequests:
         request = requests_pb2.Id(id=_game_id)
         return self.stub.GetShopCards(request)
 
-    def get_user_cards(self, _user_id: int):
-        request = requests_pb2.Id(id=_user_id)
+    def get_user_cards(self, _game_id: int, _user_id: int):
+        request = requests_pb2.GameUserId(user_id=_user_id, game_id=_game_id)
         return self.stub.GetUserCards(request)
 
     def get_points_count(self, _game_id: int, _user_id: int):
@@ -66,3 +70,7 @@ class ClientRequests:
         request = requests_pb2.PickedCards(user_id=_user_id, game_id=_game_id, card_in_hand=hand_cards,
                                            card_in_shop=shop_cards)
         return self.stub.MakeMove(request)
+
+    def get_game_stage(self, _game_id: int):
+        request = requests_pb2.Id(id=_game_id)
+        return self.stub.GameStage(request)

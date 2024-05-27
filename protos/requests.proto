@@ -11,21 +11,28 @@ service DbService {
   rpc JoinGame(GameUserId) returns (IsDone);
   rpc LeaveGame(GameUserId) returns (IsDone);
   rpc ChangeReadiness(GameUserId) returns (IsDone);
+  rpc IsUserReady(GameUserId) returns (Bool);
 
-  rpc GetGoals(Id) returns (GoalList);
+  rpc GetGoals(GameUserId) returns (GoalList);
   rpc GetUsersInSession(Id) returns (UsersInSession);
 
   rpc GetShopCards(Id) returns (CardsResponse);
-  rpc GetUserCards(Id) returns (CardsResponse); // ?
+  rpc GetUserCards(GameUserId) returns (CardsResponse);
 
   rpc GetPointsCount(GameUserId) returns (PointsCount);
   rpc WhoseMove(Id) returns (IdResponse);
   rpc MakeMove(PickedCards) returns (IsDone);
 
+  rpc GameStage(Id) returns (Stage);
 }
 
 message IsDone{
   int32 status = 1;
+}
+
+message Bool{
+  int32 status = 1;
+  bool is_true = 2;
 }
 
 message IdResponse{
@@ -75,12 +82,13 @@ message PointsCount{
 }
 
 message GoalState{
-  string goal = 1;
+  int32 goal = 1;
   int32 point = 2;
 }
 
 message GoalList{
-  repeated GoalState goals = 1;
+  int32 status = 1;
+  repeated GoalState goals = 2;
 }
 
 message CardsResponse{
@@ -93,4 +101,9 @@ message PickedCards{
   int32 game_id = 2;
   repeated int32 card_in_hand = 3;
   repeated int32 card_in_shop = 4;
+}
+
+message Stage{
+  int32 status = 1;
+  int32 game_stage = 2;
 }
