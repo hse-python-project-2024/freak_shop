@@ -141,7 +141,7 @@ class GameBoardView:
         for TaskNumber in Game.Tasks:
             TaskImagesRects[ind] = Rect(ScreenWidth / 50, ScreenHeight * ind / 5 + 10, 140,
                                         200)
-            screen.blit(self.TaskImages[TaskNumber - 1], (ScreenWidth / 50,
+            screen.blit(self.TaskImages[TaskNumber], (ScreenWidth / 50,
                                                           ScreenHeight * ind / 5 + 10))
             ind += 1
         return TaskImagesRects
