@@ -74,3 +74,7 @@ class ClientRequests:
     def get_game_stage(self, _game_id: int):
         request = requests_pb2.Id(id=_game_id)
         return self.stub.GameStage(request)
+
+    def get_leaderboard(self):
+        request = requests_pb2.Empty()
+        return self.stub.GetLeaderboard(request)
