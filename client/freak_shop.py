@@ -146,7 +146,6 @@ if __name__ == "__main__":
                     new_lang = Languages.english
                 Menu.change_menu_language(new_lang)
                 ViewModelEntity.change_language(new_lang)
-        # TODO fix all the indents of strings that change from languages (if there will be time and will)
 
         # Show messages
         Message = ViewModelEntity.info_window
