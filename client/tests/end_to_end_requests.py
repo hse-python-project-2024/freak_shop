@@ -2,6 +2,13 @@ from ..facade import ClientRequests
 
 if __name__ == '__main__':
     client = ClientRequests()
+
+    print("Get leaderboard")
+    response = client.get_leaderboard()
+    print(f"status = {response.status}\n")
+    for user in response.users:
+        print(f"login = {user.login}, game_count = {user.game_count}, wins_count = {user.wins_count}")
+
     print("Create Game:")
     response = client.creat_game(0)
     print(f"status = {response.status}, Game id = {response.id}\n")
