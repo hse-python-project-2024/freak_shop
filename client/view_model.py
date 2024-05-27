@@ -54,6 +54,13 @@ class ViewModel:
         self.whose_move = None  # user_id whose move
         self.mutex = threading.Lock()
 
+    def my_pos_in_users(self):
+        with self.mutex:
+            for i in range(len(self.users)):
+                if self.users[i].id == self.user_id:
+                    return i
+            return -1
+
     def reset_all_info(self):
         self.user_id, self.user_name, self.game_id, self.user_login, self.whose_move = None, None, None, None, None
         self.goals = dict()
@@ -141,6 +148,8 @@ class ViewModel:
         response = self.req.change_readiness(_game_id=self.game_id, _user_id=self.user_id)
         if response.status != 0:
             self.put_info_window(_info=response.status)
+        else:
+            self.users[self.my_pos_in_users()].readiness = not self.users[self.my_pos_in_users()].readiness
 
     def join_game(self, _game_id: int):
         response = self.req.join_game(_game_id=_game_id, _user_id=self.user_id)
@@ -168,6 +177,7 @@ class ViewModel:
             self.put_info_window(_info=response.status)
 
     def make_move(self, my_cards: tuple[int], shop_cards: tuple[int]):
+        self._LOGGER.info(f"make move with player cards:  {my_cards} and shop cards: {shop_cards}")
         response = self.req.make_move(_game_id=self.game_id, _user_id=self.user_id, hand_cards=my_cards,
                                       shop_cards=shop_cards)
         if response.status != 0:
@@ -190,24 +200,23 @@ class ViewModel:
     def go_to_waiting_room(self, _game_id: int):
         self.window = ViewWindows.waiting_room
         self.game_id = _game_id
-        self.users.append(User(_id=self.user_id, _name=self.user_name))
         threading.Thread(target=self.get_users_in_session, args=(0.4, True,), daemon=True).start()
         threading.Thread(target=self.check_user_readiness, args=(0.2,), daemon=True).start()
 
     def run_all_game_requests(self):
         threading.Thread(target=self.get_users_in_session, args=(1,), daemon=True).start()
-        threading.Thread(target=self.get_user_cards, args=(0.2,), daemon=True).start()
         threading.Thread(target=self.get_shop_cards, args=(0.2,), daemon=True).start()
         threading.Thread(target=self.get_whose_move, args=(0.2,), daemon=True).start()
-        for user in self.users:
-            threading.Thread(target=self.get_goal_points, args=(0.5, user.id,), daemon=True).start()
+        for i in range(len(self.users)):
+            threading.Thread(target=self.get_goal_points, args=(0.5, self.users[i].id,), daemon=True).start()
+            threading.Thread(target=self.get_user_cards, args=(0.2, self.users[i].id, i,), daemon=True).start()
 
     def check_user_readiness(self, sleep_time):
         self._LOGGER.info(
             f"start asking users readiness, sleep time = {sleep_time}")
         while True:
+            self.mutex.acquire()
             try:
-                self.mutex.acquire()
                 if self.window != ViewWindows.waiting_room:
                     break
                 start_game = len(self.users) > 1
@@ -230,11 +239,14 @@ class ViewModel:
                 time.sleep(sleep_time)
 
     def get_goal_points(self, sleep_time: float, _user_id: int):
+        self._LOGGER.info(
+            f"start asking users goal points, sleep time = {sleep_time}, user id = {_user_id}")
         while True:
+            self.mutex.acquire()
             try:
-                self.mutex.acquire()
                 if self.game_id is None:
                     break
+                # self._LOGGER.info(f"make request get_goals game_id = {self.game_id}, user_id = {_user_id}")
                 response = self.req.get_goals(_game_id=self.game_id, _user_id=_user_id)
                 if response.status == 0:
                     for my_goal in response.goals:
@@ -251,11 +263,11 @@ class ViewModel:
         self._LOGGER.info(
             f"start asking users in session, sleep time = {sleep_time}, in waiting room = {in_waiting_room}")
         while True:
+            self.mutex.acquire()
             try:
-                self.mutex.acquire()
                 if self.game_id is None or (in_waiting_room and self.window != ViewWindows.waiting_room):
                     break
-                self._LOGGER.info("make request get_user_in_session")
+                # self._LOGGER.info("make request get_user_in_session")
                 response = self.req.get_user_in_session(_game_id=self.game_id)
                 if response.status == 0:
                     need_erase = []
@@ -286,16 +298,20 @@ class ViewModel:
                 self.mutex.release()
                 time.sleep(sleep_time)
 
-    def get_user_cards(self, sleep_time: float):
+    def get_user_cards(self, sleep_time: float, _user_id: int, _user_ind: int):
+        self._LOGGER.info(
+            f"start asking users cards, sleep time = {sleep_time}, user id = {_user_id}")
         while True:
+            self.mutex.acquire()
             try:
-                self.mutex.acquire()
                 if self.game_id is None:
                     break
-                print("?????????????????????????", self.user_id)
-                response = self.req.get_user_cards(_user_id=self.user_id)
+                # self._LOGGER.info(f"make request get_user_cards game_id = {self.game_id}, user_id = {_user_id}")
+                response = self.req.get_user_cards(_game_id=self.game_id, _user_id=_user_id)
                 if response.status == 0:
-                    self.my_card = list(response.card_id)
+                    self.users[_user_ind].cards = list(response.card_id)
+                    if _user_id == self.user_id:
+                        self.my_card = list(response.card_id)
                 else:
                     self.put_info_window(_info=response.status, _time=1)
             except Exception as e:
@@ -305,11 +321,14 @@ class ViewModel:
                 time.sleep(sleep_time)
 
     def get_shop_cards(self, sleep_time: float):
+        self._LOGGER.info(
+            f"start asking shop cards readiness, sleep time = {sleep_time}, game id = {self.game_id}")
         while True:
+            self.mutex.acquire()
             try:
-                self.mutex.acquire()
                 if self.game_id is None:
                     break
+                # self._LOGGER.info(f"make request get_shop_cards, game_id = {self.game_id}")
                 response = self.req.get_shop_cards(_game_id=self.game_id)
                 if response.status == 0:
                     self.shop_card = list(response.card_id)
@@ -322,10 +341,14 @@ class ViewModel:
                 time.sleep(sleep_time)
 
     def get_whose_move(self, sleep_time: float):
+        self._LOGGER.info(
+            f"start asking shop cards readiness, sleep time = {sleep_time}, game id = {self.game_id}")
         while True:
+            self.mutex.acquire()
             try:
                 if self.game_id is None:
                     break
+                # self._LOGGER.info(f"make request whose_move, game_id = {self.game_id}")
                 response = self.req.whose_move(_game_id=self.game_id)
                 if response.status == 0:
                     for i in range(len(self.users)):

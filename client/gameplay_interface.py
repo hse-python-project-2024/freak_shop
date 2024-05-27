@@ -5,8 +5,8 @@ from menu import ReturnStatus
 
 
 class GameView:
-    def __init__(self, NewGameInfo):
-        self.Info = NewGameInfo
+    def __init__(self):
+        self.Info = None
         self.EndTurnButtonRect = Rect(ScreenWidth * 6 / 7, ScreenHeight * 3 / 4, 250, 250)
 
         self.TaskImagesRects = list()
@@ -17,12 +17,12 @@ class GameView:
         self.IsMyTurn = True
         self.CurrentPlayerPosition = 0
 
-    def update_game_info(self, PlayerCardList, ShopCardList, NewCurPlayer):
+    def update_game_info(self, PlayerCards, ShopCards, NewCurPlayer):
+        PlayerCardList = card_format_from_specific(PlayerCards)
         NewPlayer = PlayerInfo()
-        print("!!!!!!!!!!!!!!!!!!!!!!!!!")
-        print(PlayerCardList)
         NewPlayer.CardsInHand = PlayerCardList[0]
         NewPlayer.DiscountedCardsInHand = PlayerCardList[1]
+        ShopCardList = card_format_from_specific(ShopCards)
         NewShop = ShopInfo()
         NewShop.CardsInShop = ShopCardList[0]
         NewShop.DiscountedCardsInShop = ShopCardList[1]
@@ -53,8 +53,16 @@ class GameView:
             if event.type == MOUSEBUTTONDOWN:
                 if self.IsMyTurn:
                     MousePosition = pygame.mouse.get_pos()
-                    if self.EndTurnButtonRect.collidepoint(MousePosition):
+                    if self.EndTurnButtonRect.collidepoint(MousePosition): # Send trade request
+                        PlayerCardsToTrade = [self.GameBoard.ClickedPlayerCards,
+                                              self.GameBoard.ClickedPlayerCardsDiscounted]
+                        ShopCardsToTrade = [self.GameBoard.ClickedShopCards,
+                                            self.GameBoard.ClickedShopCardsDiscounted]
+                        PlayerGoodFormat = card_format_from_full(PlayerCardsToTrade)
+                        ShopGoodFormat = card_format_from_full(ShopCardsToTrade)
+                        Returnee = [ReturnStatus.trade, [PlayerGoodFormat, ShopGoodFormat]]
                         self.GameBoard.reset()
+                        return Returnee
 
                     # Shop card click checks
                     for i in range(10):
@@ -116,19 +124,38 @@ class GameView:
 
         pressed_keys = pygame.key.get_pressed()
         if pressed_keys[K_ESCAPE]:
-            Returnee = [ReturnStatus.quit,[""]]
+            Returnee = [ReturnStatus.quit, [""]]
             return Returnee
 
-        if self.EndTurnButtonRect.collidepoint(pygame.mouse.get_pos()):
+        # Display End Turn button
+        if self.IsMyTurn:
             self.GameBoard.display_end_turn_button(True,lang)
         else:
-            self.GameBoard.display_end_turn_button(False,lang)
-            # Display Tasks text when hovering over them
-            for i in range(3):
-                if TaskImagesRects[i].collidepoint(pygame.mouse.get_pos()):
-                    self.GameBoard.display_tasks_text(self.Info.Tasks,i,lang)
-                    break
+            self.GameBoard.display_end_turn_button(False, lang)
+
+        # Display Tasks text when hovering over them
+        for i in range(3):
+            if TaskImagesRects[i].collidepoint(pygame.mouse.get_pos()):
+                self.GameBoard.display_tasks_text(self.Info.Tasks,i,lang)
+                break
 
         Returnee = [ReturnStatus.stay, [""]]
         return Returnee
+
+
+def card_format_from_specific(Cards):
+    Return = [[0]*10,[0]*10] # TODO 0 is bad
+    for card in Cards:
+        Return[card%2][(card-1)//2] += 1
+    return Return
+
+
+def card_format_from_full(CardsList):
+    Return = []
+    for i in range(10):
+        for x in range(CardsList[0][i]):
+            Return.append((i+1)*2)
+        for x in range(CardsList[1][i]):
+            Return.append(i*2 + 1)
+    return Return
 

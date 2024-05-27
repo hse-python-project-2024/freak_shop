@@ -92,7 +92,7 @@ class Facade(requests_pb2_grpc.DbServiceServicer):
         res = self.core.get_goals(game_id, user_id)
         result.status = res[0]
         if not res[0]:
-            cnt = 1
+            cnt = 0
             for goal_name in res[1].keys():
                 goal = result.goals.add()
                 goal.goal = cnt
@@ -115,29 +115,27 @@ class Facade(requests_pb2_grpc.DbServiceServicer):
         return result
 
     def GetShopCards(self, request, context):
-        game_id = request.game_id
-        user_id = request.user_id
-        self._LOGGER.info(f"GET SHOP CARDS: game_id={game_id} player_id={user_id}")
-
-        res = self.core.get_shop_cards(game_id, user_id)
+        game_id = request.id
+        # self._LOGGER.info(f"GET SHOP CARDS: game_id={game_id}")
+        res = self.core.get_shop_cards(game_id)
         result = requests_pb2.CardsResponse()
         result.status = res[0]
         result.card_id.extend(res[1])
 
-        self._LOGGER.info(f"RESULT: {res}")
+        # self._LOGGER.info(f"RESULT: {res}")
         return result
 
     def GetUserCards(self, request, context):
         game_id = request.game_id
         user_id = request.user_id
-        self._LOGGER.info(f"GET USER CARDS: game_id={game_id} player_id={user_id}")
+        # self._LOGGER.info(f"GET USER CARDS: game_id={game_id} player_id={user_id}")
 
         res = self.core.get_player_cards(game_id, user_id)
         result = requests_pb2.CardsResponse()
         result.status = res[0]
         result.card_id.extend(res[1])
 
-        self._LOGGER.info(f"RESULT: {res}")
+        # self._LOGGER.info(f"RESULT: {res}")
         return result
 
     def GetPointsCount(self, request, context):
@@ -149,6 +147,26 @@ class Facade(requests_pb2_grpc.DbServiceServicer):
         return requests_pb2.IdResponse(status=res[0], id=res[1])
 
     def MakeMove(self, request, context):
-        code = self.core.make_move(request.game_id, request.user_id, request.card_in_hand,
-                                   request.card_in_shop)
+        game_id = request.game_id
+        user_id = request.user_id
+        card_in_hand = request.card_in_hand
+        card_in_shop = request.card_in_shop
+        self._LOGGER.info(
+            f"MAKE MOVE: game_id={game_id} player_id={user_id} player_cards={card_in_hand} shop_cards={card_in_shop}")
+
+        code = self.core.make_move(game_id, user_id, card_in_hand,
+                                   card_in_shop)
+        self._LOGGER.info(f"RESULT: {code}")
         return requests_pb2.IsDone(status=code)
+
+    def GameStage(self, request, context):
+        game_id = request.id
+        self._LOGGER.info(f"GAME STAGE: game_id={game_id}")
+
+        code, stage = self.core.get_stage(game_id)
+        if code:
+            self._LOGGER.info(f"RESULT: status={code}")
+        else:
+            self._LOGGER.info(f"RESULT: status={code} game_stage={['WAITING', 'RUNNING', 'RESULTS'][stage]}")
+        res = requests_pb2.Stage(status=code, stage=stage)
+        return res

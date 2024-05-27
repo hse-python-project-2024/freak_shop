@@ -54,8 +54,8 @@ class ClientRequests:
         request = requests_pb2.Id(id=_game_id)
         return self.stub.GetShopCards(request)
 
-    def get_user_cards(self, _user_id: int):
-        request = requests_pb2.Id(id=_user_id)
+    def get_user_cards(self, _game_id: int, _user_id: int):
+        request = requests_pb2.GameUserId(user_id=_user_id, game_id=_game_id)
         return self.stub.GetUserCards(request)
 
     def get_points_count(self, _game_id: int, _user_id: int):

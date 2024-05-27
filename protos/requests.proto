@@ -23,6 +23,7 @@ service DbService {
   rpc WhoseMove(Id) returns (IdResponse);
   rpc MakeMove(PickedCards) returns (IsDone);
 
+  rpc GameStage(Id) returns (Stage);
 }
 
 message IsDone{
@@ -100,4 +101,9 @@ message PickedCards{
   int32 game_id = 2;
   repeated int32 card_in_hand = 3;
   repeated int32 card_in_shop = 4;
+}
+
+message Stage{
+  int32 status = 1;
+  int32 game_stage = 2;
 }
