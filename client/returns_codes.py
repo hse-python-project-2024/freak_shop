@@ -8,7 +8,8 @@ code_description_ru = {0: "Успешно", 1: "Игра не найдена", 2
                        16: "Пользователя с таким логином не существует",
                        17: "Пользователь успешно добавлен",
                        18: "Не выбраны карты игрока", 19: "Не выбраны карты в магазине", 20: "Ход не по правилам",
-                       21: "Некорректный тип данных", 22: "Некорректные данные"}
+                       21: "Некорректный тип данных", 22: "Некорректные данные",
+                       23: "Ошибка при чтении таблицы резульатов"}
 
 code_description_en = {0: "Ok", 1: "Game not found", 2: "player not found", 3: "player is already in this game",
                        4: "player isn’t in this game", 5: "the game hasn’t started yet",
@@ -22,7 +23,7 @@ code_description_en = {0: "Ok", 1: "Game not found", 2: "player not found", 3: "
                        17: "User successfully added",
                        18: "No cards chosen from player", 19: "No cards chosen from shop",
                        20: "This move is against the rules",
-                       21: "Wrong data type", 22: "Wrong data"}
+                       21: "Wrong data type", 22: "Wrong data", 23: "Error when reading the leaderboard"}
 
 
 def get_description_ru(code: int) -> str:

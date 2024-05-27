@@ -10,6 +10,7 @@ from model import Core
 
 from goal_ids import GOAL_ID
 
+
 class Facade(requests_pb2_grpc.DbServiceServicer):
     def __init__(self):
         self._LOGGER = get_logger(__name__)
@@ -169,3 +170,20 @@ class Facade(requests_pb2_grpc.DbServiceServicer):
             self._LOGGER.info(f"RESULT: status={code} game_stage={['WAITING', 'RUNNING', 'RESULTS'][stage]}")
         res = requests_pb2.Stage(status=code, game_stage=stage)
         return res
+
+    def GetLeaderboard(self, request, context):
+        res = requests_pb2.BestPlayers()
+        self._LOGGER.info(f"GET LEADERBOARD")
+        try:
+            best_pl = self.db.get_best_player(count=5)
+            res.status = 0
+            for login, game_count, game_win in best_pl:
+                user = res.users.add()
+                user.login = login
+                user.game_count = game_count
+                user.wins_count = game_win
+            return res
+        except Exception as e:
+            self._LOGGER.error(f"Error request to database leaderboard. Exception: {e}")
+            res.status = 23
+            return res
