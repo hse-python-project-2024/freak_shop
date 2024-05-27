@@ -168,5 +168,5 @@ class Facade(requests_pb2_grpc.DbServiceServicer):
             self._LOGGER.info(f"RESULT: status={code}")
         else:
             self._LOGGER.info(f"RESULT: status={code} game_stage={['WAITING', 'RUNNING', 'RESULTS'][stage]}")
-        res = requests_pb2.Stage(status=code, stage=stage)
+        res = requests_pb2.Stage(status=code, game_stage=stage)
         return res
