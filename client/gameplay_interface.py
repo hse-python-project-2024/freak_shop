@@ -16,8 +16,9 @@ class GameView:
         self.Shop = ShopInfo()
         self.IsMyTurn = True
         self.CurrentPlayerPosition = 0
+        self.UserCards = None
 
-    def update_game_info(self, PlayerCards, ShopCards, NewCurPlayer):
+    def update_game_info(self, PlayerCards, ShopCards, NewCurPlayer,NewUsersCards,NewScores):
         PlayerCardList = card_format_from_specific(PlayerCards)
         NewPlayer = PlayerInfo()
         NewPlayer.CardsInHand = PlayerCardList[0]
@@ -29,13 +30,20 @@ class GameView:
         self.Player = NewPlayer
         self.Shop = NewShop
         self.CurrentPlayerPosition = NewCurPlayer
+        NewUserCardList = list()
+        for i in range (len(NewUsersCards)):
+            CurrentList = card_format_from_specific(NewUsersCards[i])
+            NewUserCardList.append(CurrentList)
+        self.UserCards = NewUserCardList
         if NewCurPlayer == self.Info.MyPosition:
             self.IsMyTurn = True
         else:
             self.IsMyTurn = False
+        self.Info.Scores = NewScores
 
     def update_start_game_status(self, NewGameInfo):
         self.Info = NewGameInfo
+        self.UserCards = [[[0]*10,[0]*10]*NewGameInfo.PlayerAmount]
 
     def ShowMainGameWindow(self,lang):
         screen.fill(BackgroundColor)
@@ -138,6 +146,13 @@ class GameView:
             if TaskImagesRects[i].collidepoint(pygame.mouse.get_pos()):
                 self.GameBoard.display_tasks_text(self.Info.Tasks,i,lang)
                 break
+
+        # Display other player cards while clicking
+        for i in range(self.Info.PlayerAmount):
+            if i != self.Info.MyPosition:
+                PlayerIconRect = Rect(ScreenWidth * 4 / 5 + 40, ScreenHeight * i / 8, 140, 140)
+                if PlayerIconRect.collidepoint(pygame.mouse.get_pos()):
+                    self.GameBoard.display_other_player_cards(self.UserCards[i][0], self.UserCards[i][1])
 
         Returnee = [ReturnStatus.stay, [""]]
         return Returnee

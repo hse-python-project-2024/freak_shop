@@ -114,7 +114,8 @@ Task_Descriptions = [
       "  (if players are tied - both get the points)  "]
      ]]
 
-EndTurnTexts = ["Совершить обмен","Exchange"]
+EndTurnTexts = ["Совершить обмен",
+                "        Exchange"]
 
 YouTexts = ["Вы","You"]
 
@@ -127,14 +128,15 @@ ConfirmTexts =["Войти","Enter"]
 RegistrationTexts = ["Регистрация", "Registration"]
 InitialRegistrationTexts = ["Зарегестрироваться", "Register"]
 
-JoinGameTexts = ["Присоединиться к игре", "     Join the new game  "]
+JoinGameTexts = ["Присоединиться к игре",
+                 "         Join the game"]
 CreateGameTexts = ["Создать игру", "Create the game"]
 SettingsTexts = ["Настройки", "  Settings"]
 LeaderbordTexts = ["Списки лидеров", "    Leaderboard"]
 
 LanguageSettingsTexts = ["      Язык :","Language :"]
 
-GameCodeTexts = ["Код игры :", "Game code :"]
+GameCodeTexts = [" Код игры :", "Game code :"]
 
 ReadyTexts = ["Готов","Ready"]
 

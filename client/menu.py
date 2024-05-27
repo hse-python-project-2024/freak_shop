@@ -468,9 +468,10 @@ class MenuView:
                 if self.CodeButton.collidepoint(MousePosition):
                     self.active = 1
                 elif self.CodeConfirmButton.collidepoint(MousePosition):
-                    self.active = 0
-                    Returnee = [ReturnStatus.join_lobby, [int(self.CodeInput)]]
-                    return Returnee
+                    if self.CodeInput.isnumeric():
+                        self.active = 0
+                        Returnee = [ReturnStatus.join_lobby, [int(self.CodeInput)]]
+                        return Returnee
                 elif self.BackButton.collidepoint(MousePosition):
                     Returnee = [ReturnStatus.quit, [""]]
                     return Returnee
@@ -488,8 +489,10 @@ class MenuView:
                         if event.key == K_BACKSPACE:
                             self.CodeInput = self.CodeInput[:-1]
                         elif event.key == K_RETURN:
-                            Returnee = [ReturnStatus.join_lobby, [int(self.CodeInput)]]
-                            return Returnee
+                            if self.CodeInput.isnumeric():
+                                self.active = 0
+                                Returnee = [ReturnStatus.join_lobby, [int(self.CodeInput)]]
+                                return Returnee
                         elif len(self.CodeInput) < MaxLoginLength:
                             if event.unicode.isnumeric():
                                 self.CodeInput += event.unicode
@@ -501,7 +504,7 @@ class MenuView:
         if pressed_keys[K_ESCAPE]:
             Returnee = [ReturnStatus.quit, [""]]
             return Returnee
-        screen.blit(self.CodeText, (ScreenWidth / 2 - 150, ScreenHeight/10))
+        screen.blit(self.CodeText, (ScreenWidth / 2 - 160, ScreenHeight/10))
         screen.blit(pygame.transform.scale(self.BackIconImage, (180, 180)),
                     (ScreenWidth * 6 / 7, ScreenHeight * 1 / 30))
         pygame.draw.rect(screen, RegistrationButtonColor, self.CodeButton)
@@ -509,7 +512,7 @@ class MenuView:
         screen.blit(CodeInputText, (self.CodeButton.left, self.CodeButton.center[1] - 35))
         pygame.draw.rect(screen, RegistrationButtonColor, self.CodeConfirmButton)
         screen.blit(self.ConfirmTextLogin,
-                    (self.CodeConfirmButton.midtop[0] - 100, self.CodeConfirmButton.midtop[1] + 10))
+                    (self.CodeConfirmButton.midtop[0] - 90, self.CodeConfirmButton.midtop[1] + 10))
         Returnee = [ReturnStatus.stay, [""]]
         return Returnee
 
