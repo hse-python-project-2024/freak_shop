@@ -16,7 +16,7 @@ if __name__ == "__main__":
     _LOGGER = get_logger(__name__)
     CurrentGame = GameView()
     ViewModelEntity = ViewModel()
-    DefaultLanguage = Languages.russian  # TODO remove later(or maybe just move)
+    DefaultLanguage = Languages.russian
     Menu = MenuView(DefaultLanguage)
     LastWindow = ViewWindows.initial_menu
     IsGameStarted = False
@@ -84,8 +84,13 @@ if __name__ == "__main__":
                                        ViewModelEntity.my_pos_in_users())
                 _LOGGER.info(f"Started game with players:  {PlayerNicknames} on position {ViewModelEntity.my_pos_in_users()}")
                 CurrentGame.update_start_game_status(NewGameInfo)
+            UsersCardList = list()
+            ScoresList = list()
+            for i in range(len(ViewModelEntity.users)):
+                UsersCardList.append(ViewModelEntity.users[i].cards)
+                ScoresList.append(ViewModelEntity.users[i].point_count)
             CurrentGame.update_game_info(ViewModelEntity.my_card,ViewModelEntity.shop_card
-                                         ,ViewModelEntity.whose_move)
+                                         ,ViewModelEntity.whose_move,UsersCardList,ScoresList)
             Return = CurrentGame.ShowMainGameWindow(ViewModelEntity.language)
             if Return[0] == ReturnStatus.quit:
                 time.sleep(0.1)

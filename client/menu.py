@@ -501,7 +501,7 @@ class MenuView:
         if pressed_keys[K_ESCAPE]:
             Returnee = [ReturnStatus.quit, [""]]
             return Returnee
-        screen.blit(self.CodeText, (ScreenWidth / 2 - 150, ScreenHeight/10))
+        screen.blit(self.CodeText, (ScreenWidth / 2 - 140, ScreenHeight/10))
         screen.blit(pygame.transform.scale(self.BackIconImage, (180, 180)),
                     (ScreenWidth * 6 / 7, ScreenHeight * 1 / 30))
         pygame.draw.rect(screen, RegistrationButtonColor, self.CodeButton)
