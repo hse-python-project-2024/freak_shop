@@ -109,8 +109,7 @@ if __name__ == "__main__":
                 ViewModelEntity.go_to_main_menu_window()
 
         elif CurrentWindow == ViewWindows.leaderboard:
-            # TODO - we need to get information about leaders and pass it to the function(for now just framework)
-            Return = Menu.show_leaderboard()
+            Return = Menu.show_leaderboard(ViewModelEntity.best_players)
             if Return[0] == ReturnStatus.quit:
                 time.sleep(0.1)
                 ViewModelEntity.go_to_main_menu_window()

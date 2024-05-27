@@ -22,6 +22,7 @@ class ReturnStatus(enum.Enum):
 
 class MenuView:
     def __init__(self, language):
+        self.NicknameFullText = None
         self.CodeText = None
         self.ReadyText = None
         self.LanguageSettingText = None
@@ -38,6 +39,9 @@ class MenuView:
         self.NicknameText = None
         self.LoginText = None
         self.RepeatPasswordText = None
+        self.AmountOfGamesText = None
+        self.AmountOfWinsText = None
+        self.PercentageOfWinsText = None
 
         self.RuText = RegistrationFont.render(RuText, False, (0, 0, 0))
         self.EnText = RegistrationFont.render(EnText, False, (0, 0, 0))
@@ -147,6 +151,11 @@ class MenuView:
         self.LanguageSettingText = RegistrationFont.render(LanguageSettingsTexts[new_lang], False, (0, 0, 0))
 
         self.ReadyText = RegistrationFont.render(ReadyTexts[new_lang], False, (0, 0, 0))
+
+        self.NicknameFullText = RegistrationFont.render(NicknameFullTexts[new_lang], False, (0, 0, 0))
+        self.AmountOfGamesText = RegistrationFont.render(AmountOfGamesTexts[new_lang], False, (0, 0, 0))
+        self.AmountOfWinsText = RegistrationFont.render(AmountOfWinsTexts[new_lang], False, (0, 0, 0))
+        self.PercentageOfWinsText = RegistrationFont.render(PercentageOfWinsTexts[new_lang], False, (0, 0, 0))
 
     def show_login_menu(self):
         screen.fill(RegistrationBackgroundColor)
@@ -516,7 +525,6 @@ class MenuView:
         Returnee = [ReturnStatus.stay, [""]]
         return Returnee
 
-    # TODO display people who are ready
     def show_lobby(self, player_amount, player_nicknames, player_ready_signes,lobby_code):
         screen.fill(RegistrationBackgroundColor)
         for event in pygame.event.get():
@@ -560,8 +568,7 @@ class MenuView:
         Returnee = [ReturnStatus.stay, [""]]
         return Returnee
 
-    def show_leaderboard(self):
-        # TODO add the actual leaderboard
+    def show_leaderboard(self, BestPlayers):
         screen.fill(RegistrationBackgroundColor)
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -574,7 +581,29 @@ class MenuView:
         if pressed_keys[K_ESCAPE]:
             Returnee = [ReturnStatus.quit, [""]]
             return Returnee
-
+        screen.blit(self.NicknameFullText,
+                    (ScreenWidth * 1 / 10, ScreenHeight * 1 / 19))
+        screen.blit(self.AmountOfGamesText,
+                    (ScreenWidth * 1 / 5 + 50, ScreenHeight * 1 / 19))
+        screen.blit(self.AmountOfWinsText,
+                    (ScreenWidth * 2 / 5 + 50, ScreenHeight * 1 / 19))
+        screen.blit(self.PercentageOfWinsText,
+                    (ScreenWidth * 3 / 5 + 90, ScreenHeight * 1 / 19))
+        Index = 0
+        for Player in BestPlayers:
+            PlayerNickname = RegistrationFont.render(str(Player[0]), False, (0, 0, 0))
+            PlayerGameCount = RegistrationFont.render(str(Player[1]), False, (0, 0, 0))
+            PlayerWinCount = RegistrationFont.render(str(Player[2]), False, (0, 0, 0))
+            PlayerWinrate = RegistrationFont.render(str(Player[2] * 100 // Player[1]), False, (0, 0, 0))
+            screen.blit(PlayerNickname,
+                        (ScreenWidth * 1 / 10, ScreenHeight * 3 / 19 + Index * 1 /10))
+            screen.blit(PlayerGameCount,
+                        (ScreenWidth * 1 / 5 + 50, ScreenHeight * 3 / 19 + Index * 1 / 10))
+            screen.blit(PlayerWinCount,
+                        (ScreenWidth * 2 / 5 + 50, ScreenHeight * 3 / 19 + Index * 1 / 10))
+            screen.blit(PlayerWinrate,
+                        (ScreenWidth * 3 / 5 + 90, ScreenHeight * 3 / 19 + Index * 1 / 10))
+            Index += 1
         screen.blit(pygame.transform.scale(self.BackIconImage, (180, 180)),
                     (ScreenWidth * 6 / 7, ScreenHeight * 1 / 30))
         Returnee = [ReturnStatus.stay, [""]]

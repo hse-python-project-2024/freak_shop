@@ -140,6 +140,14 @@ GameCodeTexts = [" Код игры :", "Game code :"]
 
 ReadyTexts = ["Готов","Ready"]
 
+NicknameFullTexts =  ["Имя ","Name"]
+AmountOfGamesTexts = [" Число игр",
+                     "Game count"]
+AmountOfWinsTexts = [" Число побед",
+                     "Victory count"]
+PercentageOfWinsTexts = ["% побед",
+                         "Winrate"]
+
 RuText = "Ru"
 EnText = "En"
 
