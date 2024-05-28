@@ -159,7 +159,7 @@ class GameView:
 
 
 def card_format_from_specific(Cards):
-    Return = [[0]*10,[0]*10] # TODO 0 is bad
+    Return = [[0]*10,[0]*10]
     for card in Cards:
         Return[card%2][(card-1)//2] += 1
     return Return

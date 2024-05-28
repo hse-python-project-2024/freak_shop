@@ -112,14 +112,14 @@ class GameBoardView:
     def display_player_list(self, Game, PlayerPosition, lang, CurrentPlayer):
         for i in range(Game.PlayerAmount):
             if i == CurrentPlayer:
-                screen.blit(self.PlayerIconActive, (ScreenWidth * 4 / 5 + 40, ScreenHeight * i / 8))
+                screen.blit(self.PlayerIconActive, (ScreenWidth * 4 / 5 + 00, ScreenHeight * i / 8))
             else:
-                screen.blit(self.PlayerIcon, (ScreenWidth * 4 / 5 + 40, ScreenHeight * i / 8))
+                screen.blit(self.PlayerIcon, (ScreenWidth * 4 / 5 + 00, ScreenHeight * i / 8))
             if i != PlayerPosition:
                 PlayerNameText = TextFont.render(Game.PlayersNicknames[i], False, (0, 0, 0))
             else:
                 PlayerNameText = TextFont.render(YouTexts[lang.value], False, (0, 0, 0))
-            screen.blit(PlayerNameText, (ScreenWidth * 4 / 5 + 190, ScreenHeight * i / 8 + 60))
+            screen.blit(PlayerNameText, (ScreenWidth * 4 / 5 + 230, ScreenHeight * i / 8 + 60))
 
     def display_scores(self, Game):
         for i in range(len(Game.Scores)):

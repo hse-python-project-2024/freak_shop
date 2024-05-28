@@ -10,7 +10,6 @@ from model import Core
 
 from goal_ids import GOAL_ID
 
-
 class Facade(requests_pb2_grpc.DbServiceServicer):
     def __init__(self):
         self._LOGGER = get_logger(__name__)
