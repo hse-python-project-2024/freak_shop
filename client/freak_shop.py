@@ -129,7 +129,11 @@ if __name__ == "__main__":
                 ViewModelEntity.leave_game()
 
         elif CurrentWindow == ViewWindows.game_result:
-            pass  # TODO - remove the pass to replace with real functions
+            Return = CurrentGame.ShowEndGameScreen(ViewModelEntity.language)
+            if Return[0] == ReturnStatus.quit:
+                time.sleep(0.1)
+                IsGameStarted = False
+                ViewModelEntity.go_to_main_menu_window()
 
         elif CurrentWindow == ViewWindows.settings:  # Behaviour in Settings Menu
             Return = Menu.show_settings_menu()

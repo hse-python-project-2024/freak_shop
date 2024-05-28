@@ -594,15 +594,18 @@ class MenuView:
             PlayerNickname = RegistrationFont.render(str(Player[0]), False, (0, 0, 0))
             PlayerGameCount = RegistrationFont.render(str(Player[1]), False, (0, 0, 0))
             PlayerWinCount = RegistrationFont.render(str(Player[2]), False, (0, 0, 0))
-            PlayerWinrate = RegistrationFont.render(str(Player[2] * 100 // Player[1]), False, (0, 0, 0))
+            Winrate = "-" # Counting winrate if amount of games != 0
+            if Player[1] != 0:
+                Winrate = str(Player[2] * 100 // Player[1])
+            PlayerWinrate = RegistrationFont.render(Winrate, False, (0, 0, 0))
             screen.blit(PlayerNickname,
-                        (ScreenWidth * 1 / 10, ScreenHeight * 3 / 19 + Index * 1 /10))
+                        (ScreenWidth * 1 / 10, ScreenHeight * (3 / 19 + Index * 1 /10)))
             screen.blit(PlayerGameCount,
-                        (ScreenWidth * 1 / 5 + 50, ScreenHeight * 3 / 19 + Index * 1 / 10))
+                        (ScreenWidth * 1 / 5 + 140, ScreenHeight * (3 / 19 + Index * 1 /10)))
             screen.blit(PlayerWinCount,
-                        (ScreenWidth * 2 / 5 + 50, ScreenHeight * 3 / 19 + Index * 1 / 10))
+                        (ScreenWidth * 2 / 5 + 200, ScreenHeight * (3 / 19 + Index * 1 /10)))
             screen.blit(PlayerWinrate,
-                        (ScreenWidth * 3 / 5 + 90, ScreenHeight * 3 / 19 + Index * 1 / 10))
+                        (ScreenWidth * 3 / 5 + 200, ScreenHeight * (3 / 19 + Index * 1 /10)))
             Index += 1
         screen.blit(pygame.transform.scale(self.BackIconImage, (180, 180)),
                     (ScreenWidth * 6 / 7, ScreenHeight * 1 / 30))

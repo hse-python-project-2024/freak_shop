@@ -147,7 +147,10 @@ AmountOfWinsTexts = [" Число побед",
                      "Victory count"]
 PercentageOfWinsTexts = ["% побед",
                          "Winrate"]
-
+PlayerTexts = ["Игрок",
+               "Player"]
+ScoreTexts = ["Счёт",
+              "Score"]
 RuText = "Ru"
 EnText = "En"
 
@@ -165,3 +168,4 @@ PlayerNicknameInLobbyFont = pygame.font.SysFont('Comic Sans MS', 60)
 RegistrationFont = pygame.font.SysFont('Comic Sans MS', 80)
 ScoresFont = pygame.font.SysFont('Comic Sans MS', 100)
 CodeFont = pygame.font.SysFont('Comic Sans MS', 120)
+NicknameEndFont = pygame.font.SysFont('Comic Sans MS', 160)

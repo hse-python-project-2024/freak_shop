@@ -112,6 +112,7 @@ class ViewModel:
         self.window = ViewWindows.settings
 
     def go_to_leaderboard_window(self):
+        self.update_leaderboard()
         self.window = ViewWindows.leaderboard
 
     def go_to_jbc_window(self):  # jbc = Join by code
