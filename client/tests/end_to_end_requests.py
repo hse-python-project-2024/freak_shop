@@ -46,7 +46,7 @@ if __name__ == '__main__':
     print()
 
     print("Get user card")
-    response = client.get_user_cards(_user_id=1)
+    response = client.get_user_cards(_game_id=0, _user_id=1)
     print(f"status = {response.status}")
     for card in response.card_id:
         print(f"card id = {card}")
@@ -63,6 +63,12 @@ if __name__ == '__main__':
     print("Make Move")
     response = client.make_move(_game_id=0, _user_id=1, hand_cards=(1, 2, 3), shop_cards=(4, 5, 6))
     print(f"status = {response.status}\n")
+
+    print("Get game stage:")
+    response = client.get_game_stage(_game_id=27)
+    print(f"status = {response.status}\n")
+    if response.status == 0:
+        print(f"Game id = {response.game_stage}")
 
     while True:
         n = int(input("Enter 1 to add user, 2 to ask user by id, 3 to try log in\n"))

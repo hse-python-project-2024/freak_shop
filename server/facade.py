@@ -8,6 +8,7 @@ import requests_pb2
 
 from model import Core
 
+from goal_ids import GOAL_ID
 
 class Facade(requests_pb2_grpc.DbServiceServicer):
     def __init__(self):
@@ -92,11 +93,9 @@ class Facade(requests_pb2_grpc.DbServiceServicer):
         res = self.core.get_goals(game_id, user_id)
         result.status = res[0]
         if not res[0]:
-            cnt = 0
             for goal_name in res[1].keys():
                 goal = result.goals.add()
-                goal.goal = cnt
-                cnt += 1
+                goal.goal = GOAL_ID[goal_name]
                 goal.point = res[1][goal_name]
 
         self._LOGGER.info(f"RESULT: status={res[0]} goals={res[1]}")
@@ -168,5 +167,37 @@ class Facade(requests_pb2_grpc.DbServiceServicer):
             self._LOGGER.info(f"RESULT: status={code}")
         else:
             self._LOGGER.info(f"RESULT: status={code} game_stage={['WAITING', 'RUNNING', 'RESULTS'][stage]}")
-        res = requests_pb2.Stage(status=code, stage=stage)
+        res = requests_pb2.Stage(status=code, game_stage=stage)
         return res
+
+    def AddBot(self, request, context):
+        game_id = request.id
+
+        code = self.core.add_bot(game_id)
+
+        res = requests_pb2.IsDone(status=code)
+        return res
+
+    def RemoveBot(self, request, context):
+        game_id = request.id
+
+        code = self.core.remove_bot(game_id)
+
+        res = requests_pb2.IsDone(status=code)
+        return res
+
+    def ChangeAutoplay(self, request, context):
+        game_id = request.game_id
+        user_id = request.user_id
+
+        code = self.core.change_autoplay(game_id=game_id, player_id=user_id)
+
+        return requests_pb2.IsDone(status=code)
+
+    def CheckAutoplay(self, request, context):
+        game_id = request.game_id
+        user_id = request.user_id
+
+        res = self.core.check_autoplay(game_id, user_id)
+
+        return requests_pb2.Bool(status=res[0], is_true=res[1])

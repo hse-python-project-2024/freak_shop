@@ -24,6 +24,12 @@ service DbService {
   rpc MakeMove(PickedCards) returns (IsDone);
 
   rpc GameStage(Id) returns (Stage);
+
+  rpc AddBot(Id) returns (IsDone);
+  rpc RemoveBot(Id) returns (IsDone);
+
+  rpc ChangeAutoplay(GameUserId) returns (IsDone);
+  rpc CheckAutoplay(GameUserId) returns (Bool);
 }
 
 message IsDone{
