@@ -394,6 +394,7 @@ class Game:
         while len(self.shop) < 5:
             if not self.add_card_to_shop():
                 return False
+        self.shop.sort()
         return True
 
     def check_neighbors_festival(self):

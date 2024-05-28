@@ -338,6 +338,7 @@ class ViewModel:
                 response = self.req.get_shop_cards(_game_id=self.game_id)
                 if response.status == 0:
                     self.shop_card = list(response.card_id)
+                    # print("!!!!!!!!!!!!!!!!", self.shop_card)
                 else:
                     self.put_info_window(_info=response.status, _time=1)
             except Exception as e:
