@@ -26,6 +26,12 @@ service DbService {
   rpc GameStage(Id) returns (Stage);
 
   rpc GetLeaderboard(Empty) returns (BestPlayers);
+
+  rpc AddBot(Id) returns (IsDone);
+  rpc RemoveBot(Id) returns (IsDone);
+
+  rpc ChangeAutoplay(GameUserId) returns (IsDone);
+  rpc CheckAutoplay(GameUserId) returns (Bool);
 }
 
 message Empty {

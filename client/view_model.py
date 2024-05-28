@@ -260,7 +260,7 @@ class ViewModel:
                 else:
                     self.put_info_window(_info=response.status, _time=1)
             except Exception as e:
-                self._LOGGER.error(f"Exception in get_goal_points with error {e}")
+                self._LOGGER.error(f"Exception in get_goals with error {e}")
             finally:
                 self.mutex.release()
                 time.sleep(sleep_time)

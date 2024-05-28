@@ -88,7 +88,7 @@ class Facade(requests_pb2_grpc.DbServiceServicer):
     def GetGoals(self, request, context):
         game_id = request.game_id
         user_id = request.user_id
-        # self._LOGGER.info(f"GET GOALS: game_id={game_id} player_id={user_id}")
+        self._LOGGER.info(f"GET GOALS: game_id={game_id} player_id={user_id}")
 
         result = requests_pb2.GoalList()
         res = self.core.get_goals(game_id, user_id)
@@ -99,7 +99,7 @@ class Facade(requests_pb2_grpc.DbServiceServicer):
                 goal.goal = GOAL_ID[goal_name]
                 goal.point = res[1][goal_name]
 
-        # self._LOGGER.info(f"RESULT: status={res[0]} goals={res[1]}")
+        self._LOGGER.info(f"RESULT: status={res[0]} goals={res[1]}")
         return result
 
     def GetUsersInSession(self, request, context):
@@ -116,13 +116,13 @@ class Facade(requests_pb2_grpc.DbServiceServicer):
 
     def GetShopCards(self, request, context):
         game_id = request.id
-        self._LOGGER.info(f"GET SHOP CARDS: game_id={game_id}")
+        # self._LOGGER.info(f"GET SHOP CARDS: game_id={game_id}")
         res = self.core.get_shop_cards(game_id)
         result = requests_pb2.CardsResponse()
         result.status = res[0]
         result.card_id.extend(res[1])
 
-        self._LOGGER.info(f"RESULT: {res}")
+        # self._LOGGER.info(f"RESULT: {res}")
         return result
 
     def GetUserCards(self, request, context):
@@ -187,3 +187,35 @@ class Facade(requests_pb2_grpc.DbServiceServicer):
             self._LOGGER.error(f"Error request to database leaderboard. Exception: {e}")
             res.status = 23
             return res
+
+    def AddBot(self, request, context):
+        game_id = request.id
+
+        code = self.core.add_bot(game_id)
+
+        res = requests_pb2.IsDone(status=code)
+        return res
+
+    def RemoveBot(self, request, context):
+        game_id = request.id
+
+        code = self.core.remove_bot(game_id)
+
+        res = requests_pb2.IsDone(status=code)
+        return res
+
+    def ChangeAutoplay(self, request, context):
+        game_id = request.game_id
+        user_id = request.user_id
+
+        code = self.core.change_autoplay(game_id=game_id, player_id=user_id)
+
+        return requests_pb2.IsDone(status=code)
+
+    def CheckAutoplay(self, request, context):
+        game_id = request.game_id
+        user_id = request.user_id
+
+        res = self.core.check_autoplay(game_id, user_id)
+
+        return requests_pb2.Bool(status=res[0], is_true=res[1])
