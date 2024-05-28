@@ -70,3 +70,7 @@ class ClientRequests:
         request = requests_pb2.PickedCards(user_id=_user_id, game_id=_game_id, card_in_hand=hand_cards,
                                            card_in_shop=shop_cards)
         return self.stub.MakeMove(request)
+
+    def get_game_stage(self, _game_id: int):
+        request = requests_pb2.Id(id=_game_id)
+        return self.stub.GameStage(request)

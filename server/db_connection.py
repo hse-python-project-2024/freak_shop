@@ -32,8 +32,13 @@ class DBConnection:
                             name              varchar(50) NOT NULL
                             );""")
         self.cursor.execute("""CREATE TABLE IF NOT EXISTS passwords (
-                            login             varchar(50) REFERENCES users(login),
+                            login             varchar(50) REFERENCES users(login) UNIQUE, 
                             password          varchar(100) NOT NULL
+                            );""")
+        self.cursor.execute("""CREATE TABLE IF NOT EXISTS games (
+                            login             varchar(50) REFERENCES users(login) UNIQUE,
+                            game_count          integer NOT NULL,
+                            wins_count			integer NOT NULL
                             );""")
         self.connection.commit()
 
@@ -58,10 +63,11 @@ class DBConnection:
             self.cursor.execute(f"INSERT INTO users (login, name) VALUES ('{_user_login}', '{_user_name}');")
             self.cursor.execute(
                 f"INSERT INTO passwords (login, password) VALUES ('{_user_login}', crypt('{_password_1}', gen_salt('bf')));")
+            self.cursor.execute(f"INSERT INTO games (login, game_count, wins_count) VALUES ('{_user_login}', 0, 0);")
             self.connection.commit()
             return 0
         except Exception as e:
-            _LOGGER.warning(f'Error while adding user. Exception: {e}')
+            _LOGGER.error(f'Error while adding user. Exception: {e}')
             return 10
 
     def check_password(self, _user_login: str, _password: str) -> int:
@@ -102,6 +108,22 @@ class DBConnection:
         if result != 0:
             return result,
         return self.get_user_by_login(_user_login=_user_login)
+
+    def finish_game(self, _user_login: str, is_winner: bool):
+        plus = 1 if is_winner else 0
+        self.cursor.execute(f"""UPDATE games
+                                SET game_count = game_count + 1, wins_count = wins_count + {plus}
+                                WHERE login = '{_user_login}';""")
+        self.connection.commit()
+        return 0
+
+    def get_best_player(self, count: int = 2) -> list[tuple]:  # list[name, game_count, game_win]
+        self.cursor.execute(f"""SELECT *
+                                FROM games
+                                ORDER BY wins_count DESC
+                                LIMIT {count};""")
+        self.connection.commit()
+        return self.cursor.fetchall()
 
     def close_connection(self) -> None:
         self.connection.commit()

@@ -4,7 +4,7 @@ from facade import ClientRequests
 
 import enum
 from logs.logger import get_logger
-from returns_codes import get_description_ru
+from returns_codes import get_description_ru, get_description_en
 
 
 class User:
@@ -74,7 +74,7 @@ class ViewModel:
         if self.language == Languages.russian:
             self.info_window = get_description_ru(_info)
         elif self.language == Languages.english:
-            self.info_window = str(_info)  # TODO: add english language
+            self.info_window = get_description_en(_info)
         else:
             self.info_window = str(_info)
         time.sleep(_time)
@@ -207,6 +207,7 @@ class ViewModel:
         threading.Thread(target=self.get_users_in_session, args=(1,), daemon=True).start()
         threading.Thread(target=self.get_shop_cards, args=(0.2,), daemon=True).start()
         threading.Thread(target=self.get_whose_move, args=(0.2,), daemon=True).start()
+        threading.Thread(target=self.get_stage, args=(0.5,), daemon=True).start()
         for i in range(len(self.users)):
             threading.Thread(target=self.get_goal_points, args=(0.5, self.users[i].id,), daemon=True).start()
             threading.Thread(target=self.get_user_cards, args=(0.2, self.users[i].id, i,), daemon=True).start()
@@ -254,7 +255,7 @@ class ViewModel:
                 else:
                     self.put_info_window(_info=response.status, _time=1)
             except Exception as e:
-                self._LOGGER.error(f"Exception in get_goal_points with error {e}")
+                self._LOGGER.error(f"Exception in get_goals with error {e}")
             finally:
                 self.mutex.release()
                 time.sleep(sleep_time)
@@ -359,6 +360,24 @@ class ViewModel:
                     self.put_info_window(_info=response.status, _time=1)
             except Exception as e:
                 self._LOGGER.error(f"Exception in get_whose_move with error {e}")
+            finally:
+                self.mutex.release()
+                time.sleep(sleep_time)
+
+    def get_stage(self, sleep_time: float):
+        while True:
+            self.mutex.acquire()
+            try:
+                # self._LOGGER.info(f"make request get_game_stage, game_id = {self.game_id}")
+                response = self.req.get_game_stage(_game_id=self.game_id)
+                if response.status == 0:
+                    # 'WAITING', 'RUNNING', 'RESULTS' это 0, 1 и 2 соответственно
+                    if response.status == 2:
+                        self.window = ViewWindows.game_result
+                else:
+                    self.put_info_window(_info=response.status, _time=1)
+            except Exception as e:
+                self._LOGGER.error(f"Exception in get_game_stage with error {e}")
             finally:
                 self.mutex.release()
                 time.sleep(sleep_time)
