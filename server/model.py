@@ -568,23 +568,24 @@ class Core:
         """Start new game session.
 
         Output:
+            - [0]: status code (0, 9)
 
-        -- [0] status code:
-            - 0
+            - [1]: id of the new session"""
 
-            - 9
-        -- [1] int if status == 0:
-            - game_id"""
         if len(GAMES) == MX_GAME_ID:
             return 9, -1
+
         new_game_id = randint(1, MX_GAME_ID)
         while new_game_id in GAMES.keys():
             new_game_id = randint(1, MX_GAME_ID)
+
         new_game = Game(new_game_id)
         GAMES[new_game_id] = new_game
+
         return 0, new_game_id
 
     def get_stage(self, game_id):
+        """"""
         if game_id not in GAMES:
             return 1, 0
         game = GAMES[game_id]
