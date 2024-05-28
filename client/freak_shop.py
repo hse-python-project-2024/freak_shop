@@ -124,6 +124,12 @@ if __name__ == "__main__":
             Return = Menu.show_lobby(PlayerAmount, PlayerNicknames, PlayerReadySinges,ViewModelEntity.game_id)
             if Return[0] == ReturnStatus.change_readiness:
                 ViewModelEntity.change_user_readiness()
+            elif Return[0] == ReturnStatus.add_bot:
+                _LOGGER.info(f"Asked to add bot")
+                ViewModelEntity.add_bot_to_lobby()
+            elif Return[0] == ReturnStatus.remove_bot:
+                _LOGGER.info(f"Asked to remove bot")
+                ViewModelEntity.remove_bot_from_lobby()
             elif Return[0] == ReturnStatus.quit:
                 time.sleep(0.1)
                 ViewModelEntity.leave_game()

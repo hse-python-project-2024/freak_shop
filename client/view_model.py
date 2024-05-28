@@ -225,7 +225,7 @@ class ViewModel:
                     break
                 start_game = len(self.users) > 1
                 for user in self.users:
-                    self._LOGGER.info(f"make request is_user_ready with id = {user.id}")
+                    #self._LOGGER.info(f"make request is_user_ready with id = {user.id}")
                     response = self.req.is_user_ready(_game_id=self.game_id, _user_id=user.id)
                     if response.status == 0:
                         user.readiness = response.is_true
@@ -397,3 +397,9 @@ class ViewModel:
                 self.best_players.append((user.login, user.game_count, user.wins_count))
         else:
             self.put_info_window(_info=response.status, _time=1)
+
+    def add_bot_to_lobby(self):
+        pass # TODO
+
+    def remove_bot_from_lobby(self):
+        pass # TODO

@@ -18,6 +18,8 @@ class ReturnStatus(enum.Enum):
     go_to_join_lobby = 12
     change_readiness = 13
     trade = 14
+    add_bot = 15
+    remove_bot = 16
 
 
 class MenuView:
@@ -52,7 +54,7 @@ class MenuView:
         # Buttons for Initial Menu
         self.EnterButtonInitial = Rect(ScreenWidth * 11 / 38, ScreenHeight / 6, 800, 250)
         self.RegistrationButtonInitial = Rect(ScreenWidth * 11 / 38, ScreenHeight / 2, 800, 250)
-        self.BackButtonInitial = Rect(ScreenWidth * 6 / 7, ScreenHeight * 1 / 30, 180, 180)
+        self.BackButton = Rect(ScreenWidth * 6 / 7, ScreenHeight * 1 / 30, 180, 180)
 
         # Buttons for Login Menu
         self.LoginButtonLogin = Rect(ScreenWidth * 5 / 38, ScreenHeight / 5, 1000, 150)
@@ -81,13 +83,16 @@ class MenuView:
 
         # Buttons for Lobby
         self.ReadyButton = Rect(ScreenWidth * 14 / 38, ScreenHeight * 4 / 5 + 50, 450, 100)
+        self.AddBotButton = Rect(ScreenWidth * 6 / 7 - 50, ScreenHeight * 1 / 5 + 100, 200, 200)
+        self.RemoveBotButton = Rect(ScreenWidth * 6 / 7 - 55, ScreenHeight * 2 / 5 + 100, 200, 200)
 
         # Buttons for Join_By_Code
         self.CodeConfirmButton = Rect(ScreenWidth * 14 / 38, ScreenHeight * 3 / 5 - 50, 450, 100)
         self.CodeButton = Rect(ScreenWidth * 10 / 38, ScreenHeight / 4 + 40, 850, 200)
 
         # Images of password show|hide
-        self.BackIconImage = pygame.image.load("src/img/BackIcon.png").convert_alpha()
+        self.BackIconImage = pygame.transform.scale(pygame.image.load("src/img/BackIcon.png").convert_alpha(),
+                                                 (180, 180))
         self.EyeIconImage = pygame.image.load("src/img/EyeIcon.png").convert_alpha()
         self.EyeIconImageCrossed = pygame.image.load("src/img/EyeIconCrossed.png").convert_alpha()
 
@@ -101,6 +106,12 @@ class MenuView:
             (200, 200))
         self.ReadiedUpIconActivated = pygame.transform.scale(
             pygame.image.load("src/img/End_Turn_Icon_Activated.png").convert_alpha(),
+            (200, 200))
+        self.AddBotIcon = pygame.transform.scale(
+            pygame.image.load("src/img/Add_Bot_Icon.png").convert_alpha(),
+            (200, 200))
+        self.RemoveBotIcon = pygame.transform.scale(
+            pygame.image.load("src/img/Remove_Bot_Icon.png").convert_alpha(),
             (200, 200))
 
         # Variables for registration/login
@@ -139,7 +150,6 @@ class MenuView:
 
         self.LoginTextInitial = RegistrationFont.render(ConfirmTexts[new_lang], False, (0, 0, 0))
         self.RegistrationTextInitial = RegistrationFont.render(InitialRegistrationTexts[new_lang], False, (0, 0, 0))
-        self.BackButton = Rect(ScreenWidth * 6 / 7, ScreenHeight * 1 / 30, 180, 180)
 
         self.JoinGameText = RegistrationFont.render(JoinGameTexts[new_lang], False, (0, 0, 0))
         self.CreateGameText = RegistrationFont.render(CreateGameTexts[new_lang], False, (0, 0, 0))
@@ -231,7 +241,7 @@ class MenuView:
             PasswordInputText = RegistrationFont.render('*' * len(self.PasswordInput) + (self.active == 2) * '|', False,
                                                         (0, 0, 0))
             screen.blit(PasswordInputText, (self.PasswordButtonLogin.left, self.PasswordButtonLogin.center[1] - 10))
-        screen.blit(pygame.transform.scale(self.BackIconImage, (180, 180)),
+        screen.blit(self.BackIconImage,
                     (ScreenWidth * 6 / 7, ScreenHeight * 1 / 30))
 
         Returnee = [ReturnStatus.stay, [""]]
@@ -363,7 +373,7 @@ class MenuView:
                 False, (0, 0, 0))
             screen.blit(RepeatPasswordInputText, (
                 self.RepeatPasswordButtonRegistration.left, self.RepeatPasswordButtonRegistration.center[1] - 10))
-        screen.blit(pygame.transform.scale(self.BackIconImage, (180, 180)),
+        screen.blit(self.BackIconImage,
                     (ScreenWidth * 6 / 7, ScreenHeight * 1 / 30))
 
         Returnee = [ReturnStatus.stay, [""]]
@@ -391,7 +401,7 @@ class MenuView:
             return Returnee
         pygame.draw.rect(screen, RegistrationButtonColor, self.EnterButtonInitial)
         pygame.draw.rect(screen, RegistrationButtonColor, self.RegistrationButtonInitial)
-        screen.blit(pygame.transform.scale(self.BackIconImage, (180, 180)),
+        screen.blit(self.BackIconImage,
                     (ScreenWidth * 6 / 7, ScreenHeight * 1 / 30))
         screen.blit(self.LoginTextInitial,
                     (self.EnterButtonInitial.center[0] - 85, self.EnterButtonInitial.center[1] - 40))
@@ -433,7 +443,7 @@ class MenuView:
         screen.blit(self.CreateGameText, (self.CreateGameButton.center[0] - 185, self.CreateGameButton.center[1] - 35))
         screen.blit(self.SettingsText, (self.SettingsButton.center[0] - 150, self.SettingsButton.center[1] - 35))
         screen.blit(self.RankingsText, (self.RankingsButton.center[0] - 230, self.RankingsButton.center[1] - 35))
-        screen.blit(pygame.transform.scale(self.BackIconImage, (180, 180)),
+        screen.blit(self.BackIconImage,
                     (ScreenWidth * 6 / 7, ScreenHeight * 1 / 30))
         Returnee = [ReturnStatus.stay, [""]]
         return Returnee
@@ -462,7 +472,7 @@ class MenuView:
         screen.blit(self.RuText, (self.RuButton.center[0] - 35, self.RuButton.center[1] - 25))
         screen.blit(self.EnText, (self.EnButton.center[0] - 35, self.EnButton.center[1] - 25))
         screen.blit(self.LanguageSettingText, (self.RuButton.center[0] + 110, self.RuButton.center[1] - 200))
-        screen.blit(pygame.transform.scale(self.BackIconImage, (180, 180)),
+        screen.blit(self.BackIconImage,
                     (ScreenWidth * 6 / 7, ScreenHeight * 1 / 30))
         Returnee = [ReturnStatus.stay, [""]]
         return Returnee
@@ -514,7 +524,7 @@ class MenuView:
             Returnee = [ReturnStatus.quit, [""]]
             return Returnee
         screen.blit(self.CodeText, (ScreenWidth / 2 - 160, ScreenHeight/10))
-        screen.blit(pygame.transform.scale(self.BackIconImage, (180, 180)),
+        screen.blit(self.BackIconImage,
                     (ScreenWidth * 6 / 7, ScreenHeight * 1 / 30))
         pygame.draw.rect(screen, RegistrationButtonColor, self.CodeButton)
         CodeInputText = CodeFont.render(self.CodeInput + (self.active == 1) * '|', False, (0, 0, 0))
@@ -537,6 +547,12 @@ class MenuView:
                 elif self.ReadyButton.collidepoint(pygame.mouse.get_pos()):
                     Returnee = [ReturnStatus.change_readiness, [""]]
                     return Returnee
+                elif self.AddBotButton.collidepoint(pygame.mouse.get_pos()):
+                    Returnee = [ReturnStatus.add_bot,[""]]
+                    return Returnee
+                elif self.RemoveBotButton.collidepoint(pygame.mouse.get_pos()):
+                    Returnee = [ReturnStatus.remove_bot,[""]]
+                    return Returnee
         pressed_keys = pygame.key.get_pressed()
         if pressed_keys[K_ESCAPE]:
             Returnee = [ReturnStatus.quit, [""]]
@@ -555,7 +571,7 @@ class MenuView:
             else:
                 screen.blit(self.ReadiedUpIconDeactivated,
                             (ScreenWidth * i / 6 + 50, ScreenHeight * 3 / 5 + 50))
-            screen.blit(pygame.transform.scale(self.BackIconImage, (180, 180)),
+            screen.blit(self.BackIconImage,
                         (ScreenWidth * 6 / 7, ScreenHeight * 1 / 30))
         pygame.draw.rect(screen, RegistrationButtonColor, self.ReadyButton)
         screen.blit(self.ReadyText,
@@ -563,8 +579,12 @@ class MenuView:
         LobbyCodeText = CodeFont.render(str(lobby_code), False, (0, 0, 0))
         screen.blit(LobbyCodeText,
                     (ScreenWidth * 1 / 2 - 95, ScreenHeight * 1 / 19))
-        screen.blit(pygame.transform.scale(self.BackIconImage, (180, 180)),
+        screen.blit(self.BackIconImage,
                     (ScreenWidth * 6 / 7, ScreenHeight * 1 / 30))
+        screen.blit(self.AddBotIcon,
+                    (ScreenWidth * 6 / 7 - 50, ScreenHeight * 1 / 5 + 100))
+        screen.blit(self.RemoveBotIcon,
+                    (ScreenWidth * 6 / 7 - 55, ScreenHeight * 2 / 5 + 100))
         Returnee = [ReturnStatus.stay, [""]]
         return Returnee
 
@@ -607,7 +627,7 @@ class MenuView:
             screen.blit(PlayerWinrate,
                         (ScreenWidth * 3 / 5 + 200, ScreenHeight * (3 / 19 + Index * 1 /10)))
             Index += 1
-        screen.blit(pygame.transform.scale(self.BackIconImage, (180, 180)),
+        screen.blit(self.BackIconImage,
                     (ScreenWidth * 6 / 7, ScreenHeight * 1 / 30))
         Returnee = [ReturnStatus.stay, [""]]
         return Returnee
