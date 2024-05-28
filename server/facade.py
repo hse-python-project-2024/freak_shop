@@ -10,7 +10,6 @@ from model import Core
 
 from goal_ids import GOAL_ID
 
-
 class Facade(requests_pb2_grpc.DbServiceServicer):
     def __init__(self):
         self._LOGGER = get_logger(__name__)
@@ -187,3 +186,35 @@ class Facade(requests_pb2_grpc.DbServiceServicer):
             self._LOGGER.error(f"Error request to database leaderboard. Exception: {e}")
             res.status = 23
             return res
+
+    def AddBot(self, request, context):
+        game_id = request.id
+
+        code = self.core.add_bot(game_id)
+
+        res = requests_pb2.IsDone(status=code)
+        return res
+
+    def RemoveBot(self, request, context):
+        game_id = request.id
+
+        code = self.core.remove_bot(game_id)
+
+        res = requests_pb2.IsDone(status=code)
+        return res
+
+    def ChangeAutoplay(self, request, context):
+        game_id = request.game_id
+        user_id = request.user_id
+
+        code = self.core.change_autoplay(game_id=game_id, player_id=user_id)
+
+        return requests_pb2.IsDone(status=code)
+
+    def CheckAutoplay(self, request, context):
+        game_id = request.game_id
+        user_id = request.user_id
+
+        res = self.core.check_autoplay(game_id, user_id)
+
+        return requests_pb2.Bool(status=res[0], is_true=res[1])
