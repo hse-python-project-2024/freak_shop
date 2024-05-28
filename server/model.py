@@ -163,6 +163,8 @@ class Player:
         self.decks = {}
         self.goals = {}
         self.ready = {}
+        self.human = True
+        self.autoplay = {}
 
     def join_game(self, game_id):
         """Create a new deck, point counters and readiness status for the new game."""
@@ -182,6 +184,7 @@ class Player:
             fashion_at_lowest_price: 0,
         }
         self.ready[game_id] = False
+        self.autoplay[game_id] = False
 
     def change_readiness(self, game_id):
         """Change the readiness status. 'Ready' changes into 'not ready' and vice versa."""
@@ -192,11 +195,25 @@ class Player:
         """Return the readiness status. True if ready, False otherwise."""
         return self.ready[game_id]
 
+    def is_human(self):
+        return self.human
+
+    def check_autoplay(self, game_id):
+        return self.autoplay[game_id]
+
+    def change_autoplay(self, game_id):
+        self.autoplay[game_id] += 1
+        self.autoplay[game_id] %= 2
+
     def leave_game(self, game_id):
         """Remove data from the game."""
         self.decks.pop(game_id)
         self.goals.pop(game_id)
         self.ready.pop(game_id)
+        self.autoplay.pop(game_id)
+
+        if not self.is_human():
+            PLAYERS.pop(self.id)
 
     def add_cards(self, game_id, cards):
         """Add cards to the deck used in the given game."""
@@ -287,9 +304,34 @@ class Game:
         self.players.append(player_id)
         PLAYERS[player_id].join_game(self.id)
 
+    def add_bot(self):
+        new_bot_id = randint(1, MX_BOT_ID)
+        while new_bot_id in PLAYERS:
+            new_bot_id = randint(1, MX_BOT_ID)
+        new_bot_login = f"bot{new_bot_id}"
+        new_bot_name = f"bot{new_bot_id}"
+
+        new_bot = Player(new_bot_id, new_bot_login, new_bot_name)
+        PLAYERS[new_bot_id] = new_bot
+
+        self.add_player(new_bot_id)
+        self.change_player_readiness(new_bot_id)
+        new_bot.change_autoplay(self.id)
+
+    def remove_bot(self):
+        for player_id in self.players[::-1]:
+            player = PLAYERS[player_id]
+            if not player.is_human():
+                self.kick_player(player_id)
+                break
+
     def check_readiness(self, player_id):
         player = PLAYERS[player_id]
         return player.is_ready(self.id)
+
+    def check_autoplay(self, player_id):
+        player = PLAYERS[player_id]
+        return player.check_autoplay(self.id)
 
     def change_player_readiness(self, player_id):
         """Change the readiness status of the player with the given id.
@@ -304,7 +346,7 @@ class Game:
         """Remove player from the game."""
         self.players.remove(player_id)
         PLAYERS[player_id].leave_game(self.id)
-        if not self.players:
+        if not self.players or not any(PLAYERS[player_id].is_human() for player_id in self.players):
             GAMES.pop(self.id)
 
     def start(self):
@@ -352,6 +394,8 @@ class Game:
         player.sell_cards(self.id, sold_cards_ids)
         player.add_cards(self.id, bought_cards_ids)
 
+        for card_id in bought_cards_ids:
+            self.shop.remove(card_id)
         self.shop += sold_cards_ids
         self.shop.sort()
 
@@ -365,7 +409,11 @@ class Game:
 
         if not self.restock():
             self.finish()
-
+        else:
+            next_player = PLAYERS[self.players[self.cur_player]]
+            if next_player.check_autoplay(self.id):
+                self.move(self.players[self.cur_player], [choice(next_player.get_cards(self.id))],
+                          [choice(self.get_shop_cards())])
         return 0
 
     def get_goals(self):
@@ -502,6 +550,7 @@ CARDS = [Card(card_id=0, value=0, is_merch=False, category=Closed),
          Card(category=20, value=10, is_merch=False, card_id=Employees)]
 
 MX_GAME_ID = 50
+MX_BOT_ID = MX_GAME_ID * 4 + 10
 
 
 class Core:
@@ -815,3 +864,68 @@ class Core:
         for player_id in game.get_players():
             res[player_id] = self.get_points(game_id, player_id)
         return res
+
+    def add_bot(self, game_id):
+        if game_id not in GAMES:
+            return 1
+        game = GAMES[game_id]
+        '''if game.get_stage() == RUNNING:
+            return 6
+        if game.get_stage() == RESULTS:
+            return 7'''
+        if len(game.get_players().keys()) == 5:
+            return 8
+        game.add_bot()
+        return 0
+
+    def remove_bot(self, game_id):
+        if game_id not in GAMES:
+            return 1
+        game = GAMES[game_id]
+        '''if game.get_stage() == RUNNING:
+            return 6
+        if game.get_stage() == RESULTS:
+            return 7'''
+        game.remove_bot()
+        return 0
+
+    def change_autoplay(self, game_id, player_id):
+        """Add player to a game.
+
+        Output:
+
+        -- status code
+             - 0
+
+             - 1
+
+             - 2
+
+             - 6
+
+             - 7"""
+
+        if game_id not in GAMES:
+            return 1
+        if player_id not in PLAYERS:
+            return 2
+        game = GAMES[game_id]
+        if game.get_stage() == WAITING:
+            return 5
+        if game.get_stage() == RESULTS:
+            return 7
+        player = PLAYERS[player_id]
+        player.change_autoplay(player_id)
+        return 0
+
+    def check_autoplay(self, game_id, player_id):
+        if game_id not in GAMES:
+            return 1, 0
+        if player_id not in PLAYERS:
+            return 2, 0
+        game = GAMES[game_id]
+        '''if game.get_stage() == RUNNING:
+            return 6, 0
+        if game.get_stage() == RESULTS:
+            return 7, 0'''
+        return 0, game.check_autoplay(player_id)

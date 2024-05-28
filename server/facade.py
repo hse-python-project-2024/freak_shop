@@ -169,3 +169,35 @@ class Facade(requests_pb2_grpc.DbServiceServicer):
             self._LOGGER.info(f"RESULT: status={code} game_stage={['WAITING', 'RUNNING', 'RESULTS'][stage]}")
         res = requests_pb2.Stage(status=code, game_stage=stage)
         return res
+
+    def AddBot(self, request, context):
+        game_id = request.id
+
+        code = self.core.add_bot(game_id)
+
+        res = requests_pb2.IsDone(status=code)
+        return res
+
+    def RemoveBot(self, request, context):
+        game_id = request.id
+
+        code = self.core.remove_bot(game_id)
+
+        res = requests_pb2.IsDone(status=code)
+        return res
+
+    def ChangeAutoplay(self, request, context):
+        game_id = request.game_id
+        user_id = request.user_id
+
+        code = self.core.change_autoplay(game_id=game_id, player_id=user_id)
+
+        return requests_pb2.IsDone(status=code)
+
+    def CheckAutoplay(self, request, context):
+        game_id = request.game_id
+        user_id = request.user_id
+
+        res = self.core.check_autoplay(game_id, user_id)
+
+        return requests_pb2.Bool(status=res[0], is_true=res[1])
