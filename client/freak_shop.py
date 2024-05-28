@@ -72,8 +72,10 @@ if __name__ == "__main__":
                 ViewModelEntity.go_to_settings_window()
             elif Return[0] == ReturnStatus.leaderboard:
                 ViewModelEntity.go_to_leaderboard_window()
+            elif Return[0] == ReturnStatus.show_rules:
+                ViewModelEntity.go_to_rules_window()
 
-        elif CurrentWindow == ViewWindows.game:
+        elif CurrentWindow == ViewWindows.game: # Gameplay Interface behaviour
             if not IsGameStarted:
                 time.sleep(1)
                 IsGameStarted = True
@@ -155,6 +157,13 @@ if __name__ == "__main__":
                     new_lang = Languages.english
                 Menu.change_menu_language(new_lang)
                 ViewModelEntity.change_language(new_lang)
+
+        elif CurrentWindow == ViewWindows.rules:
+            Return = Menu.show_rules()
+            if Return[0] == ReturnStatus.quit:
+                time.sleep(0.1)
+                IsGameStarted = False
+                ViewModelEntity.go_to_main_menu_window()
 
         # Show messages
         Message = ViewModelEntity.info_window

@@ -20,6 +20,7 @@ class ReturnStatus(enum.Enum):
     trade = 14
     add_bot = 15
     remove_bot = 16
+    show_rules = 17
 
 
 class MenuView:
@@ -76,6 +77,7 @@ class MenuView:
         self.CreateGameButton = Rect(ScreenWidth * 10 / 38, ScreenHeight / 4 + 40, 850, 200)
         self.SettingsButton = Rect(ScreenWidth * 10 / 38, ScreenHeight * 4 / 9 + 45, 850, 200)
         self.RankingsButton = Rect(ScreenWidth * 10 / 38, ScreenHeight * 2 / 3 + 25, 850, 200)
+        self.RuleButton = Rect(ScreenWidth * 1 / 25, ScreenHeight * 1 / 60, 270, 270)
 
         # Buttons for Settings Menu
         self.RuButton = Rect(ScreenWidth * 10 / 38, ScreenHeight * 1 / 5, 350, 200)
@@ -113,6 +115,9 @@ class MenuView:
         self.RemoveBotIcon = pygame.transform.scale(
             pygame.image.load("src/img/Remove_Bot_Icon.png").convert_alpha(),
             (200, 200))
+        self.RuleIcon = pygame.transform.scale(
+            pygame.image.load("src/img/Rule_Icon.png").convert_alpha(),
+            (270, 270))
 
         # Variables for registration/login
         self.LoginInput = ""
@@ -432,6 +437,9 @@ class MenuView:
                 elif self.RankingsButton.collidepoint(pygame.mouse.get_pos()):
                     Returnee = [ReturnStatus.leaderboard, [""]]
                     return Returnee
+                elif self.RuleButton.collidepoint(pygame.mouse.get_pos()):
+                    Returnee = [ReturnStatus.show_rules, [""]]
+                    return Returnee
         pressed_keys = pygame.key.get_pressed()
         if pressed_keys[K_ESCAPE]:
             sys.exit()
@@ -445,6 +453,8 @@ class MenuView:
         screen.blit(self.RankingsText, (self.RankingsButton.center[0] - 230, self.RankingsButton.center[1] - 35))
         screen.blit(self.BackIconImage,
                     (ScreenWidth * 6 / 7, ScreenHeight * 1 / 30))
+        screen.blit(self.RuleIcon,
+                    (ScreenWidth * 1 / 25, ScreenHeight * 1 / 60))
         Returnee = [ReturnStatus.stay, [""]]
         return Returnee
 
@@ -629,6 +639,27 @@ class MenuView:
             Index += 1
         screen.blit(self.BackIconImage,
                     (ScreenWidth * 6 / 7, ScreenHeight * 1 / 30))
+        Returnee = [ReturnStatus.stay, [""]]
+        return Returnee
+
+    def show_rules(self):
+        screen.fill(RegistrationBackgroundColor)
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                sys.exit()
+            if event.type == MOUSEBUTTONDOWN:
+                if self.BackButton.collidepoint(pygame.mouse.get_pos()):
+                    Returnee = [ReturnStatus.quit, [""]]
+                    return Returnee
+        pressed_keys = pygame.key.get_pressed()
+        if pressed_keys[K_ESCAPE]:
+            Returnee = [ReturnStatus.quit, [""]]
+            return Returnee
+        screen.blit(self.BackIconImage,
+                    (ScreenWidth * 6 / 7 + 40, ScreenHeight * 1 / 30))
+        for j in range(len(RuleTexts[self.lang.value])):
+            RuleLineText = RegistrationFont.render(RuleTexts[self.lang.value][j], False, (0, 0, 0))
+            screen.blit(RuleLineText, (ScreenWidth * 1 / 40, ScreenHeight * 1 / 30 + j * 60))
         Returnee = [ReturnStatus.stay, [""]]
         return Returnee
 

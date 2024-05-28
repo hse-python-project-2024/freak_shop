@@ -27,6 +27,7 @@ class ViewWindows(enum.Enum):
     game_result = 8
     leaderboard = 9
     settings = 10
+    rules = 11
 
 
 class Languages(enum.Enum):
@@ -117,6 +118,9 @@ class ViewModel:
 
     def go_to_jbc_window(self):  # jbc = Join by code
         self.window = ViewWindows.connecting_by_code
+
+    def go_to_rules_window(self):
+        self.window = ViewWindows.rules
 
     def go_to_game_menu(self):  # Testing only, not needed in real game
         self.window = ViewWindows.game
