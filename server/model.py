@@ -305,7 +305,7 @@ class Game:
         PLAYERS[player_id].join_game(self.id)
 
     def add_bot(self):
-        new_bot_id = randint(1, MX_BOT_ID)
+        new_bot_id = -randint(1, MX_BOT_ID)
         while new_bot_id in PLAYERS:
             new_bot_id = randint(1, MX_BOT_ID)
         new_bot_login = f"bot{new_bot_id}"
