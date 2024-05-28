@@ -367,7 +367,8 @@ class Game:
                     [17] + [18] * (2 - (len(self.players) >= 5)) + \
                     [19] + [20]
         shuffle(all_cards)
-        ind = randint(len(all_cards) - 7, len(all_cards) - 1)
+        # ind = randint(len(all_cards) - 7, len(all_cards) - 1)
+        ind = 5
         all_cards.insert(ind, 0)
         self.unused = deque(all_cards)
 
@@ -442,7 +443,6 @@ class Game:
         while len(self.shop) < 5:
             if not self.add_card_to_shop():
                 return False
-        self.shop.sort()
         return True
 
     def check_neighbors_festival(self):
