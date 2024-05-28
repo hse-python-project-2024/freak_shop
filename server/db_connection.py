@@ -117,7 +117,7 @@ class DBConnection:
         self.connection.commit()
         return 0
 
-    def get_best_player(self, count: int = 2) -> list[tuple]:  # list[name, game_count, game_win]
+    def get_best_player(self, count: int = 2) -> list[tuple]:  # list[tuple(name, game_count, game_win)]
         self.cursor.execute(f"""SELECT *
                                 FROM games
                                 ORDER BY wins_count DESC

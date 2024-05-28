@@ -25,11 +25,16 @@ service DbService {
 
   rpc GameStage(Id) returns (Stage);
 
+  rpc GetLeaderboard(Empty) returns (BestPlayers);
+
   rpc AddBot(Id) returns (IsDone);
   rpc RemoveBot(Id) returns (IsDone);
 
   rpc ChangeAutoplay(GameUserId) returns (IsDone);
   rpc CheckAutoplay(GameUserId) returns (Bool);
+}
+
+message Empty {
 }
 
 message IsDone{
@@ -112,4 +117,15 @@ message PickedCards{
 message Stage{
   int32 status = 1;
   int32 game_stage = 2;
+}
+
+message UserGames{
+  string login = 1;
+  int32 game_count = 2;
+  int32 wins_count = 3;
+}
+
+message BestPlayers{
+  int32 status = 1;
+  repeated UserGames users = 2;
 }

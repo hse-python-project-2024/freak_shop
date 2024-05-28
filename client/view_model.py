@@ -50,9 +50,11 @@ class ViewModel:
         self.shop_card = []
         self.goals = dict()  # key = id of goal, val = point of this player this person
         self.language = language
-        self.users = []  # list[User]
+        self.users: list[User] = []
         self.whose_move = None  # user_id whose move
         self.mutex = threading.Lock()
+
+        self.best_players: list[tuple[str, int, int]] = []  # login, game_count, win_count
 
     def my_pos_in_users(self):
         with self.mutex:
@@ -166,7 +168,7 @@ class ViewModel:
                 self.go_to_waiting_room(_game_id=response.id)
             else:
                 self.put_info_window(_info=response2.status)
-        else:
+            self.best_players: list[tuple[str, int, int]] = []  # login, game_count, win_count else:
             self.put_info_window(_info=response.status)
 
     def leave_game(self):
@@ -209,7 +211,7 @@ class ViewModel:
         threading.Thread(target=self.get_whose_move, args=(0.2,), daemon=True).start()
         threading.Thread(target=self.get_stage, args=(0.5,), daemon=True).start()
         for i in range(len(self.users)):
-            threading.Thread(target=self.get_goal_points, args=(0.5, self.users[i].id,), daemon=True).start()
+            threading.Thread(target=self.get_goal_points, args=(0.5, self.users[i].id, i,), daemon=True).start()
             threading.Thread(target=self.get_user_cards, args=(0.2, self.users[i].id, i,), daemon=True).start()
 
     def check_user_readiness(self, sleep_time):
@@ -239,7 +241,7 @@ class ViewModel:
                 self.mutex.release()
                 time.sleep(sleep_time)
 
-    def get_goal_points(self, sleep_time: float, _user_id: int):
+    def get_goal_points(self, sleep_time: float, _user_id: int, _user_ind: int):
         self._LOGGER.info(
             f"start asking users goal points, sleep time = {sleep_time}, user id = {_user_id}")
         while True:
@@ -250,8 +252,11 @@ class ViewModel:
                 # self._LOGGER.info(f"make request get_goals game_id = {self.game_id}, user_id = {_user_id}")
                 response = self.req.get_goals(_game_id=self.game_id, _user_id=_user_id)
                 if response.status == 0:
+                    self.users[_user_ind].point_count = 0
                     for my_goal in response.goals:
-                        self.goals[my_goal.goal] = response.goals[my_goal.point]
+                        self.users[_user_ind].point_count += my_goal.point
+                        if _user_id == self.user_id:
+                            self.goals[my_goal.goal] = my_goal.point
                 else:
                     self.put_info_window(_info=response.status, _time=1)
             except Exception as e:
@@ -381,3 +386,12 @@ class ViewModel:
             finally:
                 self.mutex.release()
                 time.sleep(sleep_time)
+
+    def update_leaderboard(self):
+        response = self.req.get_leaderboard()
+        if response.status == 0:
+            self.best_players: list[tuple[str, int, int]] = []  # login, game_count, win_count
+            for user in response.users:
+                self.best_players.append((user.login, user.game_count, user.wins_count))
+        else:
+            self.put_info_window(_info=response.status, _time=1)
