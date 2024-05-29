@@ -10,14 +10,14 @@ from model import Core
 
 from goal_ids import GOAL_ID
 
+
 class Facade(requests_pb2_grpc.DbServiceServicer):
     def __init__(self):
         self._LOGGER = get_logger(__name__)
         super().__init__()
         self.db = db_connection.DBConnection()
-        self._LOGGER.info("Корректное подлючение фасада")
-
         self.core = Core()
+        self._LOGGER.info("Корректное подключение фасада сервера")
 
     def RegisterUser(self, request, context):
         result = self.db.add_user(_user_login=request.login, _user_name=request.name, _password_1=request.password1,

@@ -44,7 +44,6 @@ class ViewModel:
         self.user_name = None
         self.user_id = None
         self.user_login = None
-        self._LOGGER.info("View model is initialized correctly")
 
         self.game_id = None
         self.my_card = []
@@ -56,6 +55,9 @@ class ViewModel:
         self.mutex = threading.Lock()
 
         self.best_players: list[tuple[str, int, int]] = []  # login, game_count, win_count
+
+        self._LOGGER.info(
+            f"Корректное подключение view-model с {'русским' if language == Languages.russian else 'английским'} языком")
 
     def my_pos_in_users(self):
         with self.mutex:
@@ -173,7 +175,7 @@ class ViewModel:
                 self.go_to_waiting_room(_game_id=response.id)
             else:
                 self.put_info_window(_info=response2.status)
-            self.best_players: list[tuple[str, int, int]] = []  # login, game_count, win_count else:
+        else:
             self.put_info_window(_info=response.status)
 
     def leave_game(self):
@@ -229,7 +231,7 @@ class ViewModel:
                     break
                 start_game = len(self.users) > 1
                 for user in self.users:
-                    #self._LOGGER.info(f"make request is_user_ready with id = {user.id}")
+                    # self._LOGGER.info(f"make request is_user_ready with id = {user.id}")
                     response = self.req.is_user_ready(_game_id=self.game_id, _user_id=user.id)
                     if response.status == 0:
                         user.readiness = response.is_true
@@ -284,7 +286,9 @@ class ViewModel:
                     need_erase = []
                     for user in self.users:
                         need_erase.append(user.id)
+                    # self._LOGGER.info("Юзеры в сессии:")
                     for my_user in response.users_info:
+                        # self._LOGGER.info(f"Юзер с id={my_user.id} есть в сессии")
                         if my_user.id in need_erase:
                             need_erase.remove(my_user.id)
 
@@ -403,7 +407,15 @@ class ViewModel:
             self.put_info_window(_info=response.status, _time=1)
 
     def add_bot_to_lobby(self):
-        pass # TODO
+        response = self.req.add_bot(_game_id=self.game_id)
+        if response.status != 0:
+            self.put_info_window(_info=response.status, _time=1)
+        else:
+            self._LOGGER.info("Бот успешно добавлен")
 
     def remove_bot_from_lobby(self):
-        pass # TODO
+        response = self.req.remove_bot(_game_id=self.game_id)
+        if response.status != 0:
+            self.put_info_window(_info=response.status, _time=1)
+        else:
+            self._LOGGER.info("Бот успешно удален")

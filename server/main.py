@@ -13,7 +13,7 @@ def serve():
     requests_pb2_grpc.add_DbServiceServicer_to_server(Facade(), server)
     server.add_insecure_port(f'{host}:{port}')
     server.start()
-    _LOGGER.info(f'Сервер успешно поднят на хосте {host} с портом {port}')
+    _LOGGER.info(f'Сервер успешно поднят на хосте {host} с портом {port} и готов принимать запросы')
     server.wait_for_termination()
 
 

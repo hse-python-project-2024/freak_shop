@@ -557,7 +557,7 @@ MX_BOT_ID = MX_GAME_ID * 4 + 10
 class Core:
     def __init__(self):
         self._LOGGER = get_logger(__name__)
-        self._LOGGER.info("LETS GOOO")
+        self._LOGGER.info("Корректное подключение модели")
 
     def log_in_player(self, player_id, login, name):
         if player_id not in PLAYERS:
