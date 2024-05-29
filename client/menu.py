@@ -94,33 +94,33 @@ class MenuView:
         self.CodeButton = Rect(ScreenWidth * 10 / 38, ScreenHeight / 4 + 40, 850, 200)
 
         # Images of password show|hide
-        self.BackIconImage = pygame.transform.scale(pygame.image.load("src/img/BackIcon.png").convert_alpha(),
+        self.BackIconImage = pygame.transform.scale(pygame.image.load("src/img/Other_Icons/BackIcon.png").convert_alpha(),
                                                  (180, 180))
-        self.EyeIconImage = pygame.image.load("src/img/EyeIcon.png").convert_alpha()
-        self.EyeIconImageCrossed = pygame.image.load("src/img/EyeIconCrossed.png").convert_alpha()
+        self.EyeIconImage = pygame.image.load("src/img/Other_Icons/EyeIcon.png").convert_alpha()
+        self.EyeIconImageCrossed = pygame.image.load("src/img/Other_Icons/EyeIconCrossed.png").convert_alpha()
 
         # Icons for the Lobby
-        self.PlayerIcon = pygame.transform.scale(pygame.image.load("src/img/Player_Icon.png").convert_alpha(),
+        self.PlayerIcon = pygame.transform.scale(pygame.image.load("src/img/Other_Icons/Player_Icon.png").convert_alpha(),
                                                  (180, 180))
-        self.JoinedPlayerCard = (pygame.transform.scale(pygame.image.load("src/img/Joined_Player_Icon.png").convert(),
+        self.JoinedPlayerCard = (pygame.transform.scale(pygame.image.load("src/img/Other_Icons/Joined_Player_Icon.png").convert(),
                                                         (240, 320)))
         self.ReadiedUpIconDeactivated = pygame.transform.scale(
-            pygame.image.load("src/img/End_Turn_Icon.png").convert_alpha(),
+            pygame.image.load("src/img/Other_Icons/End_Turn_Icon.png").convert_alpha(),
             (200, 200))
         self.ReadiedUpIconActivated = pygame.transform.scale(
-            pygame.image.load("src/img/End_Turn_Icon_Activated.png").convert_alpha(),
+            pygame.image.load("src/img/Other_Icons/End_Turn_Icon_Activated.png").convert_alpha(),
             (200, 200))
         self.AddBotIcon = pygame.transform.scale(
-            pygame.image.load("src/img/Add_Bot_Icon.png").convert_alpha(),
+            pygame.image.load("src/img/Other_Icons/Add_Bot_Icon.png").convert_alpha(),
             (200, 200))
         self.RemoveBotIcon = pygame.transform.scale(
-            pygame.image.load("src/img/Remove_Bot_Icon.png").convert_alpha(),
+            pygame.image.load("src/img/Other_Icons/Remove_Bot_Icon.png").convert_alpha(),
             (200, 200))
         self.RuleIcon = pygame.transform.scale(
-            pygame.image.load("src/img/Rule_Icon.png").convert_alpha(),
+            pygame.image.load("src/img/Other_Icons/Rule_Icon.png").convert_alpha(),
             (270, 270))
         self.SettingsIcon = pygame.transform.scale(
-            pygame.image.load("src/img/Settings_Icon.png").convert_alpha(),
+            pygame.image.load("src/img/Other_Icons/Settings_Icon.png").convert_alpha(),
             (200, 200))
 
         # Variables for registration/login
@@ -629,13 +629,13 @@ class MenuView:
         screen.blit(self.AmountOfWinsText,
                     (ScreenWidth * 2 / 5 + 50, ScreenHeight * 1 / 19))
         screen.blit(self.PercentageOfWinsText,
-                    (ScreenWidth * 3 / 5 + 90, ScreenHeight * 1 / 19))
+                    (ScreenWidth * 3 / 5 + 140, ScreenHeight * 1 / 19))
         Index = 0
         for Player in BestPlayers:
             PlayerNickname = RegistrationFont.render(str(Player[0]), False, (0, 0, 0))
             PlayerGameCount = RegistrationFont.render(str(Player[1]), False, (0, 0, 0))
             PlayerWinCount = RegistrationFont.render(str(Player[2]), False, (0, 0, 0))
-            Winrate = "-" # Counting winrate if amount of games != 0
+            Winrate = "   -" # Counting winrate if amount of games != 0
             if Player[1] != 0:
                 Winrate = str(Player[2] * 100 // Player[1]) + "%"
             PlayerWinrate = RegistrationFont.render(Winrate, False, (0, 0, 0))

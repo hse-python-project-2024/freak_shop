@@ -7,7 +7,7 @@ class GameBoardView:
         self.ClickedPlayerCardsDiscounted = [0] * 10
         self.ClickedShopCards = [0] * 10
         self.ClickedShopCardsDiscounted = [0] * 10
-        self.ShopIcon = pygame.transform.scale(pygame.image.load("src/img/Shop_Icon.png").convert_alpha(),
+        self.ShopIcon = pygame.transform.scale(pygame.image.load("src/img/Other_Icons/Shop_Icon.png").convert_alpha(),
                                                  (1700, 1300))
         self.CardImages = []
         for i in range(10):
@@ -15,9 +15,9 @@ class GameBoardView:
             for j in range(2):
                 CardName = "src/img/"
                 if j == 1:
-                    CardName += "Discount_Image_"
+                    CardName += "Discounted_Cards/Discount_Image_"
                 else:
-                    CardName += "Non_Discount_Image_"
+                    CardName += "NonDiscounted_Cards/Non_Discount_Image_"
                 CardName += str(i + 1)
                 CardName += ".png"
                 self.CardImages[i].append(pygame.transform.scale(pygame.image.load(CardName).convert(), (140, 200)))
@@ -27,30 +27,30 @@ class GameBoardView:
             for j in range(2):
                 CardName = "src/img/"
                 if j == 1:
-                    CardName += "Discount_Image_"
+                    CardName += "Discounted_Cards/Discount_Image_"
                 else:
-                    CardName += "Non_Discount_Image_"
+                    CardName += "NonDiscounted_Cards/Non_Discount_Image_"
                 CardName += str(i + 1)
                 CardName += "_Selected.png"
                 self.CardImagesSelected[i].append(
                     pygame.transform.scale(pygame.image.load(CardName).convert(), (140, 200)))
         self.TaskImages = []
         for i in range(12):
-            TaskName = "src/img/Task_"
+            TaskName = "src/img/Task_Icons/Task_"
             TaskName += str(i + 1)
             TaskName += ".png"
             self.TaskImages.append(pygame.transform.scale(pygame.image.load(TaskName).convert(), (140, 200)))
-        self.PlayerIcon = pygame.transform.scale(pygame.image.load("src/img/Player_Icon.png").convert_alpha(),
+        self.PlayerIcon = pygame.transform.scale(pygame.image.load("src/img/Other_Icons/Player_Icon.png").convert_alpha(),
                                                  (140, 140))
         self.PlayerIconActive = pygame.transform.scale(
-            pygame.image.load("src/img/Player_Icon_Active.png").convert_alpha(),
+            pygame.image.load("src/img/Other_Icons/Player_Icon_Active.png").convert_alpha(),
             (140, 140))
-        self.EndTurnIcon = pygame.transform.scale(pygame.image.load("src/img/End_Turn_Icon.png").convert_alpha(),
+        self.EndTurnIcon = pygame.transform.scale(pygame.image.load("src/img/Other_Icons/End_Turn_Icon.png").convert_alpha(),
                                                   (250, 250))
         self.EndTurnIconActivated = pygame.transform.scale(
-            pygame.image.load("src/img/End_Turn_Icon_Activated.png").convert_alpha(),
+            pygame.image.load("src/img/Other_Icons/End_Turn_Icon_Activated.png").convert_alpha(),
             (250, 250))
-        self.BackIcon = pygame.transform.scale(pygame.image.load("src/img/BackIcon.png").convert_alpha(),
+        self.BackIcon = pygame.transform.scale(pygame.image.load("src/img/Other_Icons/BackIcon.png").convert_alpha(),
                                                   (200, 200))
 
     def display_shop_image(self):
