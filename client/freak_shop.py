@@ -124,10 +124,13 @@ if __name__ == "__main__":
             PlayerAmount = len(ViewModelEntity.users)
             PlayerNicknames = []
             PlayerReadySinges = []
+            OurPosition = 0
             for i in range(PlayerAmount):
                 PlayerNicknames.append(ViewModelEntity.users[i].name)
+                if ViewModelEntity.users[i].id == ViewModelEntity.user_id:
+                    OurPosition = i
                 PlayerReadySinges.append(ViewModelEntity.users[i].readiness)
-            Return = Menu.show_lobby(PlayerAmount, PlayerNicknames, PlayerReadySinges,ViewModelEntity.game_id)
+            Return = Menu.show_lobby(PlayerAmount, PlayerNicknames, PlayerReadySinges,ViewModelEntity.game_id,OurPosition)
             if Return[0] == ReturnStatus.change_readiness:
                 ViewModelEntity.change_user_readiness()
             elif Return[0] == ReturnStatus.add_bot:

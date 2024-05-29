@@ -554,7 +554,7 @@ class MenuView:
         Returnee = [ReturnStatus.stay, [""]]
         return Returnee
 
-    def show_lobby(self, player_amount, player_nicknames, player_ready_signes,lobby_code):
+    def show_lobby(self, player_amount, player_nicknames, player_ready_signes,lobby_code, our_position):
         screen.fill(RegistrationBackgroundColor)
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -580,7 +580,7 @@ class MenuView:
             screen.blit(self.PlayerIcon, (50 + ScreenWidth * j / 6, ScreenHeight * 1 / 8))
         for i in range(player_amount):
             PlayerNameText = PlayerNicknameInLobbyFont.render(player_nicknames[i], False, (0, 0, 0))
-            if i == 0:  # Point out us
+            if i == our_position:  # Point out us
                 PlayerNameText = PlayerNicknameInLobbyFont.render(player_nicknames[i], False, SelectedNickNameColor)
             screen.blit(PlayerNameText,
                         (ScreenWidth * i / 6 + 139 - len(player_nicknames[i]) * 13, ScreenHeight * 1 / 8 + 180))
