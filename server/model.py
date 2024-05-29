@@ -556,15 +556,21 @@ MX_BOT_ID = MX_GAME_ID * 4 + 10
 
 class Core:
     def __init__(self):
+        """Handles all the requests addressed to the model."""
+
+        # Initialize the logger
         self._LOGGER = get_logger(__name__)
         self._LOGGER.info("Корректное подключение модели")
 
-    def log_in_player(self, player_id, login, name):
+    def log_in_player(self, player_id: int, login: str, name: str):
+        """Remember a user upon logging in."""
+        # TODO: handle errors
+
         if player_id not in PLAYERS:
             new_player = Player(player_id=player_id, _login=login, _name=name)
             PLAYERS[player_id] = new_player
 
-    def create_game(self):
+    def create_game(self) -> tuple[int, int]:
         """Start new game session.
 
         Output:
@@ -572,44 +578,47 @@ class Core:
 
             - [1]: id of the new session"""
 
+        # Verify that the method can be used
         if len(GAMES) == MX_GAME_ID:
             return 9, -1
 
+        # Find an unused id for the new game
         new_game_id = randint(1, MX_GAME_ID)
         while new_game_id in GAMES.keys():
             new_game_id = randint(1, MX_GAME_ID)
 
+        # Initialize new game with the id
         new_game = Game(new_game_id)
         GAMES[new_game_id] = new_game
 
+        # Return the id
         return 0, new_game_id
 
-    def get_stage(self, game_id):
-        """"""
-        if game_id not in GAMES:
-            return 1, 0
-        game = GAMES[game_id]
-        return 0, game.get_stage()
-
-    def join_game(self, game_id, player_id):
-        """Add player to a game.
+    def get_stage(self, game_id: int) -> tuple[int, int]:
+        """Return the stage of a game session.
 
         Output:
+            - [0]: status code (0, 1)
+            - [1]: stage (0=WAITING, 1=RUNNING, 2=RESULTS)"""
 
-        -- status code:
-             - 0
+        # Verify that the method can be used
+        if game_id not in GAMES:
+            return 1, 0
 
-             - 1
+        # Get the stage from the game entity
+        game = GAMES[game_id]
+        stage = game.get_stage()
 
-             - 2
+        # Return the stage
+        return 0, stage
 
-             - 3
+    def join_game(self, game_id: int, player_id: int) -> int:
+        """Add a player to a game session. The game must be in its WAITING stage.
 
-             - 6
+        Output:
+            - status code (0, 1, 2, 3, 6, 7, 8)"""
 
-             - 7
-
-             - 8"""
+        # Verify that the method can be used
         if game_id not in GAMES:
             return 1
         if player_id not in PLAYERS:
@@ -623,22 +632,20 @@ class Core:
             return 7'''
         if len(game.get_players().keys()) == 5:
             return 8
+
+        # Let the game entity handle the request
         game.add_player(player_id)
+
+        # Return the 'ok' code
         return 0
 
-    def leave_game(self, game_id, player_id):
-        """Kick player from a game.
+    def leave_game(self, game_id: int, player_id: int) -> int:
+        """Kick a player from the game.
 
         Output:
+            - status code (0, 1, 2, 4)"""
 
-        -- status code:
-             - 0
-
-             - 1
-
-             - 2
-
-             - 4"""
+        # Verify that the method can be used
         if game_id not in GAMES:
             return 1
         if player_id not in PLAYERS:
@@ -646,37 +653,44 @@ class Core:
         game = GAMES[game_id]
         if player_id not in game.get_players():
             return 4
+
+        # Let the game entity handle the request
         game.kick_player(player_id)
+
+        # Return the 'ok' code
         return 0
 
-    def check_readiness(self, game_id, player_id):
+    def check_readiness(self, game_id: int, player_id: int) -> tuple[int, bool]:
+        """Check if a player is ready in the given game. The game must be in the WAITING stage.
+
+        Output:
+            - status code (0, 1, 2, 6, 7)
+            - True = ready, False = not ready"""
+
+        # Verify that the method can be used
         if game_id not in GAMES:
-            return 1, 0
+            return 1, False
         if player_id not in PLAYERS:
-            return 2, 0
+            return 2, False
         game = GAMES[game_id]
         '''if game.get_stage() == RUNNING:
             return 6, 0
         if game.get_stage() == RESULTS:
             return 7, 0'''
-        return 0, game.check_readiness(player_id)
 
-    def change_readiness(self, game_id, player_id):
-        """Add player to a game.
+        # Let the game entity handle the request
+        res = game.check_readiness(player_id)
+
+        # Return the 'ok' code
+        return 0, res
+
+    def change_readiness(self, game_id: int, player_id: int) -> int:
+        """Change a player's readiness into the opposite. The game must be in the WAITING stage.
 
         Output:
+            - status code (0, 1, 2, 6, 7)"""
 
-        -- status code
-             - 0
-
-             - 1
-
-             - 2
-
-             - 6
-
-             - 7"""
-
+        # Verify that the method can be used
         if game_id not in GAMES:
             return 1
         if player_id not in PLAYERS:
@@ -686,21 +700,21 @@ class Core:
             return 6
         if game.get_stage() == RESULTS:
             return 7
+
+        # Let the game entity handle the request
         game.change_player_readiness(player_id)
+
+        # Return the 'ok' code
         return 0
 
-    def current_player(self, game_id):
-        """Return id of the player that is currently making a move.
+    def current_player(self, game_id: int) -> tuple[int, int]:
+        """Return id of the player who is currently making a move in the given game.
+         The game must be in the RUNNING stage.
 
         Output:
+            - [0]: status code (0, 1)
 
-        -- [0] status code:
-            - 0
-
-            - 1
-
-        -- [1] int if status == 0:
-            - player_id"""
+            - [1]: the player's id"""
 
         if game_id not in GAMES:
             return 1, -1
