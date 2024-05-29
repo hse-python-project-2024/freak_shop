@@ -1,0 +1,31 @@
+version: "3.3"
+services:
+  postgres:
+    image: postgres:13.3
+    environment:
+      POSTGRES_DB: "freak_shop"
+      POSTGRES_USER: "freak_shop_owner"
+      POSTGRES_PASSWORD: "password"
+    volumes:
+      - .:/docker-entrypoint-initdb.d
+    ports:
+      - "54322:5432"
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512MB
+  server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: freak_shop_owner
+      DB_PASSWORD: password
+      DB_NAME: freak_shop
+    depends_on:
+      - postgres
+    ports:
+      - "50051:50051"
