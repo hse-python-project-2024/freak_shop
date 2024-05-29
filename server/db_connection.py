@@ -17,7 +17,7 @@ class DBConnection:
             )
             self.cursor = self.connection.cursor()
             self.connect_to_schema()
-            _LOGGER.info("Корректное подключение к базе данных")
+            _LOGGER.info(f"Корректное подключение к базе данных, по ip={db_host}. Пользователь={db_user_name}, База данных={db_name}")
         except Exception as e:
             _LOGGER.error(f"Не удалось подключиться к базе данных. Ошибка: {e}")
 
