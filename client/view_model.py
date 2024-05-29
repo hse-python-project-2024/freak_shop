@@ -347,7 +347,7 @@ class ViewModel:
                 response = self.req.get_shop_cards(_game_id=self.game_id)
                 if response.status == 0:
                     self.shop_card = list(response.card_id)
-                    # print("!!!!!!!!!!!!!!!!", self.shop_card)
+                    self._LOGGER.info(f"Сервер говорит что в магазине карты = {self.shop_card}")
                 else:
                     self.put_info_window(_info=response.status, _time=1)
             except Exception as e:
@@ -419,3 +419,16 @@ class ViewModel:
             self.put_info_window(_info=response.status, _time=1)
         else:
             self._LOGGER.info("Бот успешно удален")
+
+    def get_shop_cards_safely(self):
+        with self.mutex:
+            return self.shop_card.copy()
+
+    def get_my_card_safely(self):
+        with self.mutex:
+            return self.my_card.copy()
+
+    def get_user_cards_safely(self, _user_ind: int):
+        with self.mutex:
+            return self.users[_user_ind].cards.copy()
+

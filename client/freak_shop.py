@@ -93,9 +93,9 @@ if __name__ == "__main__":
             UsersCardList = list()
             ScoresList = list()
             for i in range(len(ViewModelEntity.users)):
-                UsersCardList.append(ViewModelEntity.users[i].cards)
+                UsersCardList.append(ViewModelEntity.get_user_cards_safely(i))
                 ScoresList.append(ViewModelEntity.users[i].point_count)
-            CurrentGame.update_game_info(ViewModelEntity.my_card,ViewModelEntity.shop_card
+            CurrentGame.update_game_info(ViewModelEntity.get_my_card_safely(),ViewModelEntity.get_shop_cards_safely()
                                          ,ViewModelEntity.whose_move,UsersCardList,ScoresList)
             Return = CurrentGame.ShowMainGameWindow(ViewModelEntity.language)
             if Return[0] == ReturnStatus.quit:

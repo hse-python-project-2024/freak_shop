@@ -218,16 +218,21 @@ class GameView:
 def card_format_from_specific(Cards):
     Return = [[0]*10,[0]*10]
     for card in Cards:
-        Return[card%2][(card-1)//2] += 1
+        Return[0][(card - 1) // 2] += 1
+        if card % 2 == 1:
+            Return[1][(card - 1) // 2] += 1
     return Return
 
 
 def card_format_from_full(CardsList):
     Return = []
     for i in range(10):
-        for x in range(CardsList[0][i]):
+        Given = 0
+        while Given < CardsList[1][i]:
+            Return.append(i * 2 + 1)
+            Given+= 1
+        while Given < CardsList[0][i]:
             Return.append((i+1)*2)
-        for x in range(CardsList[1][i]):
-            Return.append(i*2 + 1)
+            Given += 1
     return Return
 
