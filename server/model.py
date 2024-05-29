@@ -353,6 +353,8 @@ class Game:
         PLAYERS[player_id].leave_game(self.id)
         if not self.players or not any(PLAYERS[player_id].is_human() for player_id in self.players):
             GAMES.pop(self.id)
+        if len(self.players) == 1:
+            self.finish()
 
     def start(self):
         """Start the game."""
