@@ -457,7 +457,7 @@ class MenuView:
         pygame.draw.rect(screen, RegistrationButtonColor, self.SettingsButton)
         pygame.draw.rect(screen, RegistrationButtonColor, self.RankingsButton)
         screen.blit(self.JoinGameText, (self.JoinGameButton.center[0] - 325, self.JoinGameButton.center[1] - 35))
-        screen.blit(self.CreateGameText, (self.CreateGameButton.center[0] - 185, self.CreateGameButton.center[1] - 35))
+        screen.blit(self.CreateGameText, (self.CreateGameButton.center[0] - 225, self.CreateGameButton.center[1] - 35))
         screen.blit(self.SettingsText, (self.SettingsButton.center[0] - 150, self.SettingsButton.center[1] - 35))
         screen.blit(self.RankingsText, (self.RankingsButton.center[0] - 230, self.RankingsButton.center[1] - 35))
         screen.blit(self.BackIconImage,
@@ -580,6 +580,8 @@ class MenuView:
             screen.blit(self.PlayerIcon, (50 + ScreenWidth * j / 6, ScreenHeight * 1 / 8))
         for i in range(player_amount):
             PlayerNameText = PlayerNicknameInLobbyFont.render(player_nicknames[i], False, (0, 0, 0))
+            if i == 0:  # Point out us
+                PlayerNameText = PlayerNicknameInLobbyFont.render(player_nicknames[i], False, SelectedNickNameColor)
             screen.blit(PlayerNameText,
                         (ScreenWidth * i / 6 + 139 - len(player_nicknames[i]) * 13, ScreenHeight * 1 / 8 + 180))
             screen.blit(self.JoinedPlayerCard,
@@ -635,7 +637,7 @@ class MenuView:
             PlayerWinCount = RegistrationFont.render(str(Player[2]), False, (0, 0, 0))
             Winrate = "-" # Counting winrate if amount of games != 0
             if Player[1] != 0:
-                Winrate = str(Player[2] * 100 // Player[1])
+                Winrate = str(Player[2] * 100 // Player[1]) + "%"
             PlayerWinrate = RegistrationFont.render(Winrate, False, (0, 0, 0))
             screen.blit(PlayerNickname,
                         (ScreenWidth * 1 / 10, ScreenHeight * (3 / 19 + Index * 1 /10)))

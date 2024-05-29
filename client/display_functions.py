@@ -7,7 +7,8 @@ class GameBoardView:
         self.ClickedPlayerCardsDiscounted = [0] * 10
         self.ClickedShopCards = [0] * 10
         self.ClickedShopCardsDiscounted = [0] * 10
-        self.ShopImage = pygame.image.load("src/img/Shop_Image.jpg").convert()
+        self.ShopIcon = pygame.transform.scale(pygame.image.load("src/img/Shop_Icon.png").convert_alpha(),
+                                                 (1700, 1300))
         self.CardImages = []
         for i in range(10):
             self.CardImages.append([])
@@ -49,12 +50,13 @@ class GameBoardView:
         self.EndTurnIconActivated = pygame.transform.scale(
             pygame.image.load("src/img/End_Turn_Icon_Activated.png").convert_alpha(),
             (250, 250))
+        self.BackIcon = pygame.transform.scale(pygame.image.load("src/img/BackIcon.png").convert_alpha(),
+                                                  (200, 200))
 
     def display_shop_image(self):
-        screen.blit(pygame.transform.scale(self.ShopImage, (800, 400)), (ScreenWidth / 4,
-                                                                         ScreenHeight / 10))
+        screen.blit(self.ShopIcon, (50, -520))
 
-    def display_player_cards(self, CurrentPlayer):
+    def display_main_player_cards(self, CurrentPlayer):
         for i in range(10):
             DisplayedDiscounted = 0
             DisplayedDiscountedSelected = 0
@@ -135,6 +137,9 @@ class GameBoardView:
         else:
             screen.blit(self.EndTurnIcon, (ScreenWidth * 6 / 7 + 20, ScreenHeight * 3 / 4 - 30))
 
+    def display_back_button(self):
+        screen.blit(self.BackIcon, (ScreenWidth * 6 / 7 + 20, ScreenHeight * 3 / 4 - 30))
+
     def display_task_list(self, Game):
         ind = 0
         TaskImagesRects = [Rect(0, 0, 0, 0), Rect(0, 0, 0, 0), Rect(0, 0, 0, 0)]
@@ -161,7 +166,7 @@ class GameBoardView:
         self.ClickedPlayerCardsDiscounted = [0] * 10
         self.ClickedShopCardsDiscounted = [0] * 10
 
-    def display_other_player_cards(self, CardsInHand, CardsInHandDiscounted):
+    def display_player_cards(self, CardsInHand, CardsInHandDiscounted):
         CardsSurface = pygame.Surface((1600,400))
         CardsSurface.fill(RegistrationBackgroundColor)
         screen.blit(CardsSurface, (ScreenWidth * 1 / 60, ScreenHeight * 3 / 10 - 100))

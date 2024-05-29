@@ -31,7 +31,6 @@ if __name__ == "__main__":
             MidStageWindow = CurrentWindow
             Menu.reset_menu_info()
 
-        # TODO add settings window to registration as well(for language change)
         if CurrentWindow == ViewWindows.initial_menu:  # Behaviour in Initial Menu
             Return = Menu.show_initial_menu()
             if Return[0] == ReturnStatus.quit:
