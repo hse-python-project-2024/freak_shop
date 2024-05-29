@@ -237,7 +237,7 @@ class ViewModel:
                         user.readiness = response.is_true
                         start_game &= user.readiness
                     else:
-                        self.put_info_window(_info=response.status)
+                        # self.put_info_window(_info=response.status)
                         start_game = False
                 if start_game:
                     self._LOGGER.info(f"Start game with id = {self.game_id}")

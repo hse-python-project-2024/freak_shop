@@ -3,6 +3,8 @@ from random import shuffle, randint, choice
 
 from logs.loggers import get_logger
 
+from db_connection import DBConnection
+
 
 def check_good_deal(player_card_ids, shop_card_ids):
     if len(player_card_ids) != len(shop_card_ids):
@@ -38,6 +40,7 @@ class Deck:
 
     def add_cards(self, _cards):
         """Add cards with the given ids to the deck."""
+
         self.card_ids += list(_cards)
         self.card_ids.sort()
         for card_id in _cards:
@@ -163,7 +166,7 @@ class Player:
         self.decks = {}
         self.goals = {}
         self.ready = {}
-        self.human = True
+        self.human = (player_id > 0)
         self.autoplay = {}
 
     def join_game(self, game_id):
@@ -217,6 +220,8 @@ class Player:
 
     def add_cards(self, game_id, cards):
         """Add cards to the deck used in the given game."""
+
+        print(f"ADD CARDS: player_id={self.id} game_id={game_id} cards={cards}")
         self.decks[game_id].add_cards(cards)
 
     def sell_cards(self, game_id, card_ids):
@@ -367,8 +372,8 @@ class Game:
                     [17] + [18] * (2 - (len(self.players) >= 5)) + \
                     [19] + [20]
         shuffle(all_cards)
-        # ind = randint(len(all_cards) - 7, len(all_cards) - 1)
-        ind = 5
+        ind = randint(len(all_cards) - 7, len(all_cards) - 1)
+        # ind = 5
         all_cards.insert(ind, 0)
         self.unused = deque(all_cards)
 
@@ -384,11 +389,35 @@ class Game:
 
         self.stage = RESULTS
 
+        mx_points = max(PLAYERS[player_id].get_points(self.id) for player_id in self.players)
+        winners = set()
+        winner_cards = []
+
+        for player_id in self.players:
+            player = PLAYERS[player_id]
+            player_cards = player.get_cards(self.id)
+            player_cards.sort()
+            if player.get_points(self.id) == mx_points:
+                if player_cards > winner_cards:
+                    winners = {player_id}
+                    winner_cards = player_cards
+                elif player_cards == winner_cards:
+                    winners.add(player_id)
+
+        db = DBConnection()
+        for player_id in self.players:
+            player = PLAYERS[player_id]
+            db.finish_game(_user_login=player.login, is_winner=(player_id in winners))
+        db.close_connection()
+
     def move(self, player_id, sold_cards_ids, bought_cards_ids):
         """Handle a player's move. Restock the shop after a valid move
         and finish game if the "Closed Shop" card is pulled."""
+
+        print(f"MOVE: player_id={player_id}  sold_cards={sold_cards_ids} bought_cards={bought_cards_ids}")
         good_deal = check_good_deal(sold_cards_ids, bought_cards_ids)
         fair_price = check_fair_price(sold_cards_ids, bought_cards_ids)
+
         if not (good_deal or fair_price):
             return 1
         player = PLAYERS[player_id]
@@ -547,8 +576,8 @@ CARDS = [Card(card_id=0, value=0, is_merch=False, category=Closed),
          Card(card_id=16, value=8, is_merch=False, category=Employees),
          Card(card_id=17, value=9, is_merch=True, category=Employees),
          Card(card_id=18, value=9, is_merch=False, category=Employees),
-         Card(category=19, value=10, is_merch=True, card_id=Employees),
-         Card(category=20, value=10, is_merch=False, card_id=Employees)]
+         Card(card_id=19, value=10, is_merch=True, category=Employees),
+         Card(card_id=20, value=10, is_merch=False, category=Employees)]
 
 MX_GAME_ID = 50
 MX_BOT_ID = MX_GAME_ID * 4 + 10
@@ -716,28 +745,25 @@ class Core:
 
             - [1]: the player's id"""
 
+        # Verify that the method can be used
         if game_id not in GAMES:
             return 1, -1
+
+        # Let the game entity handle the request
         game = GAMES[game_id]
+
+        # Return the player's id
         return 0, game.get_current_player()
 
-    def get_shop_cards(self, game_id):
-        """Return list of cards currently in the shop
+    def get_shop_cards(self, game_id: int) -> tuple[int, list[int]]:
+        """Return the list of cards currently in the shop. The game must be in the RUNNING stage.
 
         Output:
+            - [0]: status code (0, 1, 5, 7)
 
-        -- status code:
-            - 0
+            - [1]: ids of the cards"""
 
-            - 1
-
-            - 5
-
-            - 7
-
-        -- list[int] if status == 0:
-            - list of card ids"""
-
+        # Verify that the method can be used
         if game_id not in GAMES:
             return 1, []
         game = GAMES[game_id]
@@ -745,29 +771,22 @@ class Core:
             return 5, []
         if game.get_stage == RESULTS:
             return 7, []
-        return 0, game.get_shop_cards()
 
-    def get_player_cards(self, game_id, player_id):
-        """Return list of player's cards
+        # Let the game entity handle the request
+        card_ids = game.get_shop_cards()
+
+        # Return the cards
+        return 0, card_ids
+
+    def get_player_cards(self, game_id: int, player_id: int) -> tuple[int, list[int]]:
+        """Return the list of the player's cards. The game must be in the RUNNING stage.
 
         Output:
+            - [0]: status code (0, 1, 2, 4, 5, 7)
 
-        -- status code:
-            - 0
+            - [1]: ids of the cards"""
 
-            - 1
-
-            - 2
-
-            - 4
-
-            - 5
-
-            - 7
-
-        -- list[int] if status == 0:
-            - list of cards' ids"""
-
+        # Verify that the method can be used
         if game_id not in GAMES:
             return 1, []
         game = GAMES[game_id]
@@ -780,7 +799,12 @@ class Core:
             return 5, []
         if game.get_stage == RESULTS:
             return 7, []
-        return 0, player.get_cards(game_id)
+
+        # Let the player entity handle the request
+        card_ids = player.get_cards(game_id)
+
+        # Return the cards
+        return 0, card_ids
 
     def get_players(self, game_id):
         """Return list of players' ids
