@@ -347,7 +347,7 @@ class ViewModel:
                 response = self.req.get_shop_cards(_game_id=self.game_id)
                 if response.status == 0:
                     self.shop_card = list(response.card_id)
-                    self._LOGGER.info(f"Сервер говорит что в магазине карты = {self.shop_card}")
+                    # self._LOGGER.info(f"Сервер говорит что в магазине карты = {self.shop_card}")
                 else:
                     self.put_info_window(_info=response.status, _time=1)
             except Exception as e:
@@ -383,11 +383,13 @@ class ViewModel:
         while True:
             self.mutex.acquire()
             try:
+                if self.game_id is None:
+                    break
                 # self._LOGGER.info(f"make request get_game_stage, game_id = {self.game_id}")
                 response = self.req.get_game_stage(_game_id=self.game_id)
                 if response.status == 0:
                     # 'WAITING', 'RUNNING', 'RESULTS' это 0, 1 и 2 соответственно
-                    if response.status == 2:
+                    if response.game_stage == 2:
                         self.window = ViewWindows.game_result
                 else:
                     self.put_info_window(_info=response.status, _time=1)
@@ -431,4 +433,3 @@ class ViewModel:
     def get_user_cards_safely(self, _user_ind: int):
         with self.mutex:
             return self.users[_user_ind].cards.copy()
-
