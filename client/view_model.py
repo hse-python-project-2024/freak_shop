@@ -286,7 +286,9 @@ class ViewModel:
                     need_erase = []
                     for user in self.users:
                         need_erase.append(user.id)
+                    # self._LOGGER.info("Юзеры в сессии:")
                     for my_user in response.users_info:
+                        # self._LOGGER.info(f"Юзер с id={my_user.id} есть в сессии")
                         if my_user.id in need_erase:
                             need_erase.remove(my_user.id)
 
@@ -405,7 +407,15 @@ class ViewModel:
             self.put_info_window(_info=response.status, _time=1)
 
     def add_bot_to_lobby(self):
-        pass  # TODO
+        response = self.req.add_bot(_game_id=self.game_id)
+        if response.status != 0:
+            self.put_info_window(_info=response.status, _time=1)
+        else:
+            self._LOGGER.info("Бот успешно добавлен")
 
     def remove_bot_from_lobby(self):
-        pass  # TODO
+        response = self.req.remove_bot(_game_id=self.game_id)
+        if response.status != 0:
+            self.put_info_window(_info=response.status, _time=1)
+        else:
+            self._LOGGER.info("Бот успешно удален")

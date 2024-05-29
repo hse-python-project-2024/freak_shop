@@ -78,3 +78,11 @@ class ClientRequests:
     def get_leaderboard(self):
         request = requests_pb2.Empty()
         return self.stub.GetLeaderboard(request)
+
+    def add_bot(self, _game_id: int):
+        request = requests_pb2.Id(id=_game_id)
+        return self.stub.AddBot(request)
+
+    def remove_bot(self, _game_id: int):
+        request = requests_pb2.Id(id=_game_id)
+        return self.stub.RemoveBot(request)
