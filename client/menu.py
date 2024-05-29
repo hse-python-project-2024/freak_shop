@@ -56,6 +56,7 @@ class MenuView:
         self.EnterButtonInitial = Rect(ScreenWidth * 11 / 38, ScreenHeight / 6, 800, 250)
         self.RegistrationButtonInitial = Rect(ScreenWidth * 11 / 38, ScreenHeight / 2, 800, 250)
         self.BackButton = Rect(ScreenWidth * 6 / 7, ScreenHeight * 1 / 30, 180, 180)
+        self.SettingsIconButton = Rect(ScreenWidth * 1 / 30, ScreenHeight * 1 / 30, 200, 200)
 
         # Buttons for Login Menu
         self.LoginButtonLogin = Rect(ScreenWidth * 5 / 38, ScreenHeight / 5, 1000, 150)
@@ -118,6 +119,9 @@ class MenuView:
         self.RuleIcon = pygame.transform.scale(
             pygame.image.load("src/img/Rule_Icon.png").convert_alpha(),
             (270, 270))
+        self.SettingsIcon = pygame.transform.scale(
+            pygame.image.load("src/img/Settings_Icon.png").convert_alpha(),
+            (200, 200))
 
         # Variables for registration/login
         self.LoginInput = ""
@@ -337,7 +341,7 @@ class MenuView:
         screen.blit(self.PasswordText,
                     (self.PasswordButtonRegistration.midtop[0] - 120, self.PasswordButtonRegistration.midtop[1] - 60))
         screen.blit(self.RepeatPasswordText, (
-            self.RepeatPasswordButtonRegistration.midtop[0] - 220,
+            self.RepeatPasswordButtonRegistration.midtop[0] - 260,
             self.RepeatPasswordButtonRegistration.midtop[1] - 60))
         screen.blit(self.ConfirmTextRegistration,
                     (self.ConfirmButtonRegistration.center[0] - 180, self.ConfirmButtonRegistration.center[1] - 20))
@@ -400,6 +404,9 @@ class MenuView:
                 elif self.BackButton.collidepoint(pygame.mouse.get_pos()):
                     Returnee = [ReturnStatus.quit, [""]]
                     return Returnee
+                elif self.SettingsIconButton.collidepoint(pygame.mouse.get_pos()):
+                    Returnee = [ReturnStatus.settings, [""]]
+                    return Returnee
         pressed_keys = pygame.key.get_pressed()
         if pressed_keys[K_ESCAPE]:
             Returnee = [ReturnStatus.quit, [""]]
@@ -408,6 +415,8 @@ class MenuView:
         pygame.draw.rect(screen, RegistrationButtonColor, self.RegistrationButtonInitial)
         screen.blit(self.BackIconImage,
                     (ScreenWidth * 6 / 7, ScreenHeight * 1 / 30))
+        screen.blit(self.SettingsIcon,
+                    (ScreenWidth * 1 / 30, ScreenHeight * 1 / 30))
         screen.blit(self.LoginTextInitial,
                     (self.EnterButtonInitial.center[0] - 85, self.EnterButtonInitial.center[1] - 40))
         screen.blit(self.RegistrationTextInitial,

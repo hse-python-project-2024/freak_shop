@@ -19,13 +19,16 @@ if __name__ == "__main__":
     DefaultLanguage = Languages.russian
     Menu = MenuView(DefaultLanguage)
     LastWindow = ViewWindows.initial_menu
+    MidStageWindow = ViewWindows.initial_menu
+
     IsGameStarted = False
     # LastWindow = ViewWindows.game  # code for windows design testing
     # ViewModelEntity.window = ViewWindows.game
     while True:
         CurrentWindow = ViewModelEntity.window  # Check what window to display right now
-        if CurrentWindow != LastWindow:
-            LastWindow = CurrentWindow
+        if CurrentWindow != MidStageWindow:
+            LastWindow = MidStageWindow
+            MidStageWindow = CurrentWindow
             Menu.reset_menu_info()
 
         # TODO add settings window to registration as well(for language change)
@@ -37,6 +40,8 @@ if __name__ == "__main__":
                 ViewModelEntity.go_to_login_window()
             elif Return[0] == ReturnStatus.go_to_register:
                 ViewModelEntity.go_to_registration_window()
+            elif Return[0] == ReturnStatus.settings:
+                ViewModelEntity.go_to_settings_window()
 
         elif CurrentWindow == ViewWindows.login:  # Behaviour in Login Menu
             Return = Menu.show_login_menu()
@@ -147,7 +152,10 @@ if __name__ == "__main__":
             Return = Menu.show_settings_menu()
             if Return[0] == ReturnStatus.quit:
                 time.sleep(0.1)
-                ViewModelEntity.go_to_main_menu_window()
+                if LastWindow == ViewWindows.initial_menu:
+                    ViewModelEntity.go_to_initial_window()
+                else:
+                    ViewModelEntity.go_to_main_menu_window()
             if Return[0] == ReturnStatus.change_lang:
                 new_lang_str = Return[1][0]
                 new_lang = None

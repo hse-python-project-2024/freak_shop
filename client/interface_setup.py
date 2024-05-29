@@ -137,14 +137,16 @@ EndTurnTexts = ["Совершить обмен",
 
 YouTexts = ["Вы","You"]
 
-LoginTexts = ["Логин :","Login :"]
+LoginTexts = [" Логин :"," Login :"]
 NicknameTexts = ["Имя :","Name :"]
 PasswordTexts = ["Пароль : ","Password :"]
-RepeatPasswordTexts = ["Повторите пароль : ","Repeat the password :"]
+RepeatPasswordTexts = ["   Повторите пароль : ",
+                       "Repeat the password :"]
 
 ConfirmTexts =["Войти","Enter"]
 RegistrationTexts = ["Регистрация", "Registration"]
-InitialRegistrationTexts = ["Зарегестрироваться", "Register"]
+InitialRegistrationTexts = ["Зарегестрироваться",
+                            "          Register"]
 
 JoinGameTexts = ["Присоединиться к игре",
                  "         Join the game"]
