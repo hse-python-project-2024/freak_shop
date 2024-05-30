@@ -138,7 +138,9 @@ class Facade(requests_pb2_grpc.DbServiceServicer):
         return result
 
     def GetPointsCount(self, request, context):
+        self._LOGGER.info(f"GET POINTS: game_id={request.game_id} player_id={request.user_id}")
         res = self.core.get_points(request.game_id, request.user_id)
+        self._LOGGER.info(f"RESULT: {res[1]}")
         return requests_pb2.PointsCount(status=res[0], count=res[1])
 
     def WhoseMove(self, request, context):

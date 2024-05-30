@@ -106,23 +106,37 @@ class Deck:
         """Return number of points earned through the goal "Collector".
 
         Description of the goal can be found in the rulebook."""
-        return 10 - self.vals.count(0)
+        return 3 * (11 - self.vals.count(0))
 
     def check_seeing_double(self):
         """Return number of points earned through the goal "Seeing double".
 
         Description of the goal can be found in the rulebook."""
-        return 2 * (self.cats[Items] // 2) + \
-               4 * (self.cats[Pets] // 2) + \
-               5 * (self.cats[Employees] // 2)
+
+        points = 0
+        for val in range(1, 11):
+            if val <= 3:
+                points += 2 * (self.vals[val] // 2)
+            elif val <= 6:
+                points += 4 * (self.vals[val] // 2)
+            else:
+                points += 5 * (self.vals[val] // 2)
+        return points
 
     def check_three_is_better_than_two(self):
         """Return number of points earned through the goal "Three is better than two".
 
         Description of the goal can be found in the rulebook."""
-        return 2 * (self.cats[Items] // 3) + \
-               4 * (self.cats[Pets] // 3) + \
-               5 * (self.cats[Employees] // 3)
+
+        points = 0
+        for val in range(1, 11):
+            if val <= 3:
+                points += 3 * (self.vals[val] // 3)
+            elif val <= 6:
+                points += 5 * (self.vals[val] // 3)
+            else:
+                points += 7 * (self.vals[val] // 3)
+        return points
 
     def check_the_sum_of_all_fears(self):
         """Return number of points earned through the goal "The sum of all fears".
@@ -136,14 +150,18 @@ class Deck:
         Description of the goal can be found in the rulebook."""
         points = 0
         for val in range(1, 11):
-            points += (self.vals[val] > 0 and not self.merch_vals[val])
+            points += 2 * (self.vals[val] > 0 and not self.merch_vals[val])
         return points
 
     def check_the_art_of_bargaining(self):
         """Return number of points earned through the goal "The art of bargaining".
 
         Description of the goal can be found in the rulebook."""
-        return 10 - self.merch_vals.count(0)
+
+        points = 0
+        for val in range(1, 11):
+            points += 2 * (self.merch_vals[val] > 0)
+        return points
 
     def get_cards(self):
         return self.card_ids
@@ -480,18 +498,24 @@ class Game:
         """Give players points earned through the goal "Neighbors' festival".
 
         Description of the goal can be found in the rulebook."""
+        points = {}
+        for player_id in self.players:
+            points[player_id] = 0
         for val in range(1, 11):
             mx_copies = max(PLAYERS[player_id].get_val_cnt(self.id, val) for player_id in self.players)
             for player_id in self.players:
                 player = PLAYERS[player_id]
                 if player.get_val_cnt(self.id, val) == mx_copies:
-                    player.update_neighbors_festival(self.id, 5)
+                    points[player_id] += 5
+        for player_id in points:
+            player = PLAYERS[player_id]
+            player.update_neighbors_festival(self.id, points[player_id])
 
     def check_not_the_same_values(self):
         """Give players points earned through the goal "Not the same values".
 
         Description of the goal can be found in the rulebook."""
-        mn_merch = sorted(PLAYERS[player_id].get_merch_cnt(self.id) for player_id in self.players)
+        mn_merch = sorted(list(set((PLAYERS[player_id].get_merch_cnt(self.id) for player_id in self.players))))
         for player_id in self.players:
             player = PLAYERS[player_id]
             player_merch = player.get_merch_cnt(self.id)
@@ -501,21 +525,26 @@ class Game:
                 player.update_not_the_same_values(self.id, 6)
             elif player_merch == mn_merch[2]:
                 player.update_not_the_same_values(self.id, 3)
+            else:
+                player.update_not_the_same_values(self.id, 0)
 
     def check_fashion_at_lowest_price(self):
         """Give players points earned through the goal "Fashion at lowest price".
 
         Description of the goal can be found in the rulebook."""
-        mx_merch = sorted([PLAYERS[player_id].get_merch_cnt(self.id) for player_id in self.players], reverse=True)
+        mx_merch = sorted(list(set([PLAYERS[player_id].get_merch_cnt(self.id) for player_id in self.players])),
+                          reverse=True)
         for player_id in self.players:
             player = PLAYERS[player_id]
             player_merch = player.get_merch_cnt(self.id)
             if player_merch == mx_merch[0]:
-                player.update_not_the_same_values(self.id, 10)
+                player.update_fashion_at_lowest_price(self.id, 10)
             elif player_merch == mx_merch[1]:
-                player.update_not_the_same_values(self.id, 6)
+                player.update_fashion_at_lowest_price(self.id, 6)
             elif player_merch == mx_merch[2]:
-                player.update_not_the_same_values(self.id, 3)
+                player.update_fashion_at_lowest_price(self.id, 3)
+            else:
+                player.update_fashion_at_lowest_price(self.id, 0)
 
 
 class Card:
