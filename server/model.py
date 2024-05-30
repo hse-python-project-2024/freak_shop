@@ -428,7 +428,8 @@ class Game:
 
         for player_id in self.players:
             player = PLAYERS[player_id]
-            self.db.finish_game(_user_login=player.login, is_winner=(player_id in winners))
+            if player.is_human():
+                self.db.finish_game(_user_login=player.login, is_winner=(player_id in winners))
 
     def move(self, player_id, sold_cards_ids, bought_cards_ids):
         """Handle a player's move. Restock the shop after a valid move
