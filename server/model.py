@@ -272,7 +272,7 @@ class Player:
 
 
 class Game:
-    def __init__(self, game_id):
+    def __init__(self, game_id, _db):
         """Class that handles the gameplay."""
         self.id = game_id
         self.players = []
@@ -281,6 +281,8 @@ class Game:
         self.stage = WAITING
         self.unused = deque()
         self.goals = [''] * 3
+
+        self.db = _db
 
     def get_players(self):
         """Return list of players
@@ -406,11 +408,9 @@ class Game:
                 elif player_cards == winner_cards:
                     winners.add(player_id)
 
-        db = DBConnection()
         for player_id in self.players:
             player = PLAYERS[player_id]
-            db.finish_game(_user_login=player.login, is_winner=(player_id in winners))
-        db.close_connection()
+            self.db.finish_game(_user_login=player.login, is_winner=(player_id in winners))
 
     def move(self, player_id, sold_cards_ids, bought_cards_ids):
         """Handle a player's move. Restock the shop after a valid move
@@ -593,6 +593,9 @@ class Core:
         self._LOGGER = get_logger(__name__)
         self._LOGGER.info("Корректное подключение модели")
 
+        # Connect to the database
+        self.db = DBConnection()
+
     def log_in_player(self, player_id: int, login: str, name: str):
         """Remember a user upon logging in."""
         # TODO: handle errors
@@ -619,7 +622,7 @@ class Core:
             new_game_id = randint(1, MX_GAME_ID)
 
         # Initialize new game with the id
-        new_game = Game(new_game_id)
+        new_game = Game(new_game_id, self.db)
         GAMES[new_game_id] = new_game
 
         # Return the id
