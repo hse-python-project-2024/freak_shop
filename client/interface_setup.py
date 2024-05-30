@@ -44,7 +44,7 @@ Task_Descriptions = [
       "в своей самой длинной последовательности",
       "         (например 3-4-5-6-7)           "],
 
-     ["  Игрок получает 3 очка за каждую карту",
+     ["  Игрок получает 3 очка * номинал карты",
       "своего самого многочисленного номинала",
       "(при равенстве выбирается наименьший)"],
 
@@ -90,7 +90,7 @@ Task_Descriptions = [
       " in his longest consecutive line of nominals ",
       "               (e.g 3-4-5-6-7)               "],
 
-     ["A Player receives 3 points for each card",
+     ["   A Player receives 3 points * value of",
       "       of his most popular nominal      ",
       "      (if tied - pick the smallest)     "],
 
