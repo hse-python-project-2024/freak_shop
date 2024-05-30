@@ -21,6 +21,7 @@ class ReturnStatus(enum.Enum):
     add_bot = 15
     remove_bot = 16
     show_rules = 17
+    kill_quit = 18
 
 
 class MenuView:

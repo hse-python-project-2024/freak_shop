@@ -152,8 +152,8 @@ class GameBoardView:
         return TaskImagesRects
 
     def display_tasks_text(self, Tasks, TaskNumber, lang):
-        for j in range(len(Task_Descriptions[lang.value][Tasks[TaskNumber] - 1])):
-            TaskDescriptionText = TaskFont.render(Task_Descriptions[lang.value][Tasks[TaskNumber] - 1][j], False,
+        for j in range(len(Task_Descriptions[lang.value][Tasks[TaskNumber]])):
+            TaskDescriptionText = TaskFont.render(Task_Descriptions[lang.value][Tasks[TaskNumber]][j], False,
                                                   (0, 0, 0))
             TaskTextSurface = pygame.Surface(TaskDescriptionText.get_size())
             TaskTextSurface.fill(BackgroundColor)

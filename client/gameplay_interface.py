@@ -57,7 +57,8 @@ class GameView:
 
         for event in pygame.event.get():
             if event.type == QUIT:
-                sys.exit()
+                Returnee = [ReturnStatus.kill_quit, [""]]
+                return Returnee
             if event.type == MOUSEBUTTONDOWN:
                 if self.IsMyTurn:
                     MousePosition = pygame.mouse.get_pos()
@@ -227,12 +228,13 @@ def card_format_from_specific(Cards):
 def card_format_from_full(CardsList):
     Return = []
     for i in range(10):
-        Given = 0
-        while Given < CardsList[1][i]:
+        GivenNormal = 0
+        while GivenNormal < CardsList[1][i]:
             Return.append(i * 2 + 1)
-            Given+= 1
-        while Given < CardsList[0][i]:
+            GivenNormal+= 1
+        GivenDiscounted = 0
+        while GivenDiscounted < CardsList[0][i]:
             Return.append((i+1)*2)
-            Given += 1
+            GivenDiscounted += 1
     return Return
 

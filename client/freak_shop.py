@@ -86,6 +86,7 @@ if __name__ == "__main__":
                 PlayerNicknames = []
                 for user in ViewModelEntity.users:
                     PlayerNicknames.append(user.name)
+                _LOGGER.info(f"Started game with tasks: {list(ViewModelEntity.goals.keys())}")
                 NewGameInfo = GameInfo(list(ViewModelEntity.goals.keys()), len(ViewModelEntity.users), PlayerNicknames,
                                        ViewModelEntity.my_pos_in_users())
                 _LOGGER.info(f"Started game with players:  {PlayerNicknames} on position {ViewModelEntity.my_pos_in_users()}")
@@ -104,6 +105,9 @@ if __name__ == "__main__":
                 ViewModelEntity.leave_game()
             elif Return[0] == ReturnStatus.trade:
                 ViewModelEntity.make_move(Return[1][0],Return[1][1])
+            elif Return[0] == ReturnStatus.kill_quit:
+                ViewModelEntity.leave_game()
+                sys.exit()
 
         elif CurrentWindow == ViewWindows.connecting_by_code:
             Return = Menu.show_join_by_code_menu()

@@ -129,7 +129,7 @@ class DBConnection:
         self.connection.commit()
         return self.cursor.fetchall()
 
-    def close_connection(self) -> None:
+    def __del__(self):
         self.connection.commit()
         self.cursor.close()
         self.connection.close()
