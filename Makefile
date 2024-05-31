@@ -59,3 +59,9 @@ test_client:
 
 end_to_end_requests:
 	PYTHONPATH=$(PWD)/client $(PYTHON_CLIENT) -m client.tests.end_to_end_requests
+
+test_server:
+	PYTHONPATH=$(PWD)/server $(PYTHON_SERVER) -m server.tests.test_deck
+
+test_server_requests:
+	PYTHONPATH=$(PWD)/server $(PYTHON_SERVER) -m server.tests.test_requests

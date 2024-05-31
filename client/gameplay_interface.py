@@ -8,6 +8,7 @@ class GameView:
     def __init__(self):
         self.Info = None
         self.EndTurnButtonRect = Rect(ScreenWidth * 6 / 7, ScreenHeight * 3 / 4, 250, 250)
+        self.BackButtonRect = Rect(ScreenWidth * 6 / 7 + 20, ScreenHeight * 3 / 4 - 30, 200, 200)
 
         self.TaskImagesRects = list()
         self.GameBoard = GameBoardView()
@@ -47,7 +48,7 @@ class GameView:
     def ShowMainGameWindow(self,lang):
         screen.fill(BackgroundColor)
         self.GameBoard.display_shop_image()
-        self.GameBoard.display_player_cards(self.Player)
+        self.GameBoard.display_main_player_cards(self.Player)
         self.GameBoard.display_shop_cards(self.Shop)
         self.GameBoard.display_player_list(self.Info, self.Info.MyPosition,lang,self.CurrentPlayerPosition)
         self.GameBoard.display_end_turn_button(False, lang)
@@ -56,7 +57,8 @@ class GameView:
 
         for event in pygame.event.get():
             if event.type == QUIT:
-                sys.exit()
+                Returnee = [ReturnStatus.kill_quit, [""]]
+                return Returnee
             if event.type == MOUSEBUTTONDOWN:
                 if self.IsMyTurn:
                     MousePosition = pygame.mouse.get_pos()
@@ -146,23 +148,35 @@ class GameView:
                 self.GameBoard.display_tasks_text(self.Info.Tasks,i,lang)
                 break
 
-        # Display other player cards while clicking
+        # Display other player cards while hovering
         for i in range(self.Info.PlayerAmount):
             if i != self.Info.MyPosition:
                 PlayerIconRect = Rect(ScreenWidth * 4 / 5 + 40, ScreenHeight * i / 8, 140, 140)
                 if PlayerIconRect.collidepoint(pygame.mouse.get_pos()):
-                    self.GameBoard.display_other_player_cards(self.UserCards[i][0], self.UserCards[i][1])
+                    self.GameBoard.display_player_cards(self.UserCards[i][0], self.UserCards[i][1])
 
         Returnee = [ReturnStatus.stay, [""]]
         return Returnee
 
     def ShowEndGameScreen(self, lang):
-        CardsSurface = pygame.Surface((800, 250 * self.Info.PlayerAmount))
+        screen.fill(BackgroundColor)
+        self.GameBoard.display_shop_image()
+        self.GameBoard.display_main_player_cards(self.Player)
+        self.GameBoard.display_shop_cards(self.Shop)
+        self.GameBoard.display_player_list(self.Info, self.Info.MyPosition, lang, self.CurrentPlayerPosition)
+        TaskImagesRects = self.GameBoard.display_task_list(self.Info)
+        self.GameBoard.display_back_button()
+        CardsSurface = pygame.Surface((800, 150 + 150 * self.Info.PlayerAmount))
         CardsSurface.fill(RegistrationBackgroundColor)
         screen.blit(CardsSurface, (ScreenWidth * 2 / 5 - 250, ScreenHeight * 3 / 19 - 100))
         for event in pygame.event.get():
             if event.type == QUIT:
                 sys.exit()
+
+            if event.type == MOUSEBUTTONDOWN:
+                if self.BackButtonRect.collidepoint(pygame.mouse.get_pos()):
+                    Returnee = [ReturnStatus.quit, [""]]
+                    return Returnee
         pressed_keys = pygame.key.get_pressed()
         if pressed_keys[K_ESCAPE]:
             Returnee = [ReturnStatus.quit, [""]]
@@ -176,12 +190,28 @@ class GameView:
         screen.blit(ScoreText,
                     (ScreenWidth * 3 / 5 - 100, ScreenHeight * (3 / 19) - 50))
         for i in range (len(self.Info.Scores)):
-            PlayerNickname = NicknameEndFont.render(str(self.Info.PlayersNicknames[i]), False, (0, 0, 0)) # TODO Make us be separate color
+            PlayerNickname = NicknameEndFont.render(str(self.Info.PlayersNicknames[i]), False, (0,0,0))
+            if i == self.Info.MyPosition:
+                PlayerNickname = NicknameEndFont.render(str(self.Info.PlayersNicknames[i]), False,
+                                                        SelectedNickNameColor)
             PlayerScore = CodeFont.render(str(self.Info.Scores[i]), False, (0, 0, 0))
             screen.blit(PlayerNickname,
                         (ScreenWidth * 2 / 5-200, ScreenHeight * (3 / 19 + i * 1 / 10) + 100))
             screen.blit(PlayerScore,
                         (ScreenWidth * 3 / 5 -50, ScreenHeight * (3 / 19 + i * 1 / 10) + 100))
+
+        # Display Tasks text when hovering over them
+        for i in range(3):
+            if TaskImagesRects[i].collidepoint(pygame.mouse.get_pos()):
+                self.GameBoard.display_tasks_text(self.Info.Tasks, i, lang)
+                break
+
+        # Display other player cards while hovering
+        for i in range(self.Info.PlayerAmount):
+            PlayerIconRect = Rect(ScreenWidth * 4 / 5 + 40, ScreenHeight * i / 8, 140, 140)
+            if PlayerIconRect.collidepoint(pygame.mouse.get_pos()):
+                self.GameBoard.display_player_cards(self.UserCards[i][0], self.UserCards[i][1])
+
         Returnee = [ReturnStatus.stay, [""]]
         return Returnee
 
@@ -189,16 +219,22 @@ class GameView:
 def card_format_from_specific(Cards):
     Return = [[0]*10,[0]*10]
     for card in Cards:
-        Return[card%2][(card-1)//2] += 1
+        Return[0][(card - 1) // 2] += 1
+        if card % 2 == 1:
+            Return[1][(card - 1) // 2] += 1
     return Return
 
 
 def card_format_from_full(CardsList):
     Return = []
     for i in range(10):
-        for x in range(CardsList[0][i]):
+        GivenNormal = 0
+        while GivenNormal < CardsList[1][i]:
+            Return.append(i * 2 + 1)
+            GivenNormal+= 1
+        GivenDiscounted = 0
+        while GivenDiscounted < CardsList[0][i]:
             Return.append((i+1)*2)
-        for x in range(CardsList[1][i]):
-            Return.append(i*2 + 1)
+            GivenDiscounted += 1
     return Return
 

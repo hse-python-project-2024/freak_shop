@@ -11,7 +11,10 @@ if __name__ == '__main__':
 
     print("Create Game:")
     response = client.creat_game(0)
-    print(f"status = {response.status}, Game id = {response.id}\n")
+    if response.status == 0:
+        print(f"status = {response.status}, Game id = {response.id}\n")
+    else:
+        print(f"status = {response.status}\n")
 
     print("Join Game")
     response = client.join_game(_game_id=1, _user_id=1)
@@ -27,9 +30,12 @@ if __name__ == '__main__':
 
     print("Is user ready")
     response = client.is_user_ready(_game_id=1, _user_id=1)
-    print(f"status = {response.status}, user ready = {response.is_true}\n")
-
+    if response.status == 0:
+        print(f"status = {response.status}, user ready = {response.is_true}\n")
+    else:
+        print(f"status = {response.status}")
     print("Get goals")
+
     response = client.get_goals(_game_id=1, _user_id=50)
     print(response.status)
     for my_goal in response.goals:
@@ -61,11 +67,17 @@ if __name__ == '__main__':
 
     print("Get point count")
     response = client.get_points_count(_game_id=1, _user_id=1)
-    print(f"status = {response.status}, count = {response.count}\n")
+    if response.status == 0:
+        print(f"status = {response.status}, count = {response.count}\n")
+    else:
+        print(f"status = {response.status}")
 
     print("Whose move")
     response = client.whose_move(_game_id=1)
-    print(f"status = {response.status}, move user_id = {response.id}\n")
+    if response.status == 0:
+        print(f"status = {response.status}, move user_id = {response.id}\n")
+    else:
+        print(f"status = {response.status}")
 
     print("Make Move")
     response = client.make_move(_game_id=0, _user_id=1, hand_cards=(1, 2, 3), shop_cards=(4, 5, 6))
@@ -73,9 +85,10 @@ if __name__ == '__main__':
 
     print("Get game stage:")
     response = client.get_game_stage(_game_id=27)
-    print(f"status = {response.status}\n")
     if response.status == 0:
-        print(f"Game id = {response.game_stage}")
+        print(f"Game state = {response.game_stage}\n")
+    else:
+        print(f"status = {response.status}\n")
 
     while True:
         n = int(input("Enter 1 to add user, 2 to ask user by id, 3 to try log in\n"))

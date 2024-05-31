@@ -31,7 +31,6 @@ if __name__ == "__main__":
             MidStageWindow = CurrentWindow
             Menu.reset_menu_info()
 
-        # TODO add settings window to registration as well(for language change)
         if CurrentWindow == ViewWindows.initial_menu:  # Behaviour in Initial Menu
             Return = Menu.show_initial_menu()
             if Return[0] == ReturnStatus.quit:
@@ -87,6 +86,7 @@ if __name__ == "__main__":
                 PlayerNicknames = []
                 for user in ViewModelEntity.users:
                     PlayerNicknames.append(user.name)
+                _LOGGER.info(f"Started game with tasks: {list(ViewModelEntity.goals.keys())}")
                 NewGameInfo = GameInfo(list(ViewModelEntity.goals.keys()), len(ViewModelEntity.users), PlayerNicknames,
                                        ViewModelEntity.my_pos_in_users())
                 _LOGGER.info(f"Started game with players:  {PlayerNicknames} on position {ViewModelEntity.my_pos_in_users()}")
@@ -94,9 +94,9 @@ if __name__ == "__main__":
             UsersCardList = list()
             ScoresList = list()
             for i in range(len(ViewModelEntity.users)):
-                UsersCardList.append(ViewModelEntity.users[i].cards)
+                UsersCardList.append(ViewModelEntity.get_user_cards_safely(i))
                 ScoresList.append(ViewModelEntity.users[i].point_count)
-            CurrentGame.update_game_info(ViewModelEntity.my_card,ViewModelEntity.shop_card
+            CurrentGame.update_game_info(ViewModelEntity.get_my_card_safely(),ViewModelEntity.get_shop_cards_safely()
                                          ,ViewModelEntity.whose_move,UsersCardList,ScoresList)
             Return = CurrentGame.ShowMainGameWindow(ViewModelEntity.language)
             if Return[0] == ReturnStatus.quit:
@@ -105,6 +105,9 @@ if __name__ == "__main__":
                 ViewModelEntity.leave_game()
             elif Return[0] == ReturnStatus.trade:
                 ViewModelEntity.make_move(Return[1][0],Return[1][1])
+            elif Return[0] == ReturnStatus.kill_quit:
+                ViewModelEntity.leave_game()
+                sys.exit()
 
         elif CurrentWindow == ViewWindows.connecting_by_code:
             Return = Menu.show_join_by_code_menu()
@@ -125,10 +128,13 @@ if __name__ == "__main__":
             PlayerAmount = len(ViewModelEntity.users)
             PlayerNicknames = []
             PlayerReadySinges = []
+            OurPosition = 0
             for i in range(PlayerAmount):
                 PlayerNicknames.append(ViewModelEntity.users[i].name)
+                if ViewModelEntity.users[i].id == ViewModelEntity.user_id:
+                    OurPosition = i
                 PlayerReadySinges.append(ViewModelEntity.users[i].readiness)
-            Return = Menu.show_lobby(PlayerAmount, PlayerNicknames, PlayerReadySinges,ViewModelEntity.game_id)
+            Return = Menu.show_lobby(PlayerAmount, PlayerNicknames, PlayerReadySinges,ViewModelEntity.game_id,OurPosition)
             if Return[0] == ReturnStatus.change_readiness:
                 ViewModelEntity.change_user_readiness()
             elif Return[0] == ReturnStatus.add_bot:
